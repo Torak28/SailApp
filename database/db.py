@@ -36,6 +36,7 @@ class User(Base):
     auth_token = Column(String)
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
+    owner = relationship('WaterCentre')
 
 
 class Role(Base):
@@ -86,6 +87,7 @@ class GearRental(Base):
     centre_id = Column(Integer, ForeignKey('centre.id'))
     rent_start = Column(Date)
     rent_end = Column(Date)
+    rent_amount = Column(Integer)
 
 
 class WaterCentre(Base):
@@ -99,6 +101,9 @@ class WaterCentre(Base):
                 primary_key=True,
                 unique=True)
     name = Column(String)
+    owner_id = Column(Integer, ForeignKey('user.id'))
+    latitude = Column(String)
+    longitude = Column(String)
 
     gear = relationship("Gear")
     gear_rental = relationship("GearRental")
