@@ -1,4 +1,4 @@
-import db
+import database.db as db
 
 
 def create_user(name, surname, email, password, number, role):

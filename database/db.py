@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 # import datetime
 
 Base = declarative_base()
-DATABASE_URI = 'postgres+psycopg2://postgres:123@localhost:5432/basska'
+DATABASE_URI = 'postgres+psycopg2://postgres:12345@localhost:5432/db.py'
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 s = Session()
@@ -33,7 +33,7 @@ class User(Base):
     password = Column(String)
     phone_number = Column(String)
     role_id = Column(Integer, ForeignKey('role.id'))
-
+    auth_token = Column(String)
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
 
@@ -134,4 +134,4 @@ class ClassType(Base):
     class_table = relationship('Class')
 
 
-recreate_database()
+# recreate_database()
