@@ -9,6 +9,16 @@ engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
 
+def connection_to_db(original_function):  # decorator
+    def new_function(*args, **kwargs):
+        session = Session()
+        answer = original_function(*args, **kwargs, session=session)
+        session.commit()
+        session.close()
+        return answer
+    return new_function
+
+
 def recreate_database():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -135,13 +145,3 @@ class ClassType(Base):
     class_type = Column(String)
 
     class_table = relationship('Class')
-
-
-def connection_to_db(original_function):  # decorator
-    def new_function(*args, **kwargs):
-        session = Session()
-        answer = original_function(*args, **kwargs, session=session)
-        session.commit()
-        session.close()
-        return answer
-    return new_function
