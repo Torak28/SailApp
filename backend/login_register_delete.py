@@ -1,5 +1,6 @@
 import database.db as db
-from database.insert import *
+from database.db import connection_to_db
+from database.create_objects_of_classes import *
 from backend.user import *
 from passlib.hash import sha256_crypt as crypter
 import secrets
@@ -11,8 +12,9 @@ def hash_password(password):
     return hashed_password
 
 
-def get_role_id(role):
-    return db.s.query(db.Role).filter_by(role_name=role).first().id
+@connection_to_db
+def get_role_id(role, session=None):
+    return session.query(db.Role).filter_by(role_name=role).first().id
 
 
 def register_new_person(first_name, last_name, email, password, phone_number, user_or_admin='User'):
@@ -29,53 +31,55 @@ def register_new_person(first_name, last_name, email, password, phone_number, us
         "Please provide proper name (User/Admin), not '{}'.".format(user_or_admin)
 
 
-def delete_user(user_id):
-    if db.s.query(db.User).get(user_id):
-        db.s.query(db.User).filter_by(id=user_id).delete()
-        db.s.commit()
+@connection_to_db
+def delete_user(user_id, session=None):
+    if session.query(db.User).get(user_id):
+        session.query(db.User).filter_by(id=user_id).delete()
         print("Deleted an account.")
     else:
         print("Couldn't delete nonexistent row.")
 
 
-def delete_user_by_email(email):
-    if db.s.query(db.User).get(email):
-        db.s.query(db.User).filter_by(email=email).delete()
-        db.s.commit()
+@connection_to_db
+def delete_user_by_email(email, session=None):
+    if session.query(db.User).get(email):
+        session.query(db.User).filter_by(email=email).delete()
         print("Deleted an account.")
     else:
         print("Couldn't delete nonexistent row.")
 
 
-def login_user(email, password):
+@connection_to_db
+def login_user(email, password, session=None):
     hashed_password = hash_password(password)
-    user_object = db.s.query(db.User).filter_by(email=email, password=hashed_password).first()
+    user_object = session.query(db.User).filter_by(email=email, password=hashed_password).first()
     if user_object:
-        token = secrets.token_hex(8)  # has to be >32
+        token = secrets.token_hex(8)  # TODO: has to be >32
         user_object.auth_token = token
-        db.s.commit()
         print("Logged in - token added.")
         return token
     else:
         print("Log in not successfull.")
 
-
-def logout_user(token):
-    user_object = db.s.query(db.User).filter_by(auth_token=token).first()
+@connection_to_db
+def logout_user(token, session=None):
+    user_object = session.query(db.User).filter_by(auth_token=token).first()
     if user_object:
         user_object.auth_token = None
-        db.s.commit()
-        print(user_object.email)
         print("User ({}) logged out - token deleted.".format(user_object.email))
+    else:
+        print("User could not be logged out - nobody's token!")
 
 
-def check_if_token_is_active(token):
-    user_object = db.s.query(db.User).filter_by(auth_token=token).first()
+@connection_to_db
+def check_if_token_is_active(token, session=None):
+    user_object = session.query(db.User).filter_by(auth_token=token).first()
     return True if user_object else False
 
 
-def get_user_data_by_token_value(token):
-    user_object = db.s.query(db.User).filter_by(auth_token=token).first()
+@connection_to_db
+def get_user_data_by_token_value(token, session=None):
+    user_object = session.query(db.User).filter_by(auth_token=token).first()
     if user_object:
         user_data = dict()
         user_data['name'] = user_object.first_name

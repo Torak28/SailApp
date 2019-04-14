@@ -1,4 +1,5 @@
 import database.db as db
+from database.db import connection_to_db
 
 
 def create_user(name, surname, email, password, number, role):
@@ -37,15 +38,15 @@ def create_class_type(class_type):
     return class_type
 
 
-def add_object_to_database(obj):
-    db.s.add(obj)
-    db.s.commit()
-    db.s.close()
+@connection_to_db
+def add_object_to_database(obj, session=None):
+    session.add(obj)
 
 
 # role1 = create_role('User')
 # role2 = create_role('Admin')
 # user = create_user('Papa', 'Arab', 'jpnasto@gmail.com', 'chuj', '123123123', '2')
+
 # add_object_to_database(role1)
 # add_object_to_database(role2)
 # add_object_to_database(user)

@@ -2,13 +2,11 @@ from sqlalchemy import Column, Integer, String, Date, Sequence, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-# import datetime
 
 Base = declarative_base()
 DATABASE_URI = 'postgres+psycopg2://postgres:12345@localhost:5432/db.py'
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
-s = Session()
 
 
 def recreate_database():
@@ -139,4 +137,14 @@ class ClassType(Base):
     class_table = relationship('Class')
 
 
-# recreate_database().
+def connection_to_db(original_function):  # decorator
+    def new_function(*args, **kwargs):
+        session = Session()
+        answer = original_function(*args, **kwargs, session=session)
+        session.commit()
+        session.close()
+        return answer
+    return new_function
+
+
+# recreate_database()
