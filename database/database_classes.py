@@ -145,6 +145,3 @@ def connection_to_db(original_function):  # decorator
         session.close()
         return answer
     return new_function
-
-
-# recreate_database()
