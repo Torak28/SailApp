@@ -139,4 +139,4 @@ class ClassType(Base):
     class_table = relationship('Class')
 
 
-# recreate_database()
+# recreate_database().
