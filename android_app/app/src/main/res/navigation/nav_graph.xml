@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
+            app:startDestination="@id/destination_profile">
+    <fragment android:id="@+id/destination_profile" android:name="com.pwr.sailapp.ui.main.ProfileFragment"
+              android:label="fragment_profile" tools:layout="@layout/fragment_profile"/>
+    <fragment android:id="@+id/destination_rent_master" android:name="com.pwr.sailapp.ui.main.RentMasterFragment"
+              android:label="fragment_rent_master" tools:layout="@layout/fragment_rent_master"/>
+    <fragment android:id="@+id/destination_stats" android:name="com.pwr.sailapp.ui.main.StatsFragment"
+              android:label="fragment_stats" tools:layout="@layout/fragment_stats"/>
+    <activity android:id="@+id/destination_login" android:name="com.pwr.sailapp.ui.login.LoginActivity"
+              android:label="activity_login" tools:layout="@layout/activity_login"/>
+    <fragment android:id="@+id/destination_settings" android:name="com.pwr.sailapp.ui.main.SettingsFragment"
+              android:label="fragment_settings" tools:layout="@layout/fragment_settings"/>
+    <fragment android:id="@+id/destination_rent_details" android:name="com.pwr.sailapp.ui.main.RentDetailsFragment"
+              android:label="fragment_rent_details" tools:layout="@layout/fragment_rent_details"/>
+</navigation>

@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">SailApp</string>
+    <string name="login">Login</string>
+    <string name="password">password</string>
+    <string name="email">email</string>
+    <string name="register">Register</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="my_profile">My profile</string>
+    <string name="sail_now">Sail now</string>
+    <string name="my_stats">My stats</string>
+    <string name="settings">Settings</string>
+    <string name="log_out">Log out</string>
+    <string name="login_screen_banner">Login screen banner</string>
+    <string name="sailapp_banner">SailApp banner</string>
+    <string name="first_name">First name</string>
+    <string name="second_name">Second name</string>
+    <string name="reply_password">Reply password</string>
+    <string name="i_accept_the_license_agreement">I accept the license agreement</string>
+    <string name="phone_number">Phone number</string>
+    <string name="date">Date</string>
+    <string name="start_time">Start time</string>
+    <string name="how_long">How long?</string>
+    <string name="equipment">Equipment</string>
+    <string name="confirm">Confirm</string>
+    <string name="call_the_centre">Call the centre</string>
+    <string name="show_map">Show map</string>
+    <string name="rental_date">Date:</string>
+    <string name="rental_start_time">Start time:</string>
+    <string name="rental_length">Rental length:</string>
+    <string name="rental_location">Location:</string>
+    <string name="profile_fragment">Profile fragment - your rentals:</string>
+    <string name="image_of_the_centre">Image of the centre</string>
+    <string name="image_of_the_renting_centre">Image of the renting centre</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/destination_profile"
+            android:title="@string/my_profile" />
+        <item
+            android:id="@+id/destination_rent_master"
+            android:title="@string/sail_now" />
+        <item
+            android:id="@+id/destination_stats"
+            android:title="@string/my_stats" />
+        <item
+            android:id="@+id/destination_settings"
+            android:title="@string/settings" />
+        <item
+            android:id="@+id/destination_logout"
+            android:title="@string/log_out"
+             />
+    </group>
+
+</menu>
