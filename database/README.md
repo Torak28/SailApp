@@ -42,9 +42,7 @@ cd SailApp/database
 ### Install all python dependencies:
 
 ```
-pip3 install psycopg2
-pip3 install SQLAlchemy
-pip3 install sqlalchemy_utils
+pip3 install -r requirements.txt
 ```
 
 ### Export your os variable:
