@@ -23,3 +23,21 @@ __Simple Baner 2:__
 __Simple Black&White Baner 2:__
 
 ![alt text](https://i.imgur.com/IRu1Q8T.png)
+
+# Colors
+ 
+__Palette:__
+
+![alt text](https://i.imgur.com/X5oTG8b.png)
+
+__Sample Mockup:__
+
+![alt text](https://i.imgur.com/rL7XVx4.png)
+
+# Site Design
+
+Some simple draft of how site should look like and how it should
+
+## Site Functionality
+
+![alt text](https://i.imgur.com/YsbiYpD.png)
