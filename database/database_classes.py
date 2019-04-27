@@ -2,9 +2,10 @@ from sqlalchemy import Column, Integer, String, Date, Sequence, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
+import os
 
 Base = declarative_base()
-DATABASE_URI = 'postgres+psycopg2://postgres:12345@localhost:5432/db.py'
+DATABASE_URI = os.environ['DATABASE_URL']
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
@@ -25,7 +26,7 @@ def recreate_database():
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'user_account'
 
     user_id_seq = Sequence('cart_id_seq', metadata=Base.metadata)
 
@@ -59,7 +60,7 @@ class Role(Base):
                 unique=True)
     role_name = Column(String)
 
-    role = relationship("User")
+    role = relationship('User')
 
 
 class Gear(Base):
@@ -90,7 +91,7 @@ class GearRental(Base):
                 server_default=gear_rental_id_seq.next_value(),
                 primary_key=True,
                 unique=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user_account.id'))
     gear_id = Column(Integer, ForeignKey('gear.id'))
     centre_id = Column(Integer, ForeignKey('centre.id'))
     rent_start = Column(Date)
@@ -109,7 +110,7 @@ class WaterCentre(Base):
                 primary_key=True,
                 unique=True)
     name = Column(String)
-    owner_id = Column(Integer, ForeignKey('user.id'))
+    owner_id = Column(Integer, ForeignKey('user_account.id'))
     latitude = Column(String)
     longitude = Column(String)
 
@@ -128,7 +129,7 @@ class Class(Base):
                 primary_key=True,
                 unique=True)
     class_type_id = Column(Integer, ForeignKey('class_type.id'))
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user_account.id'))
     class_date = Column(Date)
 
 
@@ -145,3 +146,5 @@ class ClassType(Base):
     class_type = Column(String)
 
     class_table = relationship('Class')
+
+recreate_database()
