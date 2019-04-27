@@ -1,5 +1,9 @@
 # Setup Database
 
+### Schemat bazy danych
+
+![alt text](schemat_bazki.png)
+
 
 ### First of all update your machine:
 
