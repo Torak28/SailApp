@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists
+import os
 
-engine = create_engine('postgres+psycopg2://postgres:12345@localhost:5432/db.py')
+engine = create_engine(os.environ['DATABASE_URL'])
 if not database_exists(engine.url):
     create_database(engine.url)
 
