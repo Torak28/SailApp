@@ -20,9 +20,9 @@ result: [
 ```
 
 
-### API endpoint
+### API endpoint:
 
-1. Main page
+1. __Main page:__
 
 PATH | METHOD | TOKEN PROTECTION | PURPOSE
 -----|--------|------------------|----------
@@ -31,7 +31,7 @@ PATH | METHOD | TOKEN PROTECTION | PURPOSE
 /registerOwner | POST | None | Owner registration
 /loginUOwner | POST | None | Owner login
 
-2. Owner panel
+2. __Owner panel:__
 
 PATH | METHOD | TOKEN PROTECTION | PURPOSE
 -----|--------|------------------|----------
@@ -43,7 +43,7 @@ PATH | METHOD | TOKEN PROTECTION | PURPOSE
 /getAllGear | GET | Access token | Get list of all gear
 /getGear | GET | Access token | Get gear with specific ID
 
-3. Client panel
+3. __Client panel:__
 
 PATH | METHOD | TOKEN PROTECTION | PURPOSE
 -----|--------|------------------|----------
