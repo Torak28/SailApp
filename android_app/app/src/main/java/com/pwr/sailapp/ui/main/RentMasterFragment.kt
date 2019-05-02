@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -13,11 +15,12 @@ import androidx.navigation.fragment.findNavController
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.Centre
 import com.pwr.sailapp.ui.main.adapters.CentreAdapter
+import com.pwr.sailapp.ui.main.dialogs.FilterDialogFragment
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_rent_master.*
 
 
-class RentMasterFragment : Fragment() {
+class RentMasterFragment : Fragment(), FilterDialogFragment.OnFilterSelectedListener{
 
     private lateinit var mainViewModel: MainViewModel
 
@@ -46,6 +49,26 @@ class RentMasterFragment : Fragment() {
             adapter.setCentres(it)
         })
 
+        search_view.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?) = false
+            override fun onQueryTextChange(newText: String?): Boolean {
+                mainViewModel.search(newText)
+                return false
+            }
+        })
+
+        button_filter.setOnClickListener {
+            val filterDialog = FilterDialogFragment()
+            filterDialog.setTargetFragment(this, 1) // fragment communication - TODO consider shared view model
+            fragmentManager?.let { it1 -> filterDialog.show(it1, "Filter dialog") }
+        }
+
+        button_sort.setOnClickListener {  }
+    }
+
+    override fun onFilterSelected(minRating: Double) {
+        mainViewModel.filter(minRating)
     }
 
     private fun centreItemClicked(centre: Centre){
@@ -53,5 +76,7 @@ class RentMasterFragment : Fragment() {
         mainViewModel.selectCentre(centre)
         findNavController().navigate(R.id.destination_rent_details) // TODO consider using nextAction and graph
     }
+
+
 
 }
