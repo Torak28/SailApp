@@ -30,6 +30,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
     val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
     val allCentres = ArrayList<Centre>()
+    var minRating = 0.0
 
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
     val rentals = MutableLiveData<ArrayList<Rental>>()
@@ -73,14 +74,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         else centres.value = allCentres
     }
 
-    fun filter(minRating:Double = 0.0, maxDistance:Double= Double.POSITIVE_INFINITY){ // rating, distance, sport, centreName ...
+    fun filter(){ // rating, distance, sport, centreName ...
         val filteredCentres = allCentres.filter { centre ->
             centre.rating >= minRating // && centre.rating>minRating
         }
         centres.value = ArrayList(filteredCentres)
     }
 
-    fun sort(byDistance :Boolean = true, byRating: Boolean = false){
+    fun sort(){ // byDistance :Boolean = true, byRating: Boolean = false
         val sortedCentres = centres.value!!.sortedBy {it.rating} // {if(byRating) it.rating else it.distance} - distance !!!
         centres.value = ArrayList(sortedCentres)
     }

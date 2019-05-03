@@ -20,7 +20,7 @@ import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_rent_master.*
 
 
-class RentMasterFragment : Fragment(), FilterDialogFragment.OnFilterSelectedListener{
+class RentMasterFragment : Fragment(){
 
     private lateinit var mainViewModel: MainViewModel
 
@@ -65,10 +65,6 @@ class RentMasterFragment : Fragment(), FilterDialogFragment.OnFilterSelectedList
         }
 
         button_sort.setOnClickListener {  }
-    }
-
-    override fun onFilterSelected(minRating: Double) {
-        mainViewModel.filter(minRating)
     }
 
     private fun centreItemClicked(centre: Centre){
