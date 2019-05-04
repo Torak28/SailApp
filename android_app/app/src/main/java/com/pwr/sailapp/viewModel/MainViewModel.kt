@@ -1,7 +1,9 @@
 package com.pwr.sailapp.viewModel
 
 import android.app.Application
+import android.location.Location
 import android.media.Rating
+import android.telephony.cdma.CdmaCellLocation
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
@@ -21,6 +23,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext = application.applicationContext
 
+    companion object {
+        const val INITIAL_MIN_RATING = 0.0
+        const val INITIAL_COORDINATE_X = 0.00
+        const val INITIAL_COORDINATE_Y = 0.00
+        const val INITIAL_MAX_DISTANCE = 1000000.00
+    }
+
     enum class AuthenticationState{
         AUTHENTICATED,
         UNAUTHENTICATED,
@@ -30,7 +39,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
     val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
     val allCentres = ArrayList<Centre>()
-    var minRating = 0.0
+    // TODO consider mutable live data
+    var minRating = INITIAL_MIN_RATING
+    var maxDistance = INITIAL_MAX_DISTANCE
+    var coordinates = Pair(INITIAL_COORDINATE_X, INITIAL_COORDINATE_Y)
+    var actualDistance = INITIAL_MAX_DISTANCE
 
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
     val rentals = MutableLiveData<ArrayList<Rental>>()
@@ -76,15 +89,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun filter(){ // rating, distance, sport, centreName ...
         val filteredCentres = allCentres.filter { centre ->
-            centre.rating >= minRating // && centre.rating>minRating
+            centre.rating >= minRating  && centre.distance<actualDistance
         }
         centres.value = ArrayList(filteredCentres)
     }
 
     fun sort(){ // byDistance :Boolean = true, byRating: Boolean = false
-        val sortedCentres = centres.value!!.sortedBy {it.rating} // {if(byRating) it.rating else it.distance} - distance !!!
+        val sortedCentres = centres.value!!.sortedBy {it.distance} // {if(byRating) it.rating else it.distance} - distance !!!
         centres.value = ArrayList(sortedCentres)
     }
+
+    fun calculateDistances(myLocation: Location){
+        for(centre in centres.value!!){
+            val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
+            centre.distance = distance.toDouble()
+            Log.d("Calculated distance", "$distance") // ...
+        }
+    }
+
+    private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>):Float{
+        val theirLocation = Location("")
+        theirLocation.latitude = theirCoordinates.first
+        theirLocation.longitude = theirCoordinates.second
+        return myLocation.distanceTo(theirLocation)
+    }
+
 
 
 

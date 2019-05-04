@@ -47,4 +47,5 @@
     <string name="minimal_rating">Minimal rating</string>
     <string name="no_matter">No matter</string>
     <string name="maximal_distance">Maximal distance</string>
+    <string name="zero">0</string>
 </resources>

@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.Centre
+import com.pwr.sailapp.utils.formatDistance
+import java.lang.StringBuilder
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -40,8 +42,8 @@ class CentreAdapter(
         holder.textViewName.text = currentCentre.name
         holder.ratingBar.rating = currentCentre.rating.toFloat() // TODO limit to 0-5 stars
         holder.textViewOpinions.text = currentCentre.rating.toString()
-        holder.textViewLocation.text = currentCentre.location
-
+        holder.textViewLocation.text = currentCentre.location // TODO use calculated distance instead?
+        if(currentCentre.distance < Double.POSITIVE_INFINITY) holder.textViewDistance.text = formatDistance(currentCentre.distance)
         holder.cardView.setOnClickListener {clickListener(currentCentre)}
     }
 
@@ -63,6 +65,7 @@ class CentreAdapter(
         val textViewOpinions:TextView = itemView.findViewById(R.id.textView_opinions)
         val textViewLocation:TextView = itemView.findViewById(R.id.textView_location)
         val cardView:CardView = itemView.findViewById(R.id.centre_card)
+        val textViewDistance: TextView = itemView.findViewById(R.id.textView_distance)
     }
 
 }
