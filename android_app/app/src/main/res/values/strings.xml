@@ -48,4 +48,6 @@
     <string name="no_matter">No matter</string>
     <string name="maximal_distance">Maximal distance</string>
     <string name="zero">0</string>
+    <string name="sort_by_distance">Sort by distance</string>
+    <string name="sort_by_rating">Sort by rating</string>
 </resources>

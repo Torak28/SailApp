@@ -25,6 +25,7 @@ import com.pwr.sailapp.R
 import com.pwr.sailapp.data.Centre
 import com.pwr.sailapp.ui.main.adapters.CentreAdapter
 import com.pwr.sailapp.ui.main.dialogs.FilterDialogFragment
+import com.pwr.sailapp.ui.main.dialogs.SortDialogFragment
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_rent_master.*
 
@@ -87,13 +88,17 @@ class RentMasterFragment : Fragment(){
 
         button_location.setOnClickListener {locateUser()}
 
-        button_filter.setOnClickListener {
-            val filterDialog = FilterDialogFragment()
-            filterDialog.setTargetFragment(this, 1) // fragment communication - TODO consider shared view model
-            fragmentManager?.let { it1 -> filterDialog.show(it1, "Filter dialog") }
+        button_sort.setOnClickListener {
+            Toast.makeText(requireContext(), "sorting", Toast.LENGTH_SHORT).show()
+            val sortDialog = SortDialogFragment()
+            fragmentManager?.let { it1 -> sortDialog.show(it1, "Sort dialog") }
         }
 
-        button_sort.setOnClickListener {  } // TODO implement sorting
+        button_filter.setOnClickListener {
+            val filterDialog = FilterDialogFragment()
+         //   filterDialog.setTargetFragment(this, 1) // fragment communication - TODO consider shared view model
+            fragmentManager?.let { it1 -> filterDialog.show(it1, "Filter dialog") }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

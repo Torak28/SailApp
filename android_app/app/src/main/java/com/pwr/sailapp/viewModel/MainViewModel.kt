@@ -44,6 +44,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var maxDistance = INITIAL_MAX_DISTANCE
     var coordinates = Pair(INITIAL_COORDINATE_X, INITIAL_COORDINATE_Y)
     var actualDistance = INITIAL_MAX_DISTANCE
+    var isByRating = false
+
 
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
     val rentals = MutableLiveData<ArrayList<Rental>>()
@@ -95,7 +97,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun sort(){ // byDistance :Boolean = true, byRating: Boolean = false
-        val sortedCentres = centres.value!!.sortedBy {it.distance} // {if(byRating) it.rating else it.distance} - distance !!!
+        val sortedCentres = if(isByRating) centres.value!!.sortedBy {it.rating} else centres.value!!.sortedBy {it.distance}// {if(byRating) it.rating else it.distance} - distance !!!
         centres.value = ArrayList(sortedCentres)
     }
 
