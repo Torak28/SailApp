@@ -11,6 +11,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.pwr.sailapp.R
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(my_toolbar)
-
 
         // TODO use data binding
         navigationView.setNavigationItemSelectedListener { item: MenuItem ->

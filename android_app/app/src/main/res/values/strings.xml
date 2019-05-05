@@ -33,4 +33,21 @@
     <string name="profile_fragment">Profile fragment - your rentals:</string>
     <string name="image_of_the_centre">Image of the centre</string>
     <string name="image_of_the_renting_centre">Image of the renting centre</string>
+    <string name="search_hint">Search centre by name</string>
+    <string name="filter_results">Filter results</string>
+    <string name="search">Search</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+    <string name="select_filters">Select filters</string>
+    <string name="five_stars">5 stars</string>
+    <string name="four_stars">4 stars</string>
+    <string name="three_stars">3 stars</string>
+    <string name="minimal_rating">Minimal rating</string>
+    <string name="no_matter">No matter</string>
+    <string name="maximal_distance">Maximal distance</string>
+    <string name="zero">0</string>
+    <string name="sort_by_distance">Sort by distance</string>
+    <string name="sort_by_rating">Sort by rating</string>
 </resources>
