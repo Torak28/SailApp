@@ -2,15 +2,13 @@ package com.pwr.sailapp.viewModel
 
 import android.app.Application
 import android.location.Location
-import android.media.Rating
-import android.telephony.cdma.CdmaCellLocation
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.pwr.sailapp.data.Centre
 import com.pwr.sailapp.utils.CredentialsUtil
 import com.pwr.sailapp.data.MockCentres
+import com.pwr.sailapp.data.MockRentalOptions
 import com.pwr.sailapp.data.Rental
 import java.util.*
 import kotlin.collections.ArrayList
@@ -36,9 +34,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         INVALID_AUTHENTICATION
     }
 
+    // Authentication
     val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
+
+    // Rent fragments
+    // Rent master fragment
     val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
     val allCentres = ArrayList<Centre>()
+    val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
+
+    // Dialogs
     // TODO consider mutable live data
     var minRating = INITIAL_MIN_RATING
     var maxDistance = INITIAL_MAX_DISTANCE
@@ -46,9 +51,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var actualDistance = INITIAL_MAX_DISTANCE
     var isByRating = false
 
+    // Rent details fragment
+    val timeOptions = ArrayList<String>()
+    val equipmentOptions = ArrayList<String>()
+    val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
+    val selectedEquipmentIndex = MutableLiveData<Int>() // observe which element of equipment options array list was selected
+    // val totalCost = MutableLiveData<Double>()
 
-    val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
+    // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
+
 
     init{
         // TODO use repository and LiveData here
@@ -65,10 +77,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         selectedCentre.value = centre
     }
 
-    fun confirmRental(centre: Centre, startDate: String, startTime: String){
+    fun confirmRental(startDate: String, startTime: String):Boolean{
     //    val rentalsPrev = rentals.value
     //    rentalsPrev?.add(Rental(centre, startDate, startTime))
-        rentals.value?.add(Rental(centre, startDate, startTime))
+        if(selectedCentre.value != null){rentals.value?.add(Rental(selectedCentre.value!!, startDate, startTime)); return true}
+        else return false
     }
 
     fun logOut(){
@@ -109,12 +122,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun fetchTimeOptions(){
+        timeOptions.clear() // remove previously fetched data
+        timeOptions.addAll(MockRentalOptions.timeOptions) // add new data
+    }
+
+    fun fetchEquipmentOptions(){
+        equipmentOptions.clear() // remove previously fetched data
+        equipmentOptions.addAll(MockRentalOptions.equipmentOptions) // add new data
+    }
+
     private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>):Float{
         val theirLocation = Location("")
         theirLocation.latitude = theirCoordinates.first
         theirLocation.longitude = theirCoordinates.second
         return myLocation.distanceTo(theirLocation)
     }
+
+    fun hasAllFieldsFilled() : Boolean{
+        return selectedCentre.value != null //  && day, time ... - necessary?
+    }
+
 
 
 

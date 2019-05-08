@@ -123,12 +123,17 @@ class RentMasterFragment : Fragment(){
         try {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
-                    mainViewModel.coordinates = Pair(location!!.latitude, location.longitude)
+                    if(location != null){
+                        mainViewModel.coordinates = Pair(location.latitude, location.longitude)
 
-                    //        search_view.setQuery(mainViewModel.coordinates.toString(), false) // TODO use live data
-                    // TODO calculate distance of centres
-                    mainViewModel.calculateDistances(location)
-                    mainViewModel.sort()
+                        //        search_view.setQuery(mainViewModel.coordinates.toString(), false) // TODO use live data
+                        // TODO calculate distance of centres
+                        mainViewModel.calculateDistances(location)
+                        mainViewModel.sort()
+                    }
+                    else {
+                        // TODO inform user that couldn't fetch location
+                    }
                 }
                 .addOnFailureListener{
                     Log.e("fusedLocationClient", "last location failure")

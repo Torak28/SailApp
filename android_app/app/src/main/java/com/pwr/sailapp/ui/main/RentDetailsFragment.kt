@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -71,6 +73,36 @@ class RentDetailsFragment : Fragment() {
                 true).show()
         }
 
+        // Displaying equipment options
+        val equipmentArrayAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, mainViewModel.equipmentOptions)
+        mainViewModel.fetchEquipmentOptions()
+        equipmentArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_equipment.adapter = equipmentArrayAdapter
+
+        spinner_equipment.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                // An item was selected. You can retrieve the selected item using
+                // parent.getItemAtPosition(pos)
+                // Save the position of selected item
+                mainViewModel.selectedEquipmentIndex.value = pos
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Another interface callback
+            }
+        }
+
+        spinner_hours.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) { mainViewModel.selectedTimeIndex.value = pos }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        // Displaying time options
+        val timeArrayAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, mainViewModel.timeOptions)
+        mainViewModel.fetchTimeOptions()
+        timeArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_hours.adapter = timeArrayAdapter
+
         button_maps.setOnClickListener {
             val location = mainViewModel.selectedCentre.value?.location
             val uri = Uri.parse("geo:0,0?q=$location")
@@ -88,12 +120,12 @@ class RentDetailsFragment : Fragment() {
         }
 
         button_confirm.setOnClickListener {
-            val centre = mainViewModel.selectedCentre.value
             // TODO use live data / data binding for date and time
             val date = textView_choose_date.text.toString()
             val time = textView_choose_start_time.text.toString()
-            if(centre != null) {
-                mainViewModel.confirmRental(centre, date, time)
+            // TODO mainViewModel.checkAllFieldsFilled
+            val confirmationSuccess =mainViewModel.confirmRental(date, time)
+            if(confirmationSuccess) {
                 Toast.makeText(requireActivity(), "Confirmed", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.destination_profile) // navigate to profile after confirmation to view rentals
             }
