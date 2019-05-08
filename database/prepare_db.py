@@ -1,4 +1,4 @@
-from create_objects_of_classes import create_role, create_user, add_object_to_database
+from database.create_objects_of_classes import create_role, create_user, add_object_to_database
 
 role1 = create_role('User')
 role2 = create_role('Admin')
