@@ -36,7 +36,10 @@ class RentalAdapter(
     // Fill the view with data from one list element - multiple times (recycler)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentRental = rentals[position]
-        Glide.with(context).asBitmap().load(currentRental.centre.photoURL).into(holder.imageView)
+        Glide.with(context).asBitmap()
+            .load(currentRental.centre.photoURL)
+            .centerCrop()
+            .into(holder.imageView)
         holder.textViewName.text = currentRental.centre.name
         holder.textViewRentalDate.text = currentRental.rentDate
         holder.textViewRentalLocation.text = currentRental.centre.location

@@ -38,7 +38,10 @@ class CentreAdapter(
     // Fill the view with data from one list element - multiple times (recycler)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentCentre = centres[position]
-        Glide.with(context).asBitmap().load(currentCentre.photoURL).into(holder.imageView)
+        Glide.with(context).asBitmap()
+            .load(currentCentre.photoURL)
+            .centerCrop()
+            .into(holder.imageView)
         holder.textViewName.text = currentCentre.name
         holder.ratingBar.rating = currentCentre.rating.toFloat() // TODO limit to 0-5 stars
         holder.textViewOpinions.text = currentCentre.rating.toString()
