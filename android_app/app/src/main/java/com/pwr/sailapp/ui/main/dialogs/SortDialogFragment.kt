@@ -3,6 +3,7 @@ package com.pwr.sailapp.ui.main.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.SeekBar
@@ -52,7 +53,7 @@ class SortDialogFragment : DialogFragment() {
                 else -> mainViewModel.isByRating = false
             }
             mainViewModel.sort()
-            dialog?.hide()
+            dialog?.dismiss()
         }
     }
 

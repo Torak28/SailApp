@@ -12,18 +12,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.Rental
+import com.pwr.sailapp.utils.formatCoordinate
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_rent_details.*
 import java.text.DateFormat
-import java.time.Year
 import java.util.*
 
 // https://www.tutorialkart.com/kotlin-android/android-datepicker-kotlin-example/
@@ -111,10 +109,12 @@ class RentDetailsFragment : Fragment() {
         spinner_hours.adapter = timeArrayAdapter
 
         button_maps.setOnClickListener {
-            val location = mainViewModel.selectedCentre.value?.location
-            val uri = Uri.parse("geo:0,0?q=$location")
+        //    val location = mainViewModel.selectedCentre.value?.location
+            val coordinateXFormatted = formatCoordinate(mainViewModel.selectedCentre.value!!.coordinateX, 4)
+            val coordinateYFormatted = formatCoordinate(mainViewModel.selectedCentre.value!!.coordinateY, 4)
+            val uri = Uri.parse("geo:$coordinateXFormatted,$coordinateYFormatted")
             val intent = Intent(Intent.ACTION_VIEW, uri)
-            if(intent.resolveActivity(activity!!.packageManager) != null && location != null) startActivity(intent)
+            if(intent.resolveActivity(activity!!.packageManager) != null) startActivity(intent)
             else toast("Cannot launch activity")
         }
 

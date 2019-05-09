@@ -89,7 +89,7 @@ class FilterDialogFragment() : DialogFragment(){
          //   listener.onFilterSelected(minRating)
             mainViewModel.minRating = minRating
             mainViewModel.filter()
-            dialog?.hide()
+            dialog?.dismiss()
         }
     }
 }
