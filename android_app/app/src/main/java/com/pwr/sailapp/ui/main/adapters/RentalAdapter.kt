@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -19,7 +20,10 @@ import com.pwr.sailapp.data.Rental
 // Adapter adapts the individual list item to the main container layout (eg. list layout)
 class RentalAdapter(
     private val context: Context,
-    val clickListener: (Rental) -> Unit // function
+    val clickListener: (Rental) -> Unit = {}, // functions
+    val phoneListener: (Rental) -> Unit = {}, // default value is {}
+    val locationListener: (Rental) -> Unit = {},
+    val cancelListener: (Rental) -> Unit = {}
 ) : RecyclerView.Adapter<RentalAdapter.ViewHolder>() {
 
     private var rentals = ArrayList<Rental>()
@@ -44,7 +48,19 @@ class RentalAdapter(
         holder.textViewRentalDate.text = currentRental.rentDate
         holder.textViewRentalLocation.text = currentRental.centre.location
         holder.textViewRentalStart.text = currentRental.rentStartTime
-        holder.cardView.setOnClickListener {clickListener(currentRental)}
+
+        // Expand the view and hide down arrow when clicked
+        holder.arrowDownImageView.setOnClickListener {
+            holder.extrasLinearLayout.visibility = View.VISIBLE
+            it.visibility = View.GONE
+        }
+
+        // Collapse the view and show up arrow when clicked
+        holder.arrowUpImageView.setOnClickListener {
+            holder.arrowDownImageView.visibility = View.VISIBLE
+            holder.extrasLinearLayout.visibility = View.GONE
+        }
+    //    holder.cardView.setOnClickListener {clickListener(currentRental)}
     }
 
     // Setter for list of centres to use LiveData TODO consider just adding or removing single rentals
@@ -65,6 +81,12 @@ class RentalAdapter(
         val textViewRentalLocation: TextView = itemView.findViewById(R.id.textView_rental_location)
     //    val textViewRentalLength: TextView = itemView.findViewById(R.id.textView_rental_length)
         val cardView: CardView = itemView.findViewById(R.id.rental_card)
+        val arrowDownImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_down)
+        val arrowUpImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_up)
+        val phoneImageView: ImageView = itemView.findViewById(R.id.imageView_phone)
+        val locationImageView: ImageView = itemView.findViewById(R.id.imageView_location)
+        val cancelImageView: ImageView = itemView.findViewById(R.id.imageView_cancel)
+        val extrasLinearLayout: LinearLayout = itemView.findViewById(R.id.linearLayout_extras)
 
     }
 }

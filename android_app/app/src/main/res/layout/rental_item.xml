@@ -15,7 +15,9 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:animateLayoutChanges="true"
+    >
 
         <ImageView
                 android:id="@+id/imageView_rental_photo"
@@ -88,13 +90,18 @@
         <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
                    android:src="@drawable/ic_keyboard_arrow_down_black"
                     android:padding="8dp"
-                   android:contentDescription="@string/arrow_down"/>
+                   android:contentDescription="@string/arrow_down"
+                   android:id="@+id/imageView_arrow_down"
+        />
 
 
         <LinearLayout
+                android:id="@+id/linearLayout_extras"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone"
+        >
 
             <LinearLayout
                     android:layout_width="match_parent"
@@ -177,20 +184,26 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="80dp"
                           android:orientation="horizontal"
             >
-                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                <ImageView
+                        android:id="@+id/imageView_phone"
+                        android:layout_width="match_parent" android:layout_height="match_parent"
                            android:src="@drawable/ic_phone_white"
                            android:background="@color/colorSuccess"
                             android:layout_weight="1"
                            android:padding="20dp"
                            android:contentDescription="@string/phone"/>
 
-                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                <ImageView
+                        android:id="@+id/imageView_location"
+                        android:layout_width="match_parent" android:layout_height="match_parent"
                            android:src="@drawable/ic_location_on_white" android:layout_weight="1"
                            android:background="@color/colorInfo"
                            android:padding="20dp"
                            android:contentDescription="@string/location"/>
 
-                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                <ImageView
+                        android:id="@+id/imageView_cancel"
+                        android:layout_width="match_parent" android:layout_height="match_parent"
                            android:src="@drawable/ic_cancel_black_24dp" android:layout_weight="1"
                            android:background="@color/colorError"
                            android:padding="20dp"
@@ -201,6 +214,7 @@
             <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
                        android:src="@drawable/ic_keyboard_arrow_up_black" android:contentDescription="@string/arrow_up"
                        android:padding="8dp"
+                       android:id="@+id/imageView_arrow_up"
             />
 
         </LinearLayout>
