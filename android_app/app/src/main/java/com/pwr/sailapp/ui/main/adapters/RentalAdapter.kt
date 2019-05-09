@@ -41,9 +41,6 @@ class RentalAdapter(
         holder.textViewRentalDate.text = currentRental.rentDate
         holder.textViewRentalLocation.text = currentRental.centre.location
         holder.textViewRentalStart.text = currentRental.rentStartTime
-    //    holder.textViewRentalLength.text = currentRental... // TODO implement start time
-
-
         holder.cardView.setOnClickListener {clickListener(currentRental)}
     }
 

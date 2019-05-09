@@ -89,14 +89,12 @@ class RentMasterFragment : Fragment(){
         button_location.setOnClickListener {locateUser()}
 
         button_sort.setOnClickListener {
-            Toast.makeText(requireContext(), "sorting", Toast.LENGTH_SHORT).show()
             val sortDialog = SortDialogFragment()
             fragmentManager?.let { it1 -> sortDialog.show(it1, "Sort dialog") }
         }
 
         button_filter.setOnClickListener {
             val filterDialog = FilterDialogFragment()
-         //   filterDialog.setTargetFragment(this, 1) // fragment communication - TODO consider shared view model
             fragmentManager?.let { it1 -> filterDialog.show(it1, "Filter dialog") }
         }
     }
@@ -114,7 +112,6 @@ class RentMasterFragment : Fragment(){
     }
 
     private fun centreItemClicked(centre: Centre){
-        Toast.makeText(requireContext(), "Clicked ${centre.name}", Toast.LENGTH_SHORT).show()
         mainViewModel.selectCentre(centre)
         findNavController().navigate(R.id.destination_rent_details) // TODO consider using nextAction and graph
     }
@@ -126,8 +123,6 @@ class RentMasterFragment : Fragment(){
                     if(location != null){
                         mainViewModel.coordinates = Pair(location.latitude, location.longitude)
 
-                        //        search_view.setQuery(mainViewModel.coordinates.toString(), false) // TODO use live data
-                        // TODO calculate distance of centres
                         mainViewModel.calculateDistances(location)
                         mainViewModel.sort()
                     }

@@ -51,8 +51,15 @@ class RentDetailsFragment : Fragment() {
         })
 
         // Initially display current date and time
-        textView_choose_date.text = DateFormat.getDateInstance().format(calendar.time)
-        textView_choose_start_time.text = DateFormat.getTimeInstance().format(calendar.time)
+        mainViewModel.startTime.value = calendar.time
+
+        mainViewModel.startTime.observe(viewLifecycleOwner, Observer {
+            val dateFormatted = DateFormat.getDateInstance().format(it)
+            textView_choose_date.text = dateFormatted
+
+            val timeFormatted = DateFormat.getTimeInstance().format(it)
+            textView_choose_start_time.text = timeFormatted
+        })
 
         button_choose_date.setOnClickListener {
             // show DatePicker dialog if button clicked
@@ -108,7 +115,7 @@ class RentDetailsFragment : Fragment() {
             val uri = Uri.parse("geo:0,0?q=$location")
             val intent = Intent(Intent.ACTION_VIEW, uri)
             if(intent.resolveActivity(activity!!.packageManager) != null && location != null) startActivity(intent)
-            else Toast.makeText(requireActivity(), "Cannot launch activity", Toast.LENGTH_SHORT).show()
+            else toast("Cannot launch activity")
         }
 
         button_call.setOnClickListener {
@@ -116,21 +123,16 @@ class RentDetailsFragment : Fragment() {
             val uri = Uri.parse("tel:$phone")
             val intent = Intent(Intent.ACTION_DIAL, uri)
             if(intent.resolveActivity(activity!!.packageManager) != null && phone != null) startActivity(intent)
-            else Toast.makeText(requireActivity(), "Cannot launch activity", Toast.LENGTH_SHORT).show()
+            else toast("Cannot launch activity")
         }
 
         button_confirm.setOnClickListener {
-            // TODO use live data / data binding for date and time
-            val date = textView_choose_date.text.toString()
-            val time = textView_choose_start_time.text.toString()
-            // TODO mainViewModel.checkAllFieldsFilled
-            val confirmationSuccess =mainViewModel.confirmRental(date, time)
+            val confirmationSuccess = mainViewModel.confirmRental()
             if(confirmationSuccess) {
-                Toast.makeText(requireActivity(), "Confirmed", Toast.LENGTH_SHORT).show()
+                toast("Confirmed")
                 findNavController().navigate(R.id.destination_profile) // navigate to profile after confirmation to view rentals
             }
-            else Toast.makeText(requireActivity(), "Error", Toast.LENGTH_SHORT).show()
-
+            else toast("Error")
         }
     }
 
@@ -140,17 +142,15 @@ class RentDetailsFragment : Fragment() {
         calendar[Calendar.YEAR] = year
         calendar[Calendar.MONTH] = month
         calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
-        // format the picked data to local date format
-        val pickedDate = DateFormat.getDateInstance().format(calendar.time)
-        textView_choose_date.text = pickedDate
+        mainViewModel.startTime.value = calendar.time
     }
 
     // implementation of OnTimeSetListener one abstract method interface
     private val timeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
         calendar[Calendar.HOUR] = hourOfDay
         calendar[Calendar.MINUTE] = minute
-        textView_choose_start_time.text = DateFormat.getTimeInstance().format(calendar.time)
+        mainViewModel.startTime.value = calendar.time
     }
 
-
+    private fun toast(text : String) = Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
 }

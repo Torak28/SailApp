@@ -52,6 +52,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var isByRating = false
 
     // Rent details fragment
+    val startTime = MutableLiveData<Date>()
     val timeOptions = ArrayList<String>()
     val equipmentOptions = ArrayList<String>()
     val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
@@ -77,10 +78,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         selectedCentre.value = centre
     }
 
-    fun confirmRental(startDate: String, startTime: String):Boolean{
+    fun confirmRental():Boolean{
     //    val rentalsPrev = rentals.value
     //    rentalsPrev?.add(Rental(centre, startDate, startTime))
-        if(selectedCentre.value != null){rentals.value?.add(Rental(selectedCentre.value!!, startDate, startTime)); return true}
+        if(selectedCentre.value != null && startTime.value != null && selectedTimeIndex.value != null && selectedEquipmentIndex.value != null)
+            {rentals.value?.add(Rental(selectedCentre.value!!, startTime.value!!, selectedTimeIndex.value!!, selectedEquipmentIndex.value!!)); return true}
         else return false
     }
 
@@ -89,7 +91,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         authenticationState.value = MainViewModel.AuthenticationState.UNAUTHENTICATED
     }
 
-    // TODO rating, location filtering, real location
     fun search(query: String?){
         val queryLowerCase = query!!.toLowerCase(Locale.getDefault())
         // Filter by centre name
@@ -109,8 +110,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         centres.value = ArrayList(filteredCentres)
     }
 
-    fun sort(){ // byDistance :Boolean = true, byRating: Boolean = false
-        val sortedCentres = if(isByRating) centres.value!!.sortedBy {it.rating} else centres.value!!.sortedBy {it.distance}// {if(byRating) it.rating else it.distance} - distance !!!
+    fun sort(){
+        val sortedCentres = if(isByRating) centres.value!!.sortedBy {it.rating} else centres.value!!.sortedBy {it.distance}
         centres.value = ArrayList(sortedCentres)
     }
 
@@ -138,13 +139,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         theirLocation.longitude = theirCoordinates.second
         return myLocation.distanceTo(theirLocation)
     }
-
-    fun hasAllFieldsFilled() : Boolean{
-        return selectedCentre.value != null //  && day, time ... - necessary?
-    }
-
-
-
-
 
 }

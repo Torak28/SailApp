@@ -50,23 +50,17 @@ class ProfileFragment : Fragment() {
         // Observe liveData
         mainViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when(authenticationState){
-                MainViewModel.AuthenticationState.AUTHENTICATED -> showWelcomeMessage()
+                MainViewModel.AuthenticationState.AUTHENTICATED -> {}//showWelcomeMessage()
                 else -> navController.navigate(R.id.destination_login)
             }
         })
 
         // TODO fix app crashing
         mainViewModel.rentals.observe(viewLifecycleOwner, Observer {
-        //    val rentalsText = StringBuilder()
-        //    for(rental in it) rentalsText.append(rental.toString(), "\n")
-        //    textView_profile_rentals.text = rentalsText
             adapter.setRentals(it)
-
         } )
     }
 
     private fun showWelcomeMessage() = Toast.makeText(requireContext(), "Welcome to your profile!", Toast.LENGTH_SHORT).show()
-
-
 
 }
