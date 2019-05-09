@@ -13,7 +13,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.pwr.sailapp.R
-import com.pwr.sailapp.databinding.FragmentSortDialogBinding
 import com.pwr.sailapp.utils.formatDistance
 import com.pwr.sailapp.viewModel.MainViewModel
 
