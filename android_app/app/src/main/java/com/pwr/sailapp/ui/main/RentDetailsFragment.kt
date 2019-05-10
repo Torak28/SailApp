@@ -112,7 +112,8 @@ class RentDetailsFragment : Fragment() {
         //    val location = mainViewModel.selectedCentre.value?.location
             val coordinateXFormatted = formatCoordinate(mainViewModel.selectedCentre.value!!.coordinateX, 4)
             val coordinateYFormatted = formatCoordinate(mainViewModel.selectedCentre.value!!.coordinateY, 4)
-            val uri = Uri.parse("geo:$coordinateXFormatted,$coordinateYFormatted")
+            val label = mainViewModel.selectedCentre.value!!.name
+            val uri = Uri.parse("geo:0,0?q=$coordinateXFormatted,$coordinateYFormatted($label)")
             val intent = Intent(Intent.ACTION_VIEW, uri)
             if(intent.resolveActivity(activity!!.packageManager) != null) startActivity(intent)
             else toast("Cannot launch activity")

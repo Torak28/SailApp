@@ -57,5 +57,11 @@
     <string name="location">Location</string>
     <string name="arrow_up">Arrow up</string>
     <string name="cancel">Cancel</string>
-    <string name="ahoy">Ahoy</string>
+    <string name="ahoy">Ahoy,</string>
+    <string name="cancel_reservation">Sure to cancel reservation?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="upcoming_events">Upcoming events</string>
+    <string name="treasure_and_map">Treasure and map</string>
+    <string name="no_rentals_info">No planned events. Want to sail a bit?</string>
 </resources>

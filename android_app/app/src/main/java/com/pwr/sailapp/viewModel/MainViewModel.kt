@@ -25,7 +25,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val INITIAL_MAX_DISTANCE = 1000000.00
     }
 
-    enum class AuthenticationState{
+    enum class AuthenticationState {
         AUTHENTICATED,
         UNAUTHENTICATED,
         INVALID_AUTHENTICATION
@@ -35,6 +35,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
 
     var currentUser: User
+    lateinit var currentRental: Rental
 
     // Rent fragments
     // Rent master fragment
@@ -55,16 +56,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val timeOptions = ArrayList<String>()
     val equipmentOptions = ArrayList<String>()
     val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
-    val selectedEquipmentIndex = MutableLiveData<Int>() // observe which element of equipment options array list was selected
+    val selectedEquipmentIndex =
+        MutableLiveData<Int>() // observe which element of equipment options array list was selected
     // val totalCost = MutableLiveData<Double>()
 
     // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
 
 
-    init{
+    init {
         // TODO use repository and LiveData here
-        if (CredentialsUtil.isLogged(application.applicationContext))  authenticationState.value = AuthenticationState.AUTHENTICATED
+        if (CredentialsUtil.isLogged(application.applicationContext)) authenticationState.value =
+            AuthenticationState.AUTHENTICATED
         else authenticationState.value = AuthenticationState.UNAUTHENTICATED
         currentUser = fetchUserData()
         centres.value = MockCentres.centres
@@ -74,72 +77,91 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // TODO consider using live data for observing whether the user has remover their credentials from shared preferences (logged out)
 
-    fun selectCentre(centre: Centre){ // TODO consider nicer Kotlin syntax
+    fun selectCentre(centre: Centre) { // TODO consider nicer Kotlin syntax
         selectedCentre.value = centre
     }
 
-    fun confirmRental():Boolean{
-    //    val rentalsPrev = rentals.value
-    //    rentalsPrev?.add(Rental(centre, startDate, startTime))
-        if(selectedCentre.value != null && startTime.value != null && selectedTimeIndex.value != null && selectedEquipmentIndex.value != null)
-            {rentals.value?.add(Rental(selectedCentre.value!!, startTime.value!!, selectedTimeIndex.value!!, selectedEquipmentIndex.value!!)); return true}
-        else return false
+    fun confirmRental(): Boolean {
+        //    val rentalsPrev = rentals.value
+        //    rentalsPrev?.add(Rental(centre, startDate, startTime))
+        if (selectedCentre.value != null && startTime.value != null && selectedTimeIndex.value != null && selectedEquipmentIndex.value != null) {
+            MockRentals.counter ++ // mock ID
+            rentals.value?.add(
+                Rental(
+                    MockRentals.counter,
+                    selectedCentre.value!!,
+                    startTime.value!!,
+                    selectedTimeIndex.value!!,
+                    selectedEquipmentIndex.value!!
+                )
+            ); return true
+        } else return false
     }
 
-    fun logOut(){
+    fun logOut() {
         CredentialsUtil.resetUserCredentials(appContext)
         authenticationState.value = MainViewModel.AuthenticationState.UNAUTHENTICATED
     }
 
-    fun search(query: String?){
+    fun search(query: String?) {
         val queryLowerCase = query!!.toLowerCase(Locale.getDefault())
         // Filter by centre name
-        if(!queryLowerCase.isEmpty()) {
+        if (!queryLowerCase.isEmpty()) {
             val filteredCentres = centres.value!!.filter { centre ->
                 centre.name.toLowerCase(Locale.getDefault()).contains(queryLowerCase) // && centre.rating>minRating
             }
             centres.value = ArrayList(filteredCentres)
-        }
-        else centres.value = allCentres
+        } else centres.value = allCentres
     }
 
-    fun filter(){ // rating, distance, sport, centreName ...
+    fun filter() { // rating, distance, sport, centreName ...
         val filteredCentres = allCentres.filter { centre ->
-            centre.rating >= minRating  && centre.distance<actualDistance
+            centre.rating >= minRating && centre.distance < actualDistance
         }
         centres.value = ArrayList(filteredCentres)
     }
 
-    fun sort(){
-        val sortedCentres = if(isByRating) centres.value!!.sortedBy {it.rating} else centres.value!!.sortedBy {it.distance}
+    fun sort() {
+        val sortedCentres =
+            if (isByRating) centres.value!!.sortedBy { it.rating } else centres.value!!.sortedBy { it.distance }
         centres.value = ArrayList(sortedCentres)
     }
 
-    fun calculateDistances(myLocation: Location){
-        for(centre in centres.value!!){
+    fun calculateDistances(myLocation: Location) {
+        for (centre in centres.value!!) {
             val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
             centre.distance = distance.toDouble()
             Log.d("Calculated distance", "$distance") // ...
         }
     }
 
-    fun fetchTimeOptions(){
+    fun fetchTimeOptions() {
         timeOptions.clear() // remove previously fetched data
         timeOptions.addAll(MockRentalOptions.timeOptions) // add new data
     }
 
-    fun fetchEquipmentOptions(){
+    fun fetchEquipmentOptions() {
         equipmentOptions.clear() // remove previously fetched data
         equipmentOptions.addAll(MockRentalOptions.equipmentOptions) // add new data
     }
 
-    private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>):Float{
+    fun cancelRental(rental: Rental) {
+        rentals.value?.remove(rental)
+        /*
+        Necessary to notify that live data changed.
+        Since live data is an object (arrayList), adding nor removing will not cause the data change (still the same reference)
+         */
+        rentals.value = rentals.value
+    }
+
+
+    private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>): Float {
         val theirLocation = Location("")
         theirLocation.latitude = theirCoordinates.first
         theirLocation.longitude = theirCoordinates.second
         return myLocation.distanceTo(theirLocation)
     }
 
-    private fun fetchUserData() : User = MockUsers.usersList[0]
+    private fun fetchUserData(): User = MockUsers.usersList[0]
 
 }

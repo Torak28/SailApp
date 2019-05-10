@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
         tools:context=".ui.main.ProfileFragment"
 >
@@ -14,8 +13,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Upcoming events "
+            android:text="@string/upcoming_events"
             android:textSize="20sp"
+    />
+
+    <ImageView
+            android:id="@+id/imageView_no_rentals"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="300dp"
+            app:layout_constraintDimensionRatio="1:1"
+            android:src="@drawable/treasuremap"
+            android:padding="10dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="@string/treasure_and_map"
+    />
+
+    <TextView
+            android:id="@+id/textView_no_rentals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_rentals_info"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:textColor="@color/colorSecondary"
     />
 
 
@@ -24,6 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/rental_item"
+            android:visibility="gone"
     >
 
     </androidx.recyclerview.widget.RecyclerView>

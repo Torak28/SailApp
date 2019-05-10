@@ -1,5 +1,8 @@
 package com.pwr.sailapp.ui.main
 
+import android.content.Intent
+import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.Rental
 import com.pwr.sailapp.ui.main.adapters.RentalAdapter
+import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
+import com.pwr.sailapp.utils.formatCoordinate
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_rent_master.*
@@ -38,7 +43,7 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView_rentals.layoutManager = LinearLayoutManager(context!!)
-        val adapter = RentalAdapter(context!!) {rental:Rental -> Toast.makeText(requireContext(), "Starts ${rental.rentDate}", Toast.LENGTH_SHORT).show()}
+        val adapter = RentalAdapter(context!!, phoneListener = onRentalCall(), locationListener = onRentalMap(), cancelListener = onRentalCancel())
         recyclerView_rentals.adapter = adapter
 
         /*
@@ -55,12 +60,48 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        // TODO fix app crashing
         mainViewModel.rentals.observe(viewLifecycleOwner, Observer {
             adapter.setRentals(it)
+            // Show list of rentals or info about no rentals
+            if(it.size > 0) {
+                imageView_no_rentals.visibility = View.GONE
+                textView_no_rentals.visibility = View.GONE
+                recyclerView_rentals.visibility = View.VISIBLE
+            }
+            else {
+                imageView_no_rentals.visibility = View.VISIBLE
+                textView_no_rentals.visibility = View.VISIBLE
+                recyclerView_rentals.visibility = View.GONE
+            }
         } )
+
     }
 
     private fun showWelcomeMessage() = Toast.makeText(requireContext(), "Welcome to your profile!", Toast.LENGTH_SHORT).show()
 
+    private fun onRentalCancel() = {rental:Rental ->
+            mainViewModel.currentRental = rental
+        val cancelRentalDialog = CancelRentalDialog()
+        fragmentManager.let {cancelRentalDialog.show(it!!, "Sort dialog") }
+    }
+
+    private fun onRentalCall() = {rental:Rental ->
+        val phone = rental.centre.phone
+        val uri = Uri.parse("tel:$phone")
+        val intent = Intent(Intent.ACTION_DIAL, uri)
+        if(intent.resolveActivity(activity!!.packageManager) != null) startActivity(intent)
+        else toast("Cannot launch activity")
+    }
+
+    private fun onRentalMap() = {rental:Rental ->
+        val coordinateXFormatted = formatCoordinate(rental.centre.coordinateX, 4)
+        val coordinateYFormatted = formatCoordinate(rental.centre.coordinateY, 4)
+        val label = rental.centre.name
+        val uri = Uri.parse("geo:0,0?q=$coordinateXFormatted,$coordinateYFormatted($label)")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        if(intent.resolveActivity(activity!!.packageManager) != null) startActivity(intent)
+        else toast("Cannot launch activity")
+    }
+
+    private fun toast(text : String) = Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
 }
