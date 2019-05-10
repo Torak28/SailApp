@@ -5,3 +5,5 @@ fun formatDistance(distance: Double):String{
     else if (distance < 1000) return "%d m".format(distance.toInt()) // distance in meters
     else return "" // other distances not displayed
 }
+
+fun formatCoordinate(coordinate:Double, decimals:Int)= "%.${decimals}f".format(coordinate)

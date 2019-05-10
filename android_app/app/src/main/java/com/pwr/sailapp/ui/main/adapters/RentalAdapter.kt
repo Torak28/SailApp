@@ -4,9 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,7 +17,9 @@ import com.pwr.sailapp.data.Rental
 // Adapter adapts the individual list item to the main container layout (eg. list layout)
 class RentalAdapter(
     private val context: Context,
-    val clickListener: (Rental) -> Unit // function
+    val phoneListener: (Rental) -> Unit = {}, // default value is {}
+    val locationListener: (Rental) -> Unit = {},
+    val cancelListener: (Rental) -> Unit = {}
 ) : RecyclerView.Adapter<RentalAdapter.ViewHolder>() {
 
     private var rentals = ArrayList<Rental>()
@@ -36,18 +36,33 @@ class RentalAdapter(
     // Fill the view with data from one list element - multiple times (recycler)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentRental = rentals[position]
-        Glide.with(context).asBitmap().load(currentRental.centre.photoURL).into(holder.imageView)
+        Glide.with(context).asBitmap()
+            .load(currentRental.centre.photoURL)
+            .centerCrop()
+            .into(holder.imageView)
         holder.textViewName.text = currentRental.centre.name
         holder.textViewRentalDate.text = currentRental.rentDate
         holder.textViewRentalLocation.text = currentRental.centre.location
         holder.textViewRentalStart.text = currentRental.rentStartTime
-    //    holder.textViewRentalLength.text = currentRental... // TODO implement start time
 
+        // Expand the view and hide down arrow when clicked
+        holder.arrowDownImageView.setOnClickListener {
+            holder.extrasLinearLayout.visibility = View.VISIBLE
+            it.visibility = View.GONE
+        }
 
-        holder.cardView.setOnClickListener {clickListener(currentRental)}
+        // Collapse the view and show up arrow when clicked
+        holder.arrowUpImageView.setOnClickListener {
+            holder.arrowDownImageView.visibility = View.VISIBLE
+            holder.extrasLinearLayout.visibility = View.GONE
+        }
+
+        // Handlers for image buttons
+        holder.phoneImageButton.setOnClickListener { phoneListener(currentRental) }
+        holder.locationImageButton.setOnClickListener { locationListener(currentRental) }
+        holder.cancelImageButton.setOnClickListener { cancelListener(currentRental) }
     }
 
-    // Setter for list of centres to use LiveData TODO consider just adding or removing single rentals
     fun setRentals(rentals: ArrayList<Rental> ){
         this.rentals = rentals
 
@@ -65,6 +80,12 @@ class RentalAdapter(
         val textViewRentalLocation: TextView = itemView.findViewById(R.id.textView_rental_location)
     //    val textViewRentalLength: TextView = itemView.findViewById(R.id.textView_rental_length)
         val cardView: CardView = itemView.findViewById(R.id.rental_card)
+        val arrowDownImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_down)
+        val arrowUpImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_up)
+        val phoneImageButton: ImageButton = itemView.findViewById(R.id.imageButton_phone)
+        val locationImageButton: ImageButton = itemView.findViewById(R.id.imageButton_location)
+        val cancelImageButton: ImageButton = itemView.findViewById(R.id.imageButton_cancel)
+        val extrasLinearLayout: LinearLayout = itemView.findViewById(R.id.linearLayout_extras)
 
     }
 }

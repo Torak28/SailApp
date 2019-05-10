@@ -10,18 +10,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.DatePicker
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.Rental
+import com.pwr.sailapp.utils.formatCoordinate
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_rent_details.*
 import java.text.DateFormat
-import java.time.Year
 import java.util.*
 
 // https://www.tutorialkart.com/kotlin-android/android-datepicker-kotlin-example/
@@ -49,8 +49,15 @@ class RentDetailsFragment : Fragment() {
         })
 
         // Initially display current date and time
-        textView_choose_date.text = DateFormat.getDateInstance().format(calendar.time)
-        textView_choose_start_time.text = DateFormat.getTimeInstance().format(calendar.time)
+        mainViewModel.startTime.value = calendar.time
+
+        mainViewModel.startTime.observe(viewLifecycleOwner, Observer {
+            val dateFormatted = DateFormat.getDateInstance().format(it)
+            textView_choose_date.text = dateFormatted
+
+            val timeFormatted = DateFormat.getTimeInstance().format(it)
+            textView_choose_start_time.text = timeFormatted
+        })
 
         button_choose_date.setOnClickListener {
             // show DatePicker dialog if button clicked
@@ -71,12 +78,45 @@ class RentDetailsFragment : Fragment() {
                 true).show()
         }
 
+        // Displaying equipment options
+        val equipmentArrayAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, mainViewModel.equipmentOptions)
+        mainViewModel.fetchEquipmentOptions()
+        equipmentArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_equipment.adapter = equipmentArrayAdapter
+
+        spinner_equipment.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                // An item was selected. You can retrieve the selected item using
+                // parent.getItemAtPosition(pos)
+                // Save the position of selected item
+                mainViewModel.selectedEquipmentIndex.value = pos
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Another interface callback
+            }
+        }
+
+        spinner_hours.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) { mainViewModel.selectedTimeIndex.value = pos }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        // Displaying time options
+        val timeArrayAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, mainViewModel.timeOptions)
+        mainViewModel.fetchTimeOptions()
+        timeArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_hours.adapter = timeArrayAdapter
+
         button_maps.setOnClickListener {
-            val location = mainViewModel.selectedCentre.value?.location
-            val uri = Uri.parse("geo:0,0?q=$location")
+        //    val location = mainViewModel.selectedCentre.value?.location
+            val coordinateXFormatted = formatCoordinate(mainViewModel.selectedCentre.value!!.coordinateX, 4)
+            val coordinateYFormatted = formatCoordinate(mainViewModel.selectedCentre.value!!.coordinateY, 4)
+            val label = mainViewModel.selectedCentre.value!!.name
+            val uri = Uri.parse("geo:0,0?q=$coordinateXFormatted,$coordinateYFormatted($label)")
             val intent = Intent(Intent.ACTION_VIEW, uri)
-            if(intent.resolveActivity(activity!!.packageManager) != null && location != null) startActivity(intent)
-            else Toast.makeText(requireActivity(), "Cannot launch activity", Toast.LENGTH_SHORT).show()
+            if(intent.resolveActivity(activity!!.packageManager) != null) startActivity(intent)
+            else toast("Cannot launch activity")
         }
 
         button_call.setOnClickListener {
@@ -84,21 +124,16 @@ class RentDetailsFragment : Fragment() {
             val uri = Uri.parse("tel:$phone")
             val intent = Intent(Intent.ACTION_DIAL, uri)
             if(intent.resolveActivity(activity!!.packageManager) != null && phone != null) startActivity(intent)
-            else Toast.makeText(requireActivity(), "Cannot launch activity", Toast.LENGTH_SHORT).show()
+            else toast("Cannot launch activity")
         }
 
         button_confirm.setOnClickListener {
-            val centre = mainViewModel.selectedCentre.value
-            // TODO use live data / data binding for date and time
-            val date = textView_choose_date.text.toString()
-            val time = textView_choose_start_time.text.toString()
-            if(centre != null) {
-                mainViewModel.confirmRental(centre, date, time)
-                Toast.makeText(requireActivity(), "Confirmed", Toast.LENGTH_SHORT).show()
+            val confirmationSuccess = mainViewModel.confirmRental()
+            if(confirmationSuccess) {
+                toast("Confirmed")
                 findNavController().navigate(R.id.destination_profile) // navigate to profile after confirmation to view rentals
             }
-            else Toast.makeText(requireActivity(), "Error", Toast.LENGTH_SHORT).show()
-
+            else toast("Error")
         }
     }
 
@@ -108,17 +143,15 @@ class RentDetailsFragment : Fragment() {
         calendar[Calendar.YEAR] = year
         calendar[Calendar.MONTH] = month
         calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
-        // format the picked data to local date format
-        val pickedDate = DateFormat.getDateInstance().format(calendar.time)
-        textView_choose_date.text = pickedDate
+        mainViewModel.startTime.value = calendar.time
     }
 
     // implementation of OnTimeSetListener one abstract method interface
     private val timeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
         calendar[Calendar.HOUR] = hourOfDay
         calendar[Calendar.MINUTE] = minute
-        textView_choose_start_time.text = DateFormat.getTimeInstance().format(calendar.time)
+        mainViewModel.startTime.value = calendar.time
     }
 
-
+    private fun toast(text : String) = Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
 }
