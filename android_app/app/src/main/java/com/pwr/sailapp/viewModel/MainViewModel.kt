@@ -5,11 +5,8 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.pwr.sailapp.data.Centre
+import com.pwr.sailapp.data.*
 import com.pwr.sailapp.utils.CredentialsUtil
-import com.pwr.sailapp.data.MockCentres
-import com.pwr.sailapp.data.MockRentalOptions
-import com.pwr.sailapp.data.Rental
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -36,6 +33,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Authentication
     val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
+
+    var currentUser: User
 
     // Rent fragments
     // Rent master fragment
@@ -67,6 +66,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // TODO use repository and LiveData here
         if (CredentialsUtil.isLogged(application.applicationContext))  authenticationState.value = AuthenticationState.AUTHENTICATED
         else authenticationState.value = AuthenticationState.UNAUTHENTICATED
+        currentUser = fetchUserData()
         centres.value = MockCentres.centres
         allCentres.addAll(MockCentres.centres)
         rentals.value = ArrayList<Rental>()
@@ -139,5 +139,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         theirLocation.longitude = theirCoordinates.second
         return myLocation.distanceTo(theirLocation)
     }
+
+    private fun fetchUserData() : User = MockUsers.usersList[0]
 
 }

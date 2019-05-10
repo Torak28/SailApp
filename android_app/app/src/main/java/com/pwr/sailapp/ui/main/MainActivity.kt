@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -14,8 +15,11 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.pwr.sailapp.R
+import com.pwr.sailapp.data.MockUsers
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.navigationview_header.*
+import kotlinx.android.synthetic.main.navigationview_header.view.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     // an object that manages app navigation within a NavHost.
     // Each NavHost has its own corresponding NavController
     private lateinit var navController: NavController
+    private lateinit var mainViewModel : MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +46,9 @@ class MainActivity : AppCompatActivity() {
         // Add nav controller to drawer's toolbar
         navigationView.setupWithNavController(navController)
 
-        // TODO find better way to logout
         // Use ViewModelProvider to get the same instance of viewModel - not to instantiate new viewModel each  time
-        val mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        
         val logoutItem = navigationView.menu.findItem(R.id.destination_logout)
         logoutItem.setOnMenuItemClickListener {
             Toast.makeText(applicationContext, "Logging out", Toast.LENGTH_SHORT).show()
@@ -52,6 +57,8 @@ class MainActivity : AppCompatActivity() {
             findNavController(R.id.my_nav_host_fragment).navigate(R.id.destination_profile)
             true
         }
+
+        changeNavigationHeaderInfo() // set user name in navigation header
     }
 
 
@@ -64,5 +71,11 @@ class MainActivity : AppCompatActivity() {
             }
             else  -> super.onOptionsItemSelected(item)
         }
+    }
+
+    // Changing the navigation header info
+    private fun changeNavigationHeaderInfo(){
+        val headerView = navigationView.getHeaderView(0)
+        headerView.textView_user_nav_name.text = mainViewModel.currentUser.firstName
     }
 }
