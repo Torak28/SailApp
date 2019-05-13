@@ -1,6 +1,7 @@
 package com.pwr.sailapp.data.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.pwr.sailapp.data.sail.response.AllCentreGearResponse
 import com.pwr.sailapp.data.sail.response.CentresResponse
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
@@ -8,6 +9,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 /*
 getCentres: https://0e4682b3-c081-4689-b8c5-51f3f0a7ae09.mock.pstmn.io/getCentres
@@ -20,6 +22,11 @@ interface SailAppApiService {
 
     @GET("getCentres")
     fun getCentres(): Deferred<CentresResponse> // defer - odraczać
+
+    @GET("getAllCentreGear")
+    fun getAllCentreGear(
+        @Query("centre_id") centreID: Int
+    ): Deferred<AllCentreGearResponse>
 
     companion object{
         // syntax: SailAppApiService()

@@ -30,8 +30,12 @@ class StatsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val apiService = SailAppApiService()
         GlobalScope.launch(Dispatchers.Main) {
+            /*
             val centresResponse = apiService.getCentres().await()
             textView_stats_fragment.text = centresResponse.centres[0].toString()
+            */
+            val centresResponse = apiService.getAllCentreGear(1).await()
+            textView_stats_fragment.text = centresResponse.gear[0].toString()
         }
     }
 
