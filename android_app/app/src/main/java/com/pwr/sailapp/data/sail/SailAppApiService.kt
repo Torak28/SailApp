@@ -30,8 +30,13 @@ interface SailAppApiService {
 
     companion object{
         // syntax: SailAppApiService()
-        operator fun invoke(): SailAppApiService{
-            // Interceptors are a powerful mechanism that can monitor, rewrite, and retry calls (OkHttp3)
+        operator fun invoke(
+            connectivityInterceptor: ConnectivityInterceptor
+        ): SailAppApiService{
+            /* okhttp3 Interceptor
+            Interceptors are a powerful mechanism that can monitor, rewrite, and retry calls
+            Typically interceptors add, remove, or transform headers on the request or response.
+             */
             val requestInterceptor = Interceptor{
                 val request = it.request()
                     .newBuilder()
@@ -42,6 +47,7 @@ interface SailAppApiService {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(requestInterceptor)
+                .addInterceptor(connectivityInterceptor)
                 .build()
 
             return Retrofit.Builder()
