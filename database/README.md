@@ -53,6 +53,7 @@ pip3 install -r requirements.txt
 
 ```
 export DATABASE_URL='postgres+psycopg2://docker:docker@localhost:5432/sailappdb'
+export DATABASE_URL='postgres+psycopg2://postgres:12345@localhost:5432/sailappdb'
 ```
 
 ### Create db:

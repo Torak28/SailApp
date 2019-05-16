@@ -1,5 +1,5 @@
-import database_classes as db
-from database_classes import connection_to_db
+import database.database_classes as db
+from database.database_classes import connection_to_db
 
 
 def create_user(name, surname, email, password, number, role):
