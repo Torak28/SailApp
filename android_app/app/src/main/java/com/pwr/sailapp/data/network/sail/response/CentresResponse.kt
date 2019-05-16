@@ -1,4 +1,4 @@
-package com.pwr.sailapp.data.sail.response
+package com.pwr.sailapp.data.network.sail.response
 
 import com.pwr.sailapp.data.Centre
 

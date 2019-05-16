@@ -1,11 +1,10 @@
-package com.pwr.sailapp.data.sail
+package com.pwr.sailapp.data.network.sail
 
 import android.content.Context
 import android.net.ConnectivityManager
 import com.pwr.sailapp.internal.NoConnectivityException
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.io.IOException
 
 class ConnectivityInterceptorImpl(
     context: Context // to get system service to check connection

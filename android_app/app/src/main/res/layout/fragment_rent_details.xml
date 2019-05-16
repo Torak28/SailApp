@@ -79,7 +79,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="30dp"
     >
 
         <Button
@@ -98,12 +97,43 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="20sp"
-                tools:text="21.06.2019"
+                tools:text="12:00"
                 android:gravity="end"
         />
 
     </LinearLayout>
 
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
+    >
+
+        <Button
+                android:id="@+id/button_choose_end_time"
+                android:layout_width="165dp"
+                android:layout_height="wrap_content"
+                android:text="@string/end_time"
+                android:background="@color/colorPrimary"
+                android:padding="10dp"
+                android:drawableStart="@drawable/ic_hourglass_empty_black_white"
+        />
+
+        <TextView
+                android:id="@+id/textView_choose_end_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="20sp"
+                tools:text="14:30"
+                android:gravity="end"
+        />
+
+    </LinearLayout>
+
+    <!--
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -129,8 +159,6 @@
 
     </LinearLayout>
 
-
-    <!--
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

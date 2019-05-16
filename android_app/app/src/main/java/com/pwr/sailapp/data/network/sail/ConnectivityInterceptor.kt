@@ -1,4 +1,4 @@
-package com.pwr.sailapp.data.sail
+package com.pwr.sailapp.data.network.sail
 
 import okhttp3.Interceptor
 

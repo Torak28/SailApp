@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    tools:text="13:15"
+                    tools:text="13:30"
                     android:textSize="20sp"
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintVertical_bias="0.0" android:layout_marginBottom="8dp"
@@ -109,7 +109,7 @@
                     android:layout_height="match_parent">
 
                 <TextView
-                        android:text="@string/rental_length"
+                        android:text="@string/rental_duration"
                         android:textSize="20sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -118,11 +118,11 @@
                 />
 
                 <TextView
-                        android:id="@+id/textView_rental_length"
+                        android:id="@+id/textView_rental_duration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text=""
-                        tools:text="Some location"
+                        tools:text="13:30 - 17:00"
                         android:layout_gravity="center_vertical|end"
                         android:textSize="20sp"
                         android:textAlignment="textEnd"
@@ -136,7 +136,7 @@
                     android:layout_height="match_parent">
 
                 <TextView
-                        android:text="@string/rental_location"
+                        android:text="@string/gear"
                         android:textSize="20sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -145,11 +145,11 @@
                 />
 
                 <TextView
-                        android:id="@+id/textView_rental_location"
+                        android:id="@+id/textView_rental_equipment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text=""
-                        tools:text="Some location"
+                        tools:text="Surf board"
                         android:layout_gravity="center_vertical|end"
                         android:textSize="20sp"
                         android:textAlignment="textEnd"

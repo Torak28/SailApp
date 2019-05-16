@@ -42,7 +42,7 @@ class RentalAdapter(
             .into(holder.imageView)
         holder.textViewName.text = currentRental.centre.name
         holder.textViewRentalDate.text = currentRental.rentDate
-        holder.textViewRentalLocation.text = currentRental.centre.location
+     //   holder.textViewRentalLocation.text = currentRental.centre.location
         holder.textViewRentalStart.text = currentRental.rentStartTime
 
         // Expand the view and hide down arrow when clicked
@@ -77,7 +77,7 @@ class RentalAdapter(
         val textViewName: TextView = itemView.findViewById(R.id.textView_rental_name)
         val textViewRentalDate: TextView = itemView.findViewById(R.id.textView_rental_date)
         val textViewRentalStart: TextView = itemView.findViewById(R.id.textView_rental_start)
-        val textViewRentalLocation: TextView = itemView.findViewById(R.id.textView_rental_location)
+     //   val textViewRentalLocation: TextView = itemView.findViewById(R.id.textView_rental_location)
     //    val textViewRentalLength: TextView = itemView.findViewById(R.id.textView_rental_length)
         val cardView: CardView = itemView.findViewById(R.id.rental_card)
         val arrowDownImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_down)

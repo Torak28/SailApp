@@ -97,6 +97,8 @@ class RentMasterFragment : Fragment(){
             val filterDialog = FilterDialogFragment()
             fragmentManager?.let { it1 -> filterDialog.show(it1, "Filter dialog") }
         }
+
+       // mainViewModel.filter()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

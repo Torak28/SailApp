@@ -3,22 +3,16 @@ package com.pwr.sailapp.ui.main
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.MockUsers
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.navigationview_header.*
 import kotlinx.android.synthetic.main.navigationview_header.view.*
 
 class MainActivity : AppCompatActivity() {

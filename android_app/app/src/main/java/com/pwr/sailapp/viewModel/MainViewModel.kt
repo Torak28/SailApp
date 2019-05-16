@@ -6,9 +6,15 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.pwr.sailapp.data.*
+import com.pwr.sailapp.data.mocks.MockCentres
+import com.pwr.sailapp.data.mocks.MockRentalOptions
+import com.pwr.sailapp.data.mocks.MockRentals
+import com.pwr.sailapp.data.mocks.MockUsers
 import com.pwr.sailapp.utils.CredentialsUtil
 import java.util.*
 import kotlin.collections.ArrayList
+import com.pwr.sailapp.utils.DateUtil
+import com.pwr.sailapp.utils.DateUtil.dateToString
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -53,9 +59,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Rent details fragment
     val startTime = MutableLiveData<Date>()
-    val timeOptions = ArrayList<String>()
+    // val timeOptions = ArrayList<String>()
+    val endTime = MutableLiveData<Date>()
     val equipmentOptions = ArrayList<String>()
-    val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
+   // val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
     val selectedEquipmentIndex =
         MutableLiveData<Int>() // observe which element of equipment options array list was selected
     // val totalCost = MutableLiveData<Double>()
@@ -84,15 +91,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun confirmRental(): Boolean {
         //    val rentalsPrev = rentals.value
         //    rentalsPrev?.add(Rental(centre, startDate, startTime))
-        if (selectedCentre.value != null && startTime.value != null && selectedTimeIndex.value != null && selectedEquipmentIndex.value != null) {
+        if (selectedCentre.value != null && startTime.value != null && endTime.value != null && selectedEquipmentIndex.value != null) {
             MockRentals.counter ++ // mock ID
             rentals.value?.add(
                 Rental(
                     MockRentals.counter,
                     selectedCentre.value!!,
-                    startTime.value!!,
-                    selectedTimeIndex.value!!,
-                    selectedEquipmentIndex.value!!
+                    dateToString(startTime.value!!)!!,
+                    dateToString(endTime.value!!)!!,
+                    selectedEquipmentIndex.value!!,
+                    equipmentOptions[selectedEquipmentIndex.value!!]
                 )
             ); return true
         } else return false
@@ -100,7 +108,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun logOut() {
         CredentialsUtil.resetUserCredentials(appContext)
-        authenticationState.value = MainViewModel.AuthenticationState.UNAUTHENTICATED
+        authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
     fun search(query: String?) {
@@ -135,10 +143,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fetchTimeOptions() {
-        timeOptions.clear() // remove previously fetched data
-        timeOptions.addAll(MockRentalOptions.timeOptions) // add new data
-    }
 
     fun fetchEquipmentOptions() {
         equipmentOptions.clear() // remove previously fetched data

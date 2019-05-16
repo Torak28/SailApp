@@ -3,7 +3,7 @@ package com.pwr.sailapp.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.pwr.sailapp.data.MockUserAuthentication
+import com.pwr.sailapp.data.mocks.MockUserAuthentication
 import com.pwr.sailapp.utils.CredentialsUtil
 
 /*

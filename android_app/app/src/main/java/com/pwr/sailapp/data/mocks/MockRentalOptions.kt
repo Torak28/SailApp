@@ -1,4 +1,4 @@
-package com.pwr.sailapp.data
+package com.pwr.sailapp.data.mocks
 
 object MockRentalOptions {
     val timeOptions = ArrayList<String>(listOf("1 hour", "2 hours", "3 hours", "Whole day"))

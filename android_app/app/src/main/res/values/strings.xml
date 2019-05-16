@@ -65,4 +65,7 @@
     <string name="treasure_and_map">Treasure and map</string>
     <string name="no_rentals_info">No planned events. Want to sail a bit?</string>
     <string name="stats_fragment">Stats fragment</string>
+    <string name="gear">Gear:</string>
+    <string name="end_time">End time</string>
+    <string name="rental_duration">Rental duration:</string>
 </resources>

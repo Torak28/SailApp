@@ -1,8 +1,9 @@
-package com.pwr.sailapp.data.sail
+package com.pwr.sailapp.data.network.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.pwr.sailapp.data.sail.response.AllCentreGearResponse
-import com.pwr.sailapp.data.sail.response.CentresResponse
+import com.pwr.sailapp.data.network.sail.response.AllCentreGearResponse
+import com.pwr.sailapp.data.network.sail.response.AllUserRentalsResponse
+import com.pwr.sailapp.data.network.sail.response.CentresResponse
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -27,6 +28,11 @@ interface SailAppApiService {
     fun getAllCentreGear(
         @Query("centre_id") centreID: Int
     ): Deferred<AllCentreGearResponse>
+
+    @GET("getAllUserRentals")
+    fun getAllUserRentals(
+        @Query("user_id") userID: Int
+    ):Deferred<AllUserRentalsResponse>
 
     companion object{
         // syntax: SailAppApiService()

@@ -3,14 +3,14 @@ package com.pwr.sailapp.data
 import com.google.gson.annotations.SerializedName
 
 
-data class Centre(@SerializedName("centre_id")
+data class Centre(@SerializedName("id")
                   val ID:Int,
                   val name:String,
                   var rating: Double,
                   val location: String,
-                  @SerializedName("coordinate_x")
+                  @SerializedName("latitude")
                   val coordinateX:Double,
-                  @SerializedName("coordinate_y")
+                  @SerializedName("longitude")
                   val coordinateY:Double,
                   @SerializedName("photo_url")
                   var photoURL:String,

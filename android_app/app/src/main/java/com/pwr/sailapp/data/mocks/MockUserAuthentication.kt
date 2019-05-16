@@ -1,6 +1,4 @@
-package com.pwr.sailapp.data
-
-import android.provider.ContactsContract
+package com.pwr.sailapp.data.mocks
 
 object MockUserAuthentication {
     val CORRECT_EMAIL = "jan@gmail.com"
