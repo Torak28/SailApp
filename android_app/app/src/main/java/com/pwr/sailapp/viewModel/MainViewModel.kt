@@ -4,17 +4,27 @@ import android.app.Application
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.pwr.sailapp.data.*
 import com.pwr.sailapp.data.mocks.MockCentres
 import com.pwr.sailapp.data.mocks.MockRentalOptions
 import com.pwr.sailapp.data.mocks.MockRentals
 import com.pwr.sailapp.data.mocks.MockUsers
+import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
+import com.pwr.sailapp.data.network.sail.SailAppApiService
+import com.pwr.sailapp.data.network.sail.SailNetworkDataSource
+import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
+import com.pwr.sailapp.data.repository.MainRepositoryImpl
 import com.pwr.sailapp.utils.CredentialsUtil
 import java.util.*
 import kotlin.collections.ArrayList
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.DateUtil.dateToString
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -23,6 +33,9 @@ https://developer.android.com/reference/android/arch/lifecycle/AndroidViewModel 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext = application.applicationContext
+
+    // TODO move repo to constructor, use dependency injection
+    private val mainRepositoryImpl = MainRepositoryImpl(SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext))))
 
     companion object {
         const val INITIAL_MIN_RATING = 0.0
@@ -45,6 +58,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Rent fragments
     // Rent master fragment
+    // val centresDeferred = CompletableDeferred<LiveData<ArrayList<Centre>>>()
+
+    // Opóźniamy wykonanie bloku do czasu gdy będzie potrzebny
+    val testCentres by lazy {
+        GlobalScope.async(start = CoroutineStart.LAZY) {
+            mainRepositoryImpl.getCentres()
+        }
+    }
+
     val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
     val allCentres = ArrayList<Centre>()
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
