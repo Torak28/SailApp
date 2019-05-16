@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 // https://developer.android.com/jetpack/docs/guide
+// https://medium.com/androiddevelopers/coroutines-on-android-part-i-getting-the-background-3e0e54d20bb
 
 class MainRepositoryImpl(
     private val sailNetworkDataSource: SailNetworkDataSource
@@ -36,6 +37,7 @@ class MainRepositoryImpl(
     }
 
     override suspend fun getAllUserRentals(userID: Int): LiveData<ArrayList<Rental>> {
+        // create a block that will run on the IO dispatcher
         return withContext(Dispatchers.IO) {
             fetchAllUserRentals(userID)
             allUserRentals

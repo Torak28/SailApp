@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.pwr.sailapp.data.*
 import com.pwr.sailapp.data.mocks.MockCentres
 import com.pwr.sailapp.data.mocks.MockRentalOptions
@@ -21,10 +22,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.DateUtil.dateToString
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -67,6 +65,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
+
     val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
     val allCentres = ArrayList<Centre>()
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
@@ -92,6 +92,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
 
+    lateinit var testCentres2: LiveData<ArrayList<Centre>>
 
     init {
         // TODO use repository and LiveData here
@@ -102,9 +103,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         centres.value = MockCentres.centres
         allCentres.addAll(MockCentres.centres)
         rentals.value = ArrayList<Rental>()
+        fetchCentres()
     }
 
     // TODO consider using live data for observing whether the user has remover their credentials from shared preferences (logged out)
+
+    fun fetchCentres(){
+        // launch a coroutine on viewModelScope and MainDispatcher
+        viewModelScope.launch {
+            // IODispatcher
+            val result = mainRepositoryImpl.getCentres()
+            // MainDispatcher
+            testCentres2 = result
+        }
+    }
 
     fun selectCentre(centre: Centre) { // TODO consider nicer Kotlin syntax
         selectedCentre.value = centre
