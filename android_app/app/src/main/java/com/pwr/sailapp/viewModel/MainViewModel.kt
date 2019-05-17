@@ -59,16 +59,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Rent master fragment
     // val centresDeferred = CompletableDeferred<LiveData<ArrayList<Centre>>>()
 
-    // Opóźniamy wykonanie bloku do czasu gdy będzie potrzebny
-    val testCentres by lazy {
-        GlobalScope.async(start = CoroutineStart.LAZY) {
-            mainRepositoryImpl.getCentres()
-        }
-    }
-
-
     val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
-    val allCentres = ArrayList<Centre>()
+    // val allCentres = ArrayList<Centre>()
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
 
     // Dialogs
@@ -92,7 +84,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
 
-    lateinit var testCentres2: LiveData<ArrayList<Centre>>
+    lateinit var allCentres: LiveData<ArrayList<Centre>>
 
     init {
         // TODO use repository and LiveData here
@@ -111,12 +103,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     suspend fun fetchCentres(){
         val fetchedCentres = mainRepositoryImpl.getCentres()
-        testCentres2 = fetchedCentres
+        allCentres = fetchedCentres
+        if(allCentres.value == null) {Log.e("MainViewModel", "fetchCentres: allCentres.value = null"); return}
+        if(centres.value == null) {Log.e("MainViewModel", "fetchCentres: centres.value = null"); return}
+        centres.value!!.addAll(allCentres.value!!)
     }
 
-    fun selectCentre(centre: Centre) {
-        selectedCentre.value = centre
-    }
+    fun selectCentre(centre: Centre) { selectedCentre.value = centre }
 
     fun confirmRental(): Boolean {
         //    val rentalsPrev = rentals.value
@@ -149,27 +142,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 centre.name.toLowerCase(Locale.getDefault()).contains(queryLowerCase) // && centre.rating>minRating
             }
             centres.value = ArrayList(filteredCentres)
-        } else centres.value = allCentres
+        } else centres.value = allCentres.value
     }
 
     fun filter() { // rating, distance, sport, centreName ...
-        val filteredCentres = allCentres.filter { centre ->
+        if(allCentres.value == null) {Log.e("MainViewModel", "filter: allCentres.value = null"); return}
+        val filteredCentres = allCentres.value!!.filter { centre ->
             centre.rating >= minRating && centre.distance < actualDistance
         }
         centres.value = ArrayList(filteredCentres)
     }
 
     fun sort() {
+        if(centres.value == null) {Log.e("MainViewModel", "sort: centres.value = null"); return}
         val sortedCentres =
-            if (isByRating) testCentres2.value!!.sortedBy { it.rating } else testCentres2.value!!.sortedBy { it.distance } //  TODO change it to centres
+            if (isByRating) centres.value!!.sortedBy { it.rating } else centres.value!!.sortedBy { it.distance }
         centres.value = ArrayList(sortedCentres)
     }
 
     fun calculateDistances(myLocation: Location) {
-        for (centre in testCentres2.value!!) { // TODO change it to centres
+        if(centres.value == null) {Log.e("MainViewModel", "calculateDistances: centres.value = null"); return}
+        for (centre in centres.value!!) {
             val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
             centre.distance = distance.toDouble()
-            Log.d("Calculated distance", "$distance") // ...
+        //    Log.d("Calculated distance", "$distance") // ...
         }
     }
 

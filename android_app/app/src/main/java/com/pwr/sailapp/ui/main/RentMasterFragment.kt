@@ -83,7 +83,7 @@ class RentMasterFragment : Fragment(), CoroutineScope{
 
 
             // Pass this (fragment) as owner - updating is bound to states of fragment's lifecycle
-            mainViewModel.testCentres2.observe(viewLifecycleOwner, Observer {
+            mainViewModel.allCentres.observe(viewLifecycleOwner, Observer {
                 adapter.setCentres(it)
             })
 

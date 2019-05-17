@@ -44,7 +44,7 @@ class StatsFragment : Fragment(), CoroutineScope {
                 mainViewModel.fetchCentres()
             }
             operation.await()
-            textView_stats_fragment.text = mainViewModel.testCentres2.value.toString()
+            textView_stats_fragment.text = mainViewModel.allCentres.value.toString()
         }
     }
     /*
