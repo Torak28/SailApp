@@ -18,7 +18,15 @@ import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 
-class StatsFragment : Fragment(){
+class StatsFragment : Fragment(), CoroutineScope {
+    private lateinit var job: Job
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        job = Job()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,21 +39,35 @@ class StatsFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
-        mainViewModel.testCentres2.observe(viewLifecycleOwner, Observer {
-            textView_stats_fragment.text = it.toString()
-        })
+        launch {
+            val operation = async(Dispatchers.IO) {
+                mainViewModel.fetchCentres()
+            }
+            operation.await()
+            textView_stats_fragment.text = mainViewModel.testCentres2.value.toString()
         }
-
-        /*
-        val apiService = SailAppApiService(ConnectivityInterceptorImpl(requireContext()))
-        val sailNetworkDataSource = SailNetworkDataSourceImpl(apiService)
-        sailNetworkDataSource.downloadedAllUserRentals.observe(this, Observer {
-            textView_stats_fragment.text = it.toString()
-        })
-
-        GlobalScope.launch(Dispatchers.Main) {
-            sailNetworkDataSource.fetchAllUserRentals(1)
-        }
-        */
     }
+    /*
+    mainViewModel.testCentres2.observe(viewLifecycleOwner, Observer {
+        textView_stats_fragment.text = it.toString()
+    })
+    }
+*/
+    /*
+    val apiService = SailAppApiService(ConnectivityInterceptorImpl(requireContext()))
+    val sailNetworkDataSource = SailNetworkDataSourceImpl(apiService)
+    sailNetworkDataSource.downloadedAllUserRentals.observe(this, Observer {
+        textView_stats_fragment.text = it.toString()
+    })
+
+    GlobalScope.launch(Dispatchers.Main) {
+        sailNetworkDataSource.fetchAllUserRentals(1)
+    }
+    */
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+}
 

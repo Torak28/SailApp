@@ -33,7 +33,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val appContext = application.applicationContext
 
     // TODO move repo to constructor, use dependency injection
-    private val mainRepositoryImpl = MainRepositoryImpl(SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext))))
+    private val mainRepositoryImpl =
+        MainRepositoryImpl(SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext))))
 
     companion object {
         const val INITIAL_MIN_RATING = 0.0
@@ -66,7 +67,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-
     val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
     val allCentres = ArrayList<Centre>()
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
@@ -84,7 +84,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // val timeOptions = ArrayList<String>()
     val endTime = MutableLiveData<Date>()
     val equipmentOptions = ArrayList<String>()
-   // val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
+    // val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
     val selectedEquipmentIndex =
         MutableLiveData<Int>() // observe which element of equipment options array list was selected
     // val totalCost = MutableLiveData<Double>()
@@ -100,25 +100,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             AuthenticationState.AUTHENTICATED
         else authenticationState.value = AuthenticationState.UNAUTHENTICATED
         currentUser = fetchUserData()
-        centres.value = MockCentres.centres
-        allCentres.addAll(MockCentres.centres)
+        //     centres.value = MockCentres.centres
+        //     allCentres.addAll(MockCentres.centres)
         rentals.value = ArrayList<Rental>()
-        fetchCentres()
+        // fetchCentres()
     }
 
     // TODO consider using live data for observing whether the user has remover their credentials from shared preferences (logged out)
 
-    fun fetchCentres(){
-        // launch a coroutine on viewModelScope and MainDispatcher
-        viewModelScope.launch {
-            // IODispatcher
-            val result = mainRepositoryImpl.getCentres()
-            // MainDispatcher
-            testCentres2 = result
-        }
+
+    suspend fun fetchCentres(){
+        val fetchedCentres = mainRepositoryImpl.getCentres()
+        testCentres2 = fetchedCentres
     }
 
-    fun selectCentre(centre: Centre) { // TODO consider nicer Kotlin syntax
+    fun selectCentre(centre: Centre) {
         selectedCentre.value = centre
     }
 
@@ -126,7 +122,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         //    val rentalsPrev = rentals.value
         //    rentalsPrev?.add(Rental(centre, startDate, startTime))
         if (selectedCentre.value != null && startTime.value != null && endTime.value != null && selectedEquipmentIndex.value != null) {
-            MockRentals.counter ++ // mock ID
+            MockRentals.counter++ // mock ID
             rentals.value?.add(
                 Rental(
                     MockRentals.counter,
@@ -165,12 +161,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sort() {
         val sortedCentres =
-            if (isByRating) centres.value!!.sortedBy { it.rating } else centres.value!!.sortedBy { it.distance }
+            if (isByRating) testCentres2.value!!.sortedBy { it.rating } else testCentres2.value!!.sortedBy { it.distance } //  TODO change it to centres
         centres.value = ArrayList(sortedCentres)
     }
 
     fun calculateDistances(myLocation: Location) {
-        for (centre in centres.value!!) {
+        for (centre in testCentres2.value!!) { // TODO change it to centres
             val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
             centre.distance = distance.toDouble()
             Log.d("Calculated distance", "$distance") // ...
