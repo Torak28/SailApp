@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -83,7 +84,7 @@ class RentMasterFragment : Fragment(), CoroutineScope{
 
 
             // Pass this (fragment) as owner - updating is bound to states of fragment's lifecycle
-            mainViewModel.allCentres.observe(viewLifecycleOwner, Observer {
+            mainViewModel.centres.observe(viewLifecycleOwner, Observer {
                 adapter.setCentres(it)
             })
 
@@ -91,7 +92,7 @@ class RentMasterFragment : Fragment(), CoroutineScope{
                 androidx.appcompat.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?) = false
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    mainViewModel.search(newText)
+            //        mainViewModel.search(newText) TODO implement searching
                     return false
                 }
             })
@@ -123,9 +124,6 @@ class RentMasterFragment : Fragment(), CoroutineScope{
 
         }
 
-
-
-       // mainViewModel.filter()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -157,7 +155,7 @@ class RentMasterFragment : Fragment(), CoroutineScope{
                     if(location != null){
                         mainViewModel.coordinates = Pair(location.latitude, location.longitude)
                         mainViewModel.calculateDistances(location)
-                        mainViewModel.sort()
+                 //       mainViewModel.sort() TODO sorting
                     }
                     else {
                         // TODO inform user that couldn't fetch location

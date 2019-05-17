@@ -47,23 +47,6 @@ class StatsFragment : Fragment(), CoroutineScope {
             textView_stats_fragment.text = mainViewModel.allCentres.value.toString()
         }
     }
-    /*
-    mainViewModel.testCentres2.observe(viewLifecycleOwner, Observer {
-        textView_stats_fragment.text = it.toString()
-    })
-    }
-*/
-    /*
-    val apiService = SailAppApiService(ConnectivityInterceptorImpl(requireContext()))
-    val sailNetworkDataSource = SailNetworkDataSourceImpl(apiService)
-    sailNetworkDataSource.downloadedAllUserRentals.observe(this, Observer {
-        textView_stats_fragment.text = it.toString()
-    })
-
-    GlobalScope.launch(Dispatchers.Main) {
-        sailNetworkDataSource.fetchAllUserRentals(1)
-    }
-    */
 
     override fun onDestroy() {
         super.onDestroy()

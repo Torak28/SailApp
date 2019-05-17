@@ -3,10 +3,7 @@ package com.pwr.sailapp.viewModel
 import android.app.Application
 import android.location.Location
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.pwr.sailapp.data.*
 import com.pwr.sailapp.data.mocks.MockCentres
 import com.pwr.sailapp.data.mocks.MockRentalOptions
@@ -55,12 +52,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var currentUser: User
     lateinit var currentRental: Rental
 
-    // Rent fragments
-    // Rent master fragment
-    // val centresDeferred = CompletableDeferred<LiveData<ArrayList<Centre>>>()
+    // val centres = MutableLiveData<ArrayList<Centre>>() // TODO use transformations here
+    /*
+    Transformations.switchMap lets you create a new LiveData that reacts to changes of other LiveData instances. It also allows carrying over the observer Lifecycle information across the chain:
+     */
+    lateinit var centres : LiveData<ArrayList<Centre>>
+    lateinit var allCentres: LiveData<ArrayList<Centre>>
 
-    val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
-    // val allCentres = ArrayList<Centre>()
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
 
     // Dialogs
@@ -84,7 +82,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
 
-    lateinit var allCentres: LiveData<ArrayList<Centre>>
 
     init {
         // TODO use repository and LiveData here
@@ -104,9 +101,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun fetchCentres(){
         val fetchedCentres = mainRepositoryImpl.getCentres()
         allCentres = fetchedCentres
-        if(allCentres.value == null) {Log.e("MainViewModel", "fetchCentres: allCentres.value = null"); return}
-        if(centres.value == null) {Log.e("MainViewModel", "fetchCentres: centres.value = null"); return}
-        centres.value!!.addAll(allCentres.value!!)
+        if(allCentres.value == null) {Log.e("MainViewModel", "fetchCentres: allCentres.value = null")}
+        // Transformation of live data
+        centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres)}
     }
 
     fun selectCentre(centre: Centre) { selectedCentre.value = centre }
@@ -134,17 +131,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
+/*
     fun search(query: String?) {
         val queryLowerCase = query!!.toLowerCase(Locale.getDefault())
         // Filter by centre name
         if (!queryLowerCase.isEmpty()) {
-            val filteredCentres = centres.value!!.filter { centre ->
+            val filteredCentres = centres.value!!.filter { centre : Centre ->
                 centre.name.toLowerCase(Locale.getDefault()).contains(queryLowerCase) // && centre.rating>minRating
             }
             centres.value = ArrayList(filteredCentres)
         } else centres.value = allCentres.value
     }
-
+*/
+    private fun filterAndSortCentres(inputCentres : ArrayList<Centre>):ArrayList<Centre>{
+        val filteredCentres = inputCentres.filter { centre ->
+            centre.rating >= minRating && centre.distance < actualDistance
+        }
+        return ArrayList(filteredCentres)
+    }
+/*
     fun filter() { // rating, distance, sport, centreName ...
         if(allCentres.value == null) {Log.e("MainViewModel", "filter: allCentres.value = null"); return}
         val filteredCentres = allCentres.value!!.filter { centre ->
@@ -159,7 +164,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (isByRating) centres.value!!.sortedBy { it.rating } else centres.value!!.sortedBy { it.distance }
         centres.value = ArrayList(sortedCentres)
     }
-
+*/
     fun calculateDistances(myLocation: Location) {
         if(centres.value == null) {Log.e("MainViewModel", "calculateDistances: centres.value = null"); return}
         for (centre in centres.value!!) {

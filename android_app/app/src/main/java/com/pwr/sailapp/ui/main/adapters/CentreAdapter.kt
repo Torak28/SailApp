@@ -18,6 +18,7 @@ import kotlin.collections.ArrayList
 // https://www.andreasjakl.com/kotlin-recyclerview-for-high-performance-lists-in-android/
 
 // Adapter adapts the individual list item to the main container layout (eg. list layout)
+// TODO stop app from crashing with no internet connection
 class CentreAdapter(
     private val context: Context,
     val clickListener: (Centre) -> Unit // function
