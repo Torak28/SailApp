@@ -1,44 +1,17 @@
 <template>
-  <b-container class="registration">
+  <b-container class="Registration">
     <h1 class='title'>Register:</h1>
-    <br>
-    <br>
-    <b-row>
-      <b-form-input type="text" v-model='name' placeholder="First Name" />
-      <br>
-      <br>
-      <b-form-input type="text" v-model='surname' placeholder="Second Name" />
-      <br>
-      <br>
-      <b-form-input type="tel" v-model='phone' placeholder="Phone number" />
-      <br>
-      <br>
-      <b-form-input type="email" v-model='email' placeholder="Email" />
-      <br>
-      <br>
-      <b-form-input type="password" v-model='password' placeholder="Password" />
-      <br>
-      <br>
-      <b-form-input type="password" v-model='checkPassword' placeholder="Replay Password" />
-      <br>
-      <br>
-      <b-button block variant="success" to="/">Register</b-button>
-    </b-row>
+    <Register />
   </b-container>
 </template>
 
 <script>
+import Register from "@/components/Register.vue";
+
 export default {
   name: "Registration",
-  data() {
-    return {
-      name: '',
-      surname: '',
-      phone: '',
-      email: '',
-      password: '',
-      checkPassword: ''
-    }
+  components: {
+    Register,
   }
 };
 </script>

@@ -5,6 +5,8 @@
         <Ads />
       </b-col>
       <b-col align-self="center" lg='4' order='1' order-lg='2'>
+        <b-alert fade dismissible :show=noData variant="danger">{{noDataMsg}}</b-alert>
+        <b-alert fade dismissible :show=wrongData variant="danger">{{wrongDataMsg}}</b-alert>
         <Login />
       </b-col>
     </b-row>
@@ -20,6 +22,19 @@ export default {
   components: {
     Login,
     Ads
+  },
+  data() {
+    return {
+      authenticated: false,
+      noData: false,
+      wrongData: false,
+      noDataMsg: "A login and password must be present",
+      wrongDataMsg: "The login and / or password is incorrect",
+      mockAccount: {
+        login: "dupa",
+        password: "dupa"
+      }
+    }
   }
 };
 </script>
