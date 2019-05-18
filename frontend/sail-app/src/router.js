@@ -20,10 +20,10 @@ export default new Router({
         import("./views/UserPanel.vue")
     },
     {
-      path: "/register",
-      name: "Register",
+      path: "/registration",
+      name: "Registration",
       component: () =>
-        import("./views/Register.vue")
+        import("./views/Registration.vue")
     }
   ]
 });

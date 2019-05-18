@@ -11,7 +11,7 @@
       <br>
       <br>
       <b-button block variant="success" to="/userPanel">Login</b-button>
-      <b-button block variant="warning" to="/register">Register</b-button>
+      <b-button block variant="warning" to="/registration">Register</b-button>
     </b-row>
     <br>
     <br>
