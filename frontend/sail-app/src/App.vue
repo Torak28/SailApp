@@ -3,7 +3,7 @@
     <b-container fluid class="cont">
       <b-navbar :sticky="true" type="light" class="nav-background">
         <b-navbar-brand href="#" class="mx-auto" >
-          <img src="./assets/logoNavbar2.png" class="align-centre" alt="Logo">
+          <img src="./assets/logoNavbar.png" class="align-centre" alt="Logo">
         </b-navbar-brand>
       </b-navbar>
       <b-row class="text">

@@ -29,14 +29,15 @@ export default {
     loginToAccount() {
       if(this.login != "" && this.password != "") {
         if(this.login == this.$parent.mockAccount.login && this.password == this.$parent.mockAccount.password) {
-          this.$emit("authenticated", true);
-          console.log('Zalogowany!');
-          //this.$router.push({ name: "UserPanel" });
+          this.$parent.authenticated = true;
+          this.$router.push({ name: "UserPanel" });
         } else {
-          this.$parent.wrongData =true;
+          this.$parent.wrongData = true;
+          this.$parent.noData = false;
         }
       } else {
-        this.$parent.wrongData =true;
+        this.$parent.noData = true;
+        this.$parent.wrongData = false;
       }
     }
   }

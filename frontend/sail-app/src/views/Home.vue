@@ -5,8 +5,8 @@
         <Ads />
       </b-col>
       <b-col align-self="center" lg='4' order='1' order-lg='2'>
-        <b-alert fade dismissible :show=noData variant="danger">{{noDataMsg}}</b-alert>
-        <b-alert fade dismissible :show=wrongData variant="danger">{{wrongDataMsg}}</b-alert>
+        <b-alert :show=noData variant="danger">{{noDataMsg}}</b-alert>
+        <b-alert :show=wrongData variant="danger">{{wrongDataMsg}}</b-alert>
         <Login />
       </b-col>
     </b-row>
