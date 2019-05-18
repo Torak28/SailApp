@@ -9,17 +9,10 @@
       <b-row class="text">
         <b-col sm="2" />
         <b-col sm="8">
-          <!--router-link to="/">Home</router-link> |
-          <router-link to="/about">About</router-link-->
           <router-view />
         </b-col>  
         <b-col sm="2" />
       </b-row>
-      <b-navbar type="light" class="nav-background">
-        <b-navbar-brand href="#" class="mx-auto">
-          <small class="text-muted">© 2019, Sail App team</small>
-        </b-navbar-brand>
-      </b-navbar>
     </b-container>
     <footer>
       <cookie-law :buttonText="cookiebuttonText" theme="royal">
@@ -56,14 +49,15 @@ export default {
     color: #222;
   }
   .cont {
-    padding: 0 !important;
+    /*padding-left: 0 !important;
+    padding-right: 0 !important;*/
   }
   .text {
     color: #222;
     padding: 2rem;
     text-align: justify;
     text-justify: inter-word;
-    height: 80vh;
+    min-height: 90vh;
   }
   img {
     max-width: 100%;
@@ -71,6 +65,6 @@ export default {
   }
   .nav-background {
     background: #ece4b7;
-    height: 10vh;
+    height: auto;
   }
 </style>
