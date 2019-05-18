@@ -5,7 +5,10 @@ from sqlalchemy import create_engine
 import os
 
 Base = declarative_base()
-DATABASE_URI = os.environ['DATABASE_URL']
+try:
+    DATABASE_URI = os.environ['DATABASE_URL']
+except KeyError:
+    DATABASE_URI = 'postgres+psycopg2://postgres:12345@localhost:5432/sailappdb'
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
