@@ -48,7 +48,9 @@ interface SailAppApiService {
                     .newBuilder()
                     .build()
 
-                return@Interceptor it.proceed(request)
+                val response = it.proceed(request)
+                // TODO check response code val responseCode = response.code()
+                return@Interceptor response
             }
 
             val okHttpClient = OkHttpClient.Builder()

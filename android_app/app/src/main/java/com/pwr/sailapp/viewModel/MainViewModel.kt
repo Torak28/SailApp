@@ -110,7 +110,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun fetchEquipment(centreID: Int){
         val fetchedEquipment = mainRepositoryImpl.getAllCentreGear(centreID)
         centreEquipment = fetchedEquipment
-        if(centreEquipment.value == null) {Log.e("MainViewModel", "fetchEquipment: centreEquipment.value= null")}
+        if(centreEquipment.value == null) {Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")}
     }
 
     fun selectCentre(centre: Centre) { selectedCentre.value = centre }
