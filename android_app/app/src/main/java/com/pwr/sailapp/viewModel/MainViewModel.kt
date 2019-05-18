@@ -38,8 +38,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     companion object {
         const val INITIAL_MIN_RATING = 0.0
-        const val INITIAL_COORDINATE_X = 0.00
-        const val INITIAL_COORDINATE_Y = 0.00
         const val INITIAL_MAX_DISTANCE = 1000000.00
     }
 
@@ -74,13 +72,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Rent details fragment
     val startTime = MutableLiveData<Date>()
-    // val timeOptions = ArrayList<String>()
     val endTime = MutableLiveData<Date>()
     val equipmentOptions = ArrayList<String>()
-    // val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
-    val selectedEquipmentIndex =
-        MutableLiveData<Int>() // observe which element of equipment options array list was selected
-    // val totalCost = MutableLiveData<Double>()
+    val selectedEquipmentIndex = MutableLiveData<Int>() // observe which element of equipment options array list was selected
 
     // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
@@ -92,8 +86,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             AuthenticationState.AUTHENTICATED
         else authenticationState.value = AuthenticationState.UNAUTHENTICATED
         currentUser = fetchUserData()
-        //     centres.value = MockCentres.centres
-        //     allCentres.addAll(MockCentres.centres)
         rentals.value = ArrayList<Rental>()
     }
 
@@ -180,9 +172,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          */
         rentals.value = rentals.value
     }
-
-
-
 
     private fun fetchUserData(): User = MockUsers.usersList[0]
 
