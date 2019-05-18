@@ -16,6 +16,11 @@
         </b-col>  
         <b-col sm="3" />
       </b-row>
+      <b-navbar type="light" class="nav-background">
+        <b-navbar-brand href="#" class="mx-auto">
+          <small class="text-muted">© 2019, Sail App team</small>
+        </b-navbar-brand>
+      </b-navbar>
     </b-container>
     <footer>
       <cookie-law :buttonText="cookiebuttonText" theme="royal">
