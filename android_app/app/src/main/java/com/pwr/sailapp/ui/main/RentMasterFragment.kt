@@ -91,13 +91,11 @@ class RentMasterFragment : Fragment(), CoroutineScope{
             })
 
 
-
-
             search_view.setOnQueryTextListener(object :
                 androidx.appcompat.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?) = false
                 override fun onQueryTextChange(newText: String?): Boolean {
-            //        mainViewModel.search(newText) TODO implement searching
+                    mainViewModel.search(newText)
                     return false
                 }
             })
@@ -161,7 +159,6 @@ class RentMasterFragment : Fragment(), CoroutineScope{
                   //      mainViewModel.coordinates = Pair(location.latitude, location.longitude)
                         mainViewModel.location = location
                         mainViewModel.applyLocation()
-                 //       mainViewModel.sort() TODO sorting
                     }
                     else {
                         // TODO inform user that couldn't fetch location

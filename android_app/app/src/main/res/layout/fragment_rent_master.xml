@@ -45,6 +45,7 @@
                 android:id="@+id/search_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:inputType="textNoSuggestions"
                 app:defaultQueryHint="@string/search_hint"
                 android:layout_weight="9"/>
 

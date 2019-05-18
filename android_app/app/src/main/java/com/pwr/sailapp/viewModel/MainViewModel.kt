@@ -20,6 +20,9 @@ import kotlin.collections.ArrayList
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.DateUtil.dateToString
 import kotlinx.coroutines.*
+import com.pwr.sailapp.utils.FiltersAndLocationUtil
+import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
+import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -66,7 +69,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Dialogs
     var minRating = INITIAL_MIN_RATING
     var maxDistance = INITIAL_MAX_DISTANCE
-    var coordinates = Pair(INITIAL_COORDINATE_X, INITIAL_COORDINATE_Y)
     var actualDistance = INITIAL_MAX_DISTANCE
     var isByRating = false
 
@@ -108,7 +110,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          centres = MediatorLiveData()
          centres.addSource(allCentres){ inputCentres ->
              val centresDist = calculateDistances(inputCentres, location)
-             centres.value = filterAndSortCentres(centresDist, minRating, isByRating)}
+             centres.value = filterAndSortCentres(centresDist, minRating, isByRating, actualDistance)}
     }
 
     fun selectCentre(centre: Centre) { selectedCentre.value = centre }
@@ -134,27 +136,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
-/*
+
+    // Search (filter) centres by name
     fun search(query: String?) {
-        val queryLowerCase = query!!.toLowerCase(Locale.getDefault())
-        // Filter by centre name
-        if (!queryLowerCase.isEmpty()) {
+        if(query == null) {Log.e("MainViewModel", "search: query = null"); return }
+        if(centres.value == null) {Log.e("MainViewModel", "search: centres.value = null"); return }
+        val queryLowerCase = query.toLowerCase(Locale.getDefault())
+        if (queryLowerCase.isNotEmpty()) {
             val filteredCentres = centres.value!!.filter { centre : Centre ->
                 centre.name.toLowerCase(Locale.getDefault()).contains(queryLowerCase) // && centre.rating>minRating
             }
             centres.value = ArrayList(filteredCentres)
-        } else centres.value = allCentres.value
+        } else centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
     }
-*/
+
 
     fun applyFilter(){
         if(allCentres.value == null) {Log.e("MainViewModel", "applyFilter: allCentres.value = null"); return }
-        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating)
+        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
     }
 
     fun applySort(){
         if(centres.value == null) {Log.e("MainViewModel", "applySort: allCentres.value = null"); return}
-        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating)
+        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
     }
 
     fun applyLocation(){
@@ -162,34 +166,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         centres.value = calculateDistances(centres.value, location)
     }
 
-    private fun filterAndSortCentres(inputCentres : ArrayList<Centre>?, minimalRating:Double, isByRatingSort:Boolean):ArrayList<Centre>{
-        if(inputCentres == null) {Log.e("MainViewModel", "filterAndSortCentres: inputCentres = null"); return ArrayList() }
-        val filteredCentres = inputCentres.filter { centre ->
-            centre.rating >= minimalRating && centre.distance < actualDistance
-        }
-        val sortedFilteredCentres = if (isByRatingSort) filteredCentres.sortedBy { it.rating } else filteredCentres.sortedBy { it.distance }
-        return ArrayList(sortedFilteredCentres)
-    }
-
-    private fun calculateDistances(inputCentres: ArrayList<Centre>?, myLocation: Location?):ArrayList<Centre> {
-        if(inputCentres == null) {Log.e("MainViewModel", "calculateDistances: inputCentres = null"); return ArrayList()
-        }
-        if(myLocation == null){ Log.d("MainViewModel", "calculateDistances: myLocation = null"); return inputCentres}
-        val outputCentres = inputCentres.map { centre ->
-            val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
-            centre.distance = distance.toDouble()
-            centre
-        }
-        return ArrayList(outputCentres)
-    }
-
-    private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>): Float {
-        val theirLocation = Location("").apply {
-            latitude = theirCoordinates.first
-            longitude = theirCoordinates.second
-        }
-        return myLocation.distanceTo(theirLocation)
-    }
 
     fun fetchEquipmentOptions() {
         equipmentOptions.clear() // remove previously fetched data
