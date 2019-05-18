@@ -4,6 +4,11 @@
     <br>
     <br>
     <h1 class='title'>{{title}}</h1>
+    <br>
+    <br>
+    <img src="https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-684639.jpg" class="align-centre" alt="Logo">
+    <br>
+    <br>
     <p>{{text}}</p>
   </b-container>
 </template>
@@ -21,8 +26,12 @@ export default {
 </script>
 
 <style scope>
-    .title {
-            background: linear-gradient(180deg, rgba(255,255,255,0) 65%, #FFD0AE 65%);
-            display: inline;
-        }
+  .title {
+    background: linear-gradient(180deg, rgba(255,255,255,0) 65%, #FFD0AE 65%);
+    display: inline;
+  }
+  img {
+        max-width: 100%;
+        height: auto;
+    }
 </style>

@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <b-container fluid>
+    <b-container fluid class="cont">
       <b-navbar :sticky="true" type="light" class="nav-background">
-        <b-navbar-brand href="#" class="mx-auto">
+        <b-navbar-brand href="#" class="mx-auto" >
           <img src="./assets/logoNavbar2.png" class="align-centre" alt="Logo">
         </b-navbar-brand>
       </b-navbar>
-      <b-row class="text" style="min-height: 80vh;">
+      <b-row class="text">
         <b-col sm="2" />
         <b-col sm="8">
-          <router-link to="/">Home</router-link> |
-          <router-link to="/about">About</router-link>
+          <!--router-link to="/">Home</router-link> |
+          <router-link to="/about">About</router-link-->
           <router-view />
         </b-col>  
         <b-col sm="2" />
@@ -55,11 +55,15 @@ export default {
     background: #fafafa !important; 
     color: #222;
   }
+  .cont {
+    padding: 0 !important;
+  }
   .text {
     color: #222;
     padding: 2rem;
     text-align: justify;
     text-justify: inter-word;
+    height: 80vh;
   }
   img {
     max-width: 100%;
@@ -67,6 +71,6 @@ export default {
   }
   .nav-background {
     background: #ece4b7;
-    min-height: 50px;
+    height: 10vh;
   }
 </style>
