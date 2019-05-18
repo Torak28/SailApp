@@ -52,19 +52,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var currentUser: User
     lateinit var currentRental: Rental
 
-    // val centres = MutableLiveData<ArrayList<Centre>>() // TODO use transformations here
     /*
     Transformations.switchMap lets you create a new LiveData that reacts to changes of other LiveData instances. It also allows carrying over the observer Lifecycle information across the chain:
     Mediator - combines multiple live data sources into single live data
      */
-    // lateinit var centres : MediatorLiveData<ArrayList<Centre>>
-    lateinit var centres : LiveData<ArrayList<Centre>>
+    lateinit var centres : MediatorLiveData<ArrayList<Centre>>
     lateinit var allCentres: LiveData<ArrayList<Centre>>
 
+
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
+    var location: Location? = null
 
     // Dialogs
-    // TODO consider mutable live data
     var minRating = INITIAL_MIN_RATING
     var maxDistance = INITIAL_MAX_DISTANCE
     var coordinates = Pair(INITIAL_COORDINATE_X, INITIAL_COORDINATE_Y)
@@ -104,22 +103,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         allCentres = fetchedCentres
         if(allCentres.value == null) {Log.e("MainViewModel", "fetchCentres: allCentres.value = null")}
         // Transformation of live data
-         centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)}
-        /*
-        If list of centres from repository changes or minimal filter rating changes all centres will be sorted
-        */
-        // centres = MediatorLiveData()
-        // centres.addSource(allCentres){ inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)} //minRating.value)} // ??
+        // centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)}
 
-        // centres.addSource(minRating){ minimalRating -> filterAndSortCentres(centres.value, minimalRating)} // ??
+         centres = MediatorLiveData()
+         centres.addSource(allCentres){ inputCentres ->
+             val centresDist = calculateDistances(inputCentres, location)
+             centres.value = filterAndSortCentres(centresDist, minRating, isByRating)}
     }
 
     fun selectCentre(centre: Centre) { selectedCentre.value = centre }
 
     fun confirmRental(): Boolean {
-        //    val rentalsPrev = rentals.value
-        //    rentalsPrev?.add(Rental(centre, startDate, startTime))
-        if (selectedCentre.value != null && startTime.value != null && endTime.value != null && selectedEquipmentIndex.value != null) {
+        return if (selectedCentre.value != null && startTime.value != null && endTime.value != null && selectedEquipmentIndex.value != null) {
             MockRentals.counter++ // mock ID
             rentals.value?.add(
                 Rental(
@@ -130,8 +125,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     selectedEquipmentIndex.value!!,
                     equipmentOptions[selectedEquipmentIndex.value!!]
                 )
-            ); return true
-        } else return false
+            ); true
+        } else false
     }
 
     fun logOut() {
@@ -151,39 +146,50 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         } else centres.value = allCentres.value
     }
 */
-    private fun filterAndSortCentres(inputCentres : ArrayList<Centre>?, minimalRating:Double?):ArrayList<Centre>{
+
+    fun applyFilter(){
+        if(allCentres.value == null) {Log.e("MainViewModel", "applyFilter: allCentres.value = null"); return }
+        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating)
+    }
+
+    fun applySort(){
+        if(centres.value == null) {Log.e("MainViewModel", "applySort: allCentres.value = null"); return}
+        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating)
+    }
+
+    fun applyLocation(){
+        if(location == null){ Log.e("MainViewModel", "calculateDistances: location = null"); return }
+        centres.value = calculateDistances(centres.value, location)
+    }
+
+    private fun filterAndSortCentres(inputCentres : ArrayList<Centre>?, minimalRating:Double, isByRatingSort:Boolean):ArrayList<Centre>{
         if(inputCentres == null) {Log.e("MainViewModel", "filterAndSortCentres: inputCentres = null"); return ArrayList() }
-        if(minimalRating == null) {Log.e("MainViewModel", "filterAndSortCentres: inputCentres = null"); return ArrayList() }
         val filteredCentres = inputCentres.filter { centre ->
             centre.rating >= minimalRating && centre.distance < actualDistance
         }
-        return ArrayList(filteredCentres)
-    }
-/*
-    fun filter() { // rating, distance, sport, centreName ...
-        if(allCentres.value == null) {Log.e("MainViewModel", "filter: allCentres.value = null"); return}
-        val filteredCentres = allCentres.value!!.filter { centre ->
-            centre.rating >= minRating && centre.distance < actualDistance
-        }
-        centres.value = ArrayList(filteredCentres)
+        val sortedFilteredCentres = if (isByRatingSort) filteredCentres.sortedBy { it.rating } else filteredCentres.sortedBy { it.distance }
+        return ArrayList(sortedFilteredCentres)
     }
 
-    fun sort() {
-        if(centres.value == null) {Log.e("MainViewModel", "sort: centres.value = null"); return}
-        val sortedCentres =
-            if (isByRating) centres.value!!.sortedBy { it.rating } else centres.value!!.sortedBy { it.distance }
-        centres.value = ArrayList(sortedCentres)
-    }
-*/
-    fun calculateDistances(myLocation: Location) {
-        if(centres.value == null) {Log.e("MainViewModel", "calculateDistances: centres.value = null"); return}
-        for (centre in centres.value!!) {
+    private fun calculateDistances(inputCentres: ArrayList<Centre>?, myLocation: Location?):ArrayList<Centre> {
+        if(inputCentres == null) {Log.e("MainViewModel", "calculateDistances: inputCentres = null"); return ArrayList()
+        }
+        if(myLocation == null){ Log.d("MainViewModel", "calculateDistances: myLocation = null"); return inputCentres}
+        val outputCentres = inputCentres.map { centre ->
             val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
             centre.distance = distance.toDouble()
-        //    Log.d("Calculated distance", "$distance") // ...
+            centre
         }
+        return ArrayList(outputCentres)
     }
 
+    private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>): Float {
+        val theirLocation = Location("").apply {
+            latitude = theirCoordinates.first
+            longitude = theirCoordinates.second
+        }
+        return myLocation.distanceTo(theirLocation)
+    }
 
     fun fetchEquipmentOptions() {
         equipmentOptions.clear() // remove previously fetched data
@@ -200,12 +206,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>): Float {
-        val theirLocation = Location("")
-        theirLocation.latitude = theirCoordinates.first
-        theirLocation.longitude = theirCoordinates.second
-        return myLocation.distanceTo(theirLocation)
-    }
+
 
     private fun fetchUserData(): User = MockUsers.usersList[0]
 

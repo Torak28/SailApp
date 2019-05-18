@@ -158,8 +158,9 @@ class RentMasterFragment : Fragment(), CoroutineScope{
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
                     if(location != null){
-                        mainViewModel.coordinates = Pair(location.latitude, location.longitude)
-                        mainViewModel.calculateDistances(location)
+                  //      mainViewModel.coordinates = Pair(location.latitude, location.longitude)
+                        mainViewModel.location = location
+                        mainViewModel.applyLocation()
                  //       mainViewModel.sort() TODO sorting
                     }
                     else {

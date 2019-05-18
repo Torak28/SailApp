@@ -51,7 +51,7 @@ class SortDialogFragment : DialogFragment() {
                 R.id.radio_by_rating-> mainViewModel.isByRating = true
                 else -> mainViewModel.isByRating = false
             }
-        //    mainViewModel.sort() TODO: use live data to notify on isByRating changed
+            mainViewModel.applySort()
             dialog?.dismiss()
         }
     }
