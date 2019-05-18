@@ -3,18 +3,17 @@
     <b-container fluid>
       <b-navbar :sticky="true" type="light" class="nav-background">
         <b-navbar-brand href="#" class="mx-auto">
-          <img src="./assets/logoNavbar.png" class="align-centre" alt="Logo">
-          Sail
+          <img src="./assets/logoNavbar2.png" class="align-centre" alt="Logo">
         </b-navbar-brand>
       </b-navbar>
-      <b-row class="text">
-        <b-col sm="3" />
-        <b-col sm="6">
+      <b-row class="text" style="min-height: 80vh;">
+        <b-col sm="2" />
+        <b-col sm="8">
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
           <router-view />
         </b-col>  
-        <b-col sm="3" />
+        <b-col sm="2" />
       </b-row>
       <b-navbar type="light" class="nav-background">
         <b-navbar-brand href="#" class="mx-auto">
@@ -55,14 +54,10 @@ export default {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
     background: #fafafa !important; 
     color: #222;
-    margin-left: -15px;
-    margin-right: -15px;
   }
   .text {
     color: #222;
     padding: 2rem;
-    margin-left: +15px;
-    margin-right: +15px;
     text-align: justify;
     text-justify: inter-word;
   }
