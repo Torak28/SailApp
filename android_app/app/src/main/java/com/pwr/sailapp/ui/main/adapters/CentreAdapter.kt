@@ -24,7 +24,6 @@ class CentreAdapter(
     val clickListener: (Centre) -> Unit // function
 ) : RecyclerView.Adapter<CentreAdapter.ViewHolder>(){
 
-    private lateinit var allCentres: ArrayList<Centre>
     private lateinit var centres: ArrayList<Centre>
 
     // Creating a new view (view holder) - only a few times
@@ -54,8 +53,6 @@ class CentreAdapter(
     // Setter for list of centres to use LiveData TODO consider just adding or removing single centres
     fun setCentres(centres: ArrayList<Centre> ){
         this.centres = centres
-        this.allCentres = ArrayList(centres) // ...
-
         // Notifies the attached observers that the underlying data has been changed and any View reflecting the data set should refresh itself.
         notifyDataSetChanged() // TODO replace this method with more efficient one
     }

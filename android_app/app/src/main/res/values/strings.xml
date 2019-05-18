@@ -68,4 +68,6 @@
     <string name="gear">Gear:</string>
     <string name="end_time">End time</string>
     <string name="rental_duration">Rental duration:</string>
+    <string name="downloading">Downloading…</string>
+    <string name="my_localization_button">My localization button</string>
 </resources>

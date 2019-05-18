@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(my_toolbar)
 
-        // TODO use data binding
         navigationView.setNavigationItemSelectedListener { item: MenuItem ->
             item.isChecked = true // menuItem is now highlighted
             drawerLayout.closeDrawers()

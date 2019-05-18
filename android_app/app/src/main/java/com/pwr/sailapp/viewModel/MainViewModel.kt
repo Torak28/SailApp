@@ -55,7 +55,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // val centres = MutableLiveData<ArrayList<Centre>>() // TODO use transformations here
     /*
     Transformations.switchMap lets you create a new LiveData that reacts to changes of other LiveData instances. It also allows carrying over the observer Lifecycle information across the chain:
+    Mediator - combines multiple live data sources into single live data
      */
+    // lateinit var centres : MediatorLiveData<ArrayList<Centre>>
     lateinit var centres : LiveData<ArrayList<Centre>>
     lateinit var allCentres: LiveData<ArrayList<Centre>>
 
@@ -92,7 +94,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         //     centres.value = MockCentres.centres
         //     allCentres.addAll(MockCentres.centres)
         rentals.value = ArrayList<Rental>()
-        // fetchCentres()
     }
 
     // TODO consider using live data for observing whether the user has remover their credentials from shared preferences (logged out)
@@ -103,7 +104,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         allCentres = fetchedCentres
         if(allCentres.value == null) {Log.e("MainViewModel", "fetchCentres: allCentres.value = null")}
         // Transformation of live data
-        centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres)}
+         centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)}
+        /*
+        If list of centres from repository changes or minimal filter rating changes all centres will be sorted
+        */
+        // centres = MediatorLiveData()
+        // centres.addSource(allCentres){ inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)} //minRating.value)} // ??
+
+        // centres.addSource(minRating){ minimalRating -> filterAndSortCentres(centres.value, minimalRating)} // ??
     }
 
     fun selectCentre(centre: Centre) { selectedCentre.value = centre }
@@ -143,9 +151,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         } else centres.value = allCentres.value
     }
 */
-    private fun filterAndSortCentres(inputCentres : ArrayList<Centre>):ArrayList<Centre>{
+    private fun filterAndSortCentres(inputCentres : ArrayList<Centre>?, minimalRating:Double?):ArrayList<Centre>{
+        if(inputCentres == null) {Log.e("MainViewModel", "filterAndSortCentres: inputCentres = null"); return ArrayList() }
+        if(minimalRating == null) {Log.e("MainViewModel", "filterAndSortCentres: inputCentres = null"); return ArrayList() }
         val filteredCentres = inputCentres.filter { centre ->
-            centre.rating >= minRating && centre.distance < actualDistance
+            centre.rating >= minimalRating && centre.distance < actualDistance
         }
         return ArrayList(filteredCentres)
     }

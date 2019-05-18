@@ -88,7 +88,7 @@ class FilterDialogFragment() : DialogFragment(){
             }
          //   listener.onFilterSelected(minRating)
             mainViewModel.minRating = minRating
-        //    mainViewModel.filter() TODO: use live data to notify on minRating changed
+        //    mainViewModel.filter() TODO: DON'T use live data to notify on minRating changed
             dialog?.dismiss()
         }
     }

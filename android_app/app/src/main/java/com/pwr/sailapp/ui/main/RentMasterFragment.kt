@@ -3,6 +3,7 @@ package com.pwr.sailapp.ui.main
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -56,8 +57,11 @@ class RentMasterFragment : Fragment(), CoroutineScope{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
+        recyclerView_master.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context!!)
+        recyclerView_master.hasFixedSize() // makes recycler view more efficient
+        val adapter=
+            CentreAdapter(context!!) { centre: Centre -> centreItemClicked(centre) }.apply { setCentres(ArrayList()) }
+        recyclerView_master.adapter = adapter
         /*
         Wait until main view model fetches all data:
         1. Show loading bar (set visible) - Main thread
@@ -70,23 +74,24 @@ class RentMasterFragment : Fragment(), CoroutineScope{
 
         mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
         launch {
+            linearLayout_loading.visibility = View.VISIBLE
+            linearLayout_centres.visibility = View.GONE
+
             val operation = async(Dispatchers.IO) {
                mainViewModel.fetchCentres()
             }
             operation.await()
 
-            recyclerView_master.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context!!)
-            // recyclerView_master.hasFixedSize() // makes recycler view more efficient
-
-            val adapter =
-                CentreAdapter(context!!) { centre: Centre -> centreItemClicked(centre) } // lambda as a second argument - can be moved out of brackets ()
-            recyclerView_master.adapter = adapter
-
+            linearLayout_loading.visibility = View.GONE
+            linearLayout_centres.visibility = View.VISIBLE
 
             // Pass this (fragment) as owner - updating is bound to states of fragment's lifecycle
             mainViewModel.centres.observe(viewLifecycleOwner, Observer {
                 adapter.setCentres(it)
             })
+
+
+
 
             search_view.setOnQueryTextListener(object :
                 androidx.appcompat.widget.SearchView.OnQueryTextListener {
