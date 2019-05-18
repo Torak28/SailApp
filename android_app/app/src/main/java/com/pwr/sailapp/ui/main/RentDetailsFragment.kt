@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,19 +19,27 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 
 import com.pwr.sailapp.R
+import com.pwr.sailapp.data.Equipment
 import com.pwr.sailapp.utils.formatCoordinate
 import com.pwr.sailapp.viewModel.MainViewModel
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListener
 import kotlinx.android.synthetic.main.fragment_rent_details.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 // https://www.tutorialkart.com/kotlin-android/android-datepicker-kotlin-example/
 
-class RentDetailsFragment : Fragment() {
+const val ON_SUCCESS_TOAST = "Confirmed"
+const val ON_FAILURE_TOAST = "Error"
+
+class RentDetailsFragment : ScopedFragment() {
 
     private lateinit var mainViewModel: MainViewModel
-    val calendar = Calendar.getInstance()
+    private val calendar = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,99 +52,136 @@ class RentDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
-
-        // Observe selected centre
-        mainViewModel.selectedCentre.observe(viewLifecycleOwner, Observer {
-            textView_centre_name_confirm.text = it.name
-        })
-
-        // Initially display current date and time
-        mainViewModel.startTime.value = calendar.time
-        mainViewModel.endTime.value = calendar.time
-
-        // Update start date and time display on start time changed
-        mainViewModel.startTime.observe(viewLifecycleOwner, Observer {
-            val dateFormatted = DateFormat.getDateInstance().format(it)
-            textView_choose_date.text = dateFormatted
-
-            val startTimeFormatted = DateFormat.getTimeInstance().format(it)
-            textView_choose_start_time.text = startTimeFormatted
-        })
-
-        // Update end time display on start end changed
-        mainViewModel.endTime.observe(viewLifecycleOwner, Observer {
-            val endTimeFormatted = DateFormat.getTimeInstance().format(it)
-            textView_choose_end_time.text = endTimeFormatted
-        })
-
-        button_choose_date.setOnClickListener {
-            // show DatePicker dialog if button clicked
-            DatePickerDialog(
-                requireActivity(),
-                dateSetListener, // listener to data set
-                calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH] // Initially set current date
-            ).show() // show dialog
-        }
-
-        // Start time dialog
-        button_choose_start_time.setOnClickListener {
-            val timeDialog = com.wdullaer.materialdatetimepicker.time.TimePickerDialog.newInstance(
-                startTimeSetListener, // listener to time set
-                true
-            ).apply {
-                setTimeInterval(1, 30)
-                enableSeconds(false) }
-            fragmentManager?.let { it1 -> timeDialog.show(it1, "Start time dialog") }
-        }
-
-        // End time dialog
-        button_choose_end_time.setOnClickListener {
-            val timeDialog = com.wdullaer.materialdatetimepicker.time.TimePickerDialog.newInstance(
-                endTimeSetListener,
-                true
-            ).apply {
-                setTimeInterval(1, 30)
-                enableSeconds(false)
-                //setMinTime()
-            }
-            fragmentManager?.let { it1 -> timeDialog.show(it1, "End time dialog") }
-        }
-
-
-        // Equipment options
-        val equipmentArrayAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, mainViewModel.equipmentOptions)
-        mainViewModel.fetchEquipmentOptions()
+        val equipmentArrayAdapter =
+            ArrayAdapter<Equipment>(requireContext(), android.R.layout.simple_spinner_item, ArrayList<Equipment>())
         equipmentArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner_equipment.adapter = equipmentArrayAdapter
+        /*
+        1. Show loading bar - Main thread
+        2. Fetch equipment options - IO thread
+        3. (a)Wait until equipment is fetched
+        4. Hide loading bar
+        5. Observe changes in equipment
+        6. On change in equipment attach new array adapter to spinner
+        7. Do the rest
+         */
+        launch {
+            linearLayout_loading_details.visibility = View.VISIBLE
+            linearLayout_details.visibility = View.GONE
 
-        spinner_equipment.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
-                // Save the position of selected item
-                mainViewModel.selectedEquipmentIndex.value = pos
+            if(mainViewModel.selectedCentre.value != null){
+                val operation = async(Dispatchers.IO) {
+                    mainViewModel.fetchEquipment(mainViewModel.selectedCentre.value!!.ID) 
+                }
+                operation.await()
             }
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
+            else Log.e("RentDetailsFragment", "mainViewModel.selectedCentre.value = null" )
 
-        // Launch maps activity
-        button_maps.setOnClickListener {
-            launchMaps()
-        }
+            linearLayout_loading_details.visibility = View.GONE
+            linearLayout_details.visibility = View.VISIBLE
 
-        // Launch dial activity
-        button_call.setOnClickListener {
-            launchDial()
-        }
 
-        // Confirm rental and when it is ok then navigate to user profile
-        button_confirm.setOnClickListener {
-            val confirmationSuccess = mainViewModel.confirmRental()
-            if (confirmationSuccess) {
-                toast("Confirmed")
-                findNavController().navigate(R.id.destination_profile) // navigate to profile after confirmation to view rentals
-            } else toast("Error")
+            mainViewModel.centreEquipment.observe(viewLifecycleOwner, Observer {
+                if (it == null) {
+                    Log.e("RentDetailsFragment", "centreEquipment.value = null"); return@Observer
+                }
+                equipmentArrayAdapter.clear()
+                equipmentArrayAdapter.addAll(it)
+            })
+
+
+            spinner_equipment.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                    // Save the position of selected item
+                    mainViewModel.selectedEquipment.value = equipmentArrayAdapter.getItem(pos)// !!!
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
+
+            // Observe selected centre
+            mainViewModel.selectedCentre.observe(viewLifecycleOwner, Observer {
+                textView_centre_name_confirm.text = it.name
+            })
+
+            // Initially display current date and time
+            mainViewModel.startTime.value = calendar.time
+            mainViewModel.endTime.value = calendar.time
+
+            // Update start date and time display on start time changed
+            mainViewModel.startTime.observe(viewLifecycleOwner, Observer {
+                val dateFormatted = DateFormat.getDateInstance().format(it)
+                textView_choose_date.text = dateFormatted
+
+                val startTimeFormatted = DateFormat.getTimeInstance().format(it)
+                textView_choose_start_time.text = startTimeFormatted
+            })
+
+            // Update end time display on start end changed
+            mainViewModel.endTime.observe(viewLifecycleOwner, Observer {
+                val endTimeFormatted = DateFormat.getTimeInstance().format(it)
+                textView_choose_end_time.text = endTimeFormatted
+            })
+
+            button_choose_date.setOnClickListener {
+                // show DatePicker dialog if button clicked
+                DatePickerDialog(
+                    requireActivity(),
+                    dateSetListener, // listener to data set
+                    calendar[Calendar.YEAR],
+                    calendar[Calendar.MONTH],
+                    calendar[Calendar.DAY_OF_MONTH] // Initially set current date
+                ).show() // show dialog
+            }
+
+            // Start time dialog
+            button_choose_start_time.setOnClickListener {
+                val timeDialog = com.wdullaer.materialdatetimepicker.time.TimePickerDialog.newInstance(
+                    startTimeSetListener, // listener to time set
+                    true
+                ).apply {
+                    setTimeInterval(1, 30)
+                    enableSeconds(false)
+                }
+                fragmentManager?.let { it1 -> timeDialog.show(it1, "Start time dialog") }
+            }
+
+            // End time dialog
+            button_choose_end_time.setOnClickListener {
+                val timeDialog = com.wdullaer.materialdatetimepicker.time.TimePickerDialog.newInstance(
+                    endTimeSetListener,
+                    true
+                ).apply {
+                    setTimeInterval(1, 30)
+                    enableSeconds(false)
+                    //setMinTime()
+                }
+                fragmentManager?.let { it1 -> timeDialog.show(it1, "End time dialog") }
+            }
+
+
+            // Launch maps activity
+            button_maps.setOnClickListener {
+                launchMaps()
+            }
+
+            // Launch dial activity
+            button_call.setOnClickListener {
+                launchDial()
+            }
+
+            // Confirm rental and when it is ok then navigate to user profile
+            button_confirm.setOnClickListener {
+                val confirmationSuccess = mainViewModel.confirmRental()
+                if (confirmationSuccess) {
+                    toast(ON_SUCCESS_TOAST)
+                    findNavController().navigate(R.id.destination_profile) // navigate to profile after confirmation to view rentals
+                } else toast(ON_FAILURE_TOAST)
+            }
+
         }
     }
-
 
     // implementation of OnDateSetListener one abstract method interface
     private val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->

@@ -41,10 +41,10 @@ class StatsFragment : Fragment(), CoroutineScope {
         val mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
         launch {
             val operation = async(Dispatchers.IO) {
-                mainViewModel.fetchCentres()
+                mainViewModel.fetchEquipment(1)
             }
             operation.await()
-            textView_stats_fragment.text = mainViewModel.allCentres.value.toString()
+            textView_stats_fragment.text = mainViewModel.centreEquipment.value.toString()
         }
     }
 

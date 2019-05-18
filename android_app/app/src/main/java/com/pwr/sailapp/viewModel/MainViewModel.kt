@@ -71,10 +71,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var isByRating = false
 
     // Rent details fragment
+    lateinit var centreEquipment : LiveData<ArrayList<Equipment>>
+    val selectedEquipment = MutableLiveData<Equipment>()
+
     val startTime = MutableLiveData<Date>()
     val endTime = MutableLiveData<Date>()
-    val equipmentOptions = ArrayList<String>()
-    val selectedEquipmentIndex = MutableLiveData<Int>() // observe which element of equipment options array list was selected
+
+
 
     // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
@@ -98,17 +101,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if(allCentres.value == null) {Log.e("MainViewModel", "fetchCentres: allCentres.value = null")}
         // Transformation of live data
         // centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)}
-
          centres = MediatorLiveData()
          centres.addSource(allCentres){ inputCentres ->
              val centresDist = calculateDistances(inputCentres, location)
              centres.value = filterAndSortCentres(centresDist, minRating, isByRating, actualDistance)}
     }
 
+    suspend fun fetchEquipment(centreID: Int){
+        val fetchedEquipment = mainRepositoryImpl.getAllCentreGear(centreID)
+        centreEquipment = fetchedEquipment
+        if(centreEquipment.value == null) {Log.e("MainViewModel", "fetchEquipment: centreEquipment.value= null")}
+    }
+
     fun selectCentre(centre: Centre) { selectedCentre.value = centre }
 
     fun confirmRental(): Boolean {
-        return if (selectedCentre.value != null && startTime.value != null && endTime.value != null && selectedEquipmentIndex.value != null) {
+        if(centreEquipment.value == null) {Log.e("MainViewModel", "confirmRental: equipment.options = null"); return false}
+        return if (selectedCentre.value != null
+            && startTime.value != null
+            && endTime.value != null
+            && selectedEquipment.value != null
+            && selectedEquipment.value != null
+        ) {
             MockRentals.counter++ // mock ID
             rentals.value?.add(
                 Rental(
@@ -116,8 +130,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     selectedCentre.value!!,
                     dateToString(startTime.value!!)!!,
                     dateToString(endTime.value!!)!!,
-                    selectedEquipmentIndex.value!!,
-                    equipmentOptions[selectedEquipmentIndex.value!!]
+                    selectedEquipment.value!!.equipmentID,
+                    selectedEquipment.value!!.toString()
                 )
             ); true
         } else false
@@ -158,11 +172,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         centres.value = calculateDistances(centres.value, location)
     }
 
-
-    fun fetchEquipmentOptions() {
-        equipmentOptions.clear() // remove previously fetched data
-        equipmentOptions.addAll(MockRentalOptions.equipmentOptions) // add new data
-    }
 
     fun cancelRental(rental: Rental) {
         rentals.value?.remove(rental)
