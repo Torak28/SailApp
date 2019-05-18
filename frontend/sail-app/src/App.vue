@@ -2,19 +2,47 @@
   <div id="app">
     <b-container fluid>
       <b-navbar :sticky="true" type="light" class="nav-background">
-          <b-navbar-brand href="#" class="mx-auto">
-            <img src="./assets/logoNavbar.png" class="align-centre" alt="Logo">
-            Sail
-          </b-navbar-brand>
-        </b-navbar>
-      <div id="text">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
-        <router-view />
-      </div>
+        <b-navbar-brand href="#" class="mx-auto">
+          <img src="./assets/logoNavbar.png" class="align-centre" alt="Logo">
+          Sail
+        </b-navbar-brand>
+      </b-navbar>
+      <b-row class="text">
+        <b-col sm="3" />
+        <b-col sm="6">
+          <router-link to="/">Home</router-link> |
+          <router-link to="/about">About</router-link>
+          <router-view />
+        </b-col>  
+        <b-col sm="3" />
+      </b-row>
     </b-container>
+    <footer>
+      <cookie-law :buttonText="buttonText" theme="royal">
+        <div slot="message">
+          Ta strona korzysta z ciasteczek aby świadczyć usługi na najwyższym poziomie. Dalsze korzystanie ze strony oznacza, że zgadzasz się na ich użycie, po więcej informacji zapraszam do zapozaniania się z treścią <b-link href="https://ezelechowska-psycholog.pl/PolitykaPrywatnosci.pdf">Polityki Prywatności</b-link>!
+        </div>
+      </cookie-law>
+    </footer>
   </div>
 </template>
+
+<script>
+import CookieLaw from 'vue-cookie-law'
+
+
+export default {
+  name: 'app',
+  components: {
+    CookieLaw
+  },
+  data() {
+    return {
+      buttonText: "Zgadzam się!"
+    }
+  }
+}
+</script>
 
 <style>
   #app {
@@ -24,10 +52,11 @@
     margin-left: -15px;
     margin-right: -15px;
   }
-  #text {
+  .text {
     color: #222;
     padding: 2rem;
-    margin: 8px;
+    margin-left: +15px;
+    margin-right: +15px;
     text-align: justify;
     text-justify: inter-word;
   }
