@@ -1,19 +1,40 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_restplus import Api, Resource, reqparse, fields
 from flask_cors import CORS, cross_origin
 from backend.login_register_delete import *
 
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    create_refresh_token,
+    jwt_required
+)
+
 app = Flask(__name__)
+app.config['BUNDLE_ERRORS'] = True
+app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 api = Api(app=app, doc='/docs')
+jwt = JWTManager(app)
+app.config['JWT_QUERY_STRING_NAME'] = 'token'
 
 ns_gear = api.namespace('gear', description='Operations on gear')
 ns_user = api.namespace('user', description='Operations involving accounts')
 
-
-@api.route('/')
-class test(Resource):
+@api.route('/test')
+class testowa(Resource):
+    @jwt_required
     def get(self):
-        return 'TEST OK GET'
+        return "wygranko"
+
+@api.route('/main')
+class test123(Resource):
+    def get(self):
+        access_token = create_access_token(identity='janusz', fresh=True)
+        refresh_token = create_refresh_token('janusz')
+        return {
+                   'access_token': access_token,
+                   'refresh_token': refresh_token
+               }, 200
 
     def post(self):
         return 'test ok post'
@@ -21,54 +42,53 @@ class test(Resource):
 
 @ns_user.route('/registerUser')
 class RegisterUser(Resource):
-    resource_fields = api.model('Resource', {
+    resource_fields = api.model('registerUser', {
         'first_name': fields.String,
         'last_name': fields.String,
         'email': fields.String,
         'password': fields.String,
         'phone_number': fields.String,
     })
+    parser = reqparse.RequestParser()
+    parser.add_argument('first_name', type=str, required=True, help='First name of the user, e.g. John.')
+    parser.add_argument('last_name', type=str, required=True, help='Last name of the user, e.g. Doe.')
+    parser.add_argument('email', type=str, required=True, help='E-mail of the user, e.g. john.doe@gmail.com.')
+    parser.add_argument('password', type=str, required=True, help='User password in plaintext.')
+    parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
     @api.doc(body=resource_fields)
     def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('first_name', type=str, required=True, help='First name of the user, e.g. John.')
-        parser.add_argument('last_name', type=str, required=True, help='Last name of the user, e.g. Doe.')
-        parser.add_argument('email', type=str, required=True, help='E-mail of the user, e.g. john.doe@gmail.com.')
-        parser.add_argument('password', type=str, required=True, help='User password in plaintext.')
-        parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
-        args = parser.parse_args(strict=True)
+        args = self.parser.parse_args(strict=True)
         register_new_person(args['first_name'], args['last_name'], args['email'],
                             args['password'], args['phone_number'], role='User')
         return jsonify(True)
 
-# @app.route('/registerUser', methods=['POST'])
-# @cross_origin(supports_credentials=True)
-# def create_user_account():
+
+@ns_user.route('/loginUser')
+class UserLogin(Resource):
+    resource_fields = api.model('loginUser', {
+        'email': fields.String,
+        'password': fields.String,
+    })
+    @api.doc(body=resource_fields)
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str, required=True, help='Email of the user logging in.')
+        parser.add_argument('password', type=str, required=True, help='Password of the user logging in.')
+        args = parser.parse_args(strict=True)
+        login_user(args['email'], args['password'])
+
+        return 'zaogowanyd'
+
+# def user_login():
 #     r = request.form
 #     try:
-#         first_name = r.get('first_name')
-#         last_name = r.get('last_name')
 #         email = r.get('email')
 #         password = r.get('password')
-#         phone_number = r.get('phone_number')
-#         register_new_person(first_name, last_name, email, password, phone_number)
+#         login_user(email, password)
 #         return "ok"
 #     except Exception:
-#         return "error in create_user_account()"
-
-
-@app.route('/loginUser', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def user_login():
-    r = request.form
-    try:
-        email = r.get('email')
-        password = r.get('password')
-        login_user(email, password)
-        return "ok"
-    except Exception:
-        return "error in user_login()"
-
+#         return "error in user_login()"
+#
 
 @app.route('/registerOwner', methods=['POST'])
 @cross_origin(supports_credentials=True)
