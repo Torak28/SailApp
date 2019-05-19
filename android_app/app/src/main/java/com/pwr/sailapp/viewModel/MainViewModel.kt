@@ -11,6 +11,7 @@ import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
 import com.pwr.sailapp.data.repository.MainRepositoryImpl
+import com.pwr.sailapp.data.repository.UserManagerImpl
 import com.pwr.sailapp.utils.CredentialsUtil
 import java.util.*
 import kotlin.collections.ArrayList
@@ -29,6 +30,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // TODO move repo to constructor, use dependency injection
     private val mainRepositoryImpl =
         MainRepositoryImpl(SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext))))
+    private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
 
     companion object {
         const val INITIAL_MIN_RATING = 0.0
@@ -36,7 +38,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Authentication
-    val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
+    val authenticationState = userManagerImp.authStatus
 
     var currentUser: User
     lateinit var currentRental: Rental
@@ -65,23 +67,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val startTime = MutableLiveData<Date>()
     val endTime = MutableLiveData<Date>()
 
-
-
     // Profile fragment
     val rentals = MutableLiveData<ArrayList<Rental>>()
 
-
     init {
-        // TODO use repository and LiveData here
-        if (CredentialsUtil.isLogged(application.applicationContext)) authenticationState.value =
-            AuthenticationState.AUTHENTICATED
-        else authenticationState.value = AuthenticationState.UNAUTHENTICATED
         currentUser = fetchUserData()
         rentals.value = ArrayList<Rental>()
     }
 
-    // TODO consider using live data for observing whether the user has remover their credentials from shared preferences (logged out)
-
+    suspend fun logOut() { userManagerImp.logoutUser() }
 
     suspend fun fetchCentres(){
         val fetchedCentres = mainRepositoryImpl.getCentres()
@@ -124,12 +118,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ); true
         } else false
     }
-
-    fun logOut() {
-        CredentialsUtil.resetUserCredentials(appContext)
-        authenticationState.value = AuthenticationState.UNAUTHENTICATED
-    }
-
 
     // Search (filter) centres by name
     fun search(query: String?) {

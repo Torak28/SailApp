@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 const val REGISTER_OK_MESSAGE = "ok"
 const val LOGIN_OK_MESSAGE = "ok"
 const val LOGOUT_OK_MESSAGE = "ok"
+const val NO_TOKEN = ""
 
 class UserManagerImpl(
     private val sailAppApiService: SailAppApiService
@@ -33,7 +34,7 @@ class UserManagerImpl(
     private val _authStatus = MutableLiveData<AuthenticationState>()
     private val _registerStatus = MutableLiveData<RegistrationState>()
     private val _currentUser = MutableLiveData<User>()
-
+    private val _token = MutableLiveData<String>()
 
 
     override suspend fun loginUser(email: String, password: String) {
@@ -42,8 +43,14 @@ class UserManagerImpl(
             try {
                 val fetchedLoginResponse = sailAppApiService.loginUserAsync(UserCredentials(email, password)).await()
                 when (fetchedLoginResponse.message) {
-                    LOGIN_OK_MESSAGE ->  _authStatus.postValue(AuthenticationState.AUTHENTICATED)
-                    else -> _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
+                    LOGIN_OK_MESSAGE -> {
+                        _authStatus.postValue(AuthenticationState.AUTHENTICATED)
+                        _token.postValue(fetchedLoginResponse.token)
+                    }
+                    else -> {
+                        _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
+                        _token.postValue(NO_TOKEN)
+                    }
                 }
             } catch (e: NoConnectivityException) {
                 Log.e("Connectivity", "No internet connection")
@@ -70,7 +77,10 @@ class UserManagerImpl(
             try {
                 val fetchedLogoutUserResponse = sailAppApiService.logoutUserAsync().await()
                 when (fetchedLogoutUserResponse.message) {
-                    LOGOUT_OK_MESSAGE -> _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
+                    LOGOUT_OK_MESSAGE -> {
+                        _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
+                        _token.postValue(NO_TOKEN)
+                    }
                     else -> _authStatus.postValue(AuthenticationState.AUTHENTICATED)
                 }
             } catch (e: NoConnectivityException) {

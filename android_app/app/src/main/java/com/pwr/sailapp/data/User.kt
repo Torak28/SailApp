@@ -11,7 +11,7 @@ data class User(val id:Int,
                 @SerializedName("email")
                 var email:String,
                 @SerializedName("password")
-                var password:String="",
+                var password:String = "",
                 @SerializedName("phone_number")
                 var phoneNumber:String = "",
                 var authToken:String = "")

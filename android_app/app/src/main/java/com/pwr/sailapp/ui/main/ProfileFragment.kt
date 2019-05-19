@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 
 class ProfileFragment : Fragment() {
 
-    // TODO consider changing var to val
     private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
@@ -49,14 +48,6 @@ class ProfileFragment : Fragment() {
          of(//activity) means: viewModel is scoped to activity lifecycle. When activity gets destroyed - viewModel too
         */
         mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
-        val navController = findNavController()
-        // Observe liveData
-        mainViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
-            when(authenticationState){
-                AuthenticationState.AUTHENTICATED -> {}//showWelcomeMessage()
-                else -> navController.navigate(R.id.destination_login)
-            }
-        })
 
         mainViewModel.rentals.observe(viewLifecycleOwner, Observer {
             adapter.setRentals(it)
