@@ -41,12 +41,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val INITIAL_MAX_DISTANCE = 1000000.00
     }
 
-    enum class AuthenticationState {
-        AUTHENTICATED,
-        UNAUTHENTICATED,
-        INVALID_AUTHENTICATION
-    }
-
     // Authentication
     val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
 

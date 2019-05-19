@@ -19,6 +19,7 @@ import com.pwr.sailapp.data.Rental
 import com.pwr.sailapp.ui.main.adapters.RentalAdapter
 import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
 import com.pwr.sailapp.utils.formatCoordinate
+import com.pwr.sailapp.viewModel.AuthenticationState
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_rent_master.*
@@ -55,7 +56,7 @@ class ProfileFragment : Fragment() {
         // Observe liveData
         mainViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when(authenticationState){
-                MainViewModel.AuthenticationState.AUTHENTICATED -> {}//showWelcomeMessage()
+                AuthenticationState.AUTHENTICATED -> {}//showWelcomeMessage()
                 else -> navController.navigate(R.id.destination_login)
             }
         })

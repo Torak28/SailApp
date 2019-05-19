@@ -1,16 +1,17 @@
 package com.pwr.sailapp.data.network.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.pwr.sailapp.data.User
 import com.pwr.sailapp.data.network.sail.response.AllCentreGearResponse
 import com.pwr.sailapp.data.network.sail.response.AllUserRentalsResponse
 import com.pwr.sailapp.data.network.sail.response.CentresResponse
+import com.pwr.sailapp.data.network.sail.response.RegisterUserResponse
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.*
 
 /*
 getCentres: https://0e4682b3-c081-4689-b8c5-51f3f0a7ae09.mock.pstmn.io/getCentres
@@ -33,6 +34,11 @@ interface SailAppApiService {
     fun getAllUserRentals(
         @Query("user_id") userID: Int
     ):Deferred<AllUserRentalsResponse>
+
+    @POST("registerUser")
+    fun registerUserAsync(
+        @Body user: User
+    ):Deferred<RegisterUserResponse>
 
     companion object{
         // syntax: SailAppApiService()

@@ -11,13 +11,8 @@ https://developer.android.com/guide/navigation/navigation-conditional#kotlin
  */
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-    val appContext = application.applicationContext
+    private val appContext = application.applicationContext
 
-    enum class AuthenticationState{
-        AUTHENTICATED,
-        UNAUTHENTICATED,
-        INVALID_AUTHENTICATION
-    }
     val authenticationState = MutableLiveData<AuthenticationState>()
 
     init{
@@ -41,4 +36,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         // TODO implement mock authentication (API)
         return MockUserAuthentication.authenticateUser(email, password)
     }
+
+    fun validateRegistrationData(firstName:String, lastName:String, phoneNumber:String, email:String, password: String, confiredPassword: String, hasAgreed:Boolean ) = true
+    // TODO validate input data
 }

@@ -70,4 +70,5 @@
     <string name="rental_duration">Rental duration:</string>
     <string name="downloading">Downloading…</string>
     <string name="my_localization_button">My localization button</string>
+    <string name="register_error">Registration error: Account already exists.</string>
 </resources>
