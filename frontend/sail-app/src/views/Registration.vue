@@ -1,6 +1,11 @@
 <template>
   <b-container class="Registration">
     <h1 class='title'>Register:</h1>
+    <br>
+    <br>
+    <br>
+    <b-alert :show=noData variant="danger">{{noDataMsg}}</b-alert>
+    <b-alert :show=wrongPass variant="danger">{{wrongPassMsg}}</b-alert>
     <Register />
   </b-container>
 </template>
@@ -12,6 +17,14 @@ export default {
   name: "Registration",
   components: {
     Register,
+  },
+  data() {
+    return {
+      noData: false,
+      wrongPass: false,
+      noDataMsg: "All data must be present",
+      wrongPassMsg: "Passwords do not match",
+    }
   }
 };
 </script>

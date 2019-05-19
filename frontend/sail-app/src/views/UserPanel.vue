@@ -1,12 +1,14 @@
 <template>
   <b-container class="UserPanel">
     <h1 class='title'>User Panel page!</h1>
+    {{user}}
   </b-container>
 </template>
 
 <script>
 export default {
-  name: "UserPanel"
+  name: "UserPanel",
+  props: ['user']
 };
 </script>
 

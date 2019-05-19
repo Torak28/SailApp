@@ -1,8 +1,6 @@
 
 <template>
   <b-container class="Register">
-    <br>
-    <br>
     <b-row>
       <b-form-input type="text" v-model='name' placeholder="First Name" />
       <br>
@@ -19,10 +17,10 @@
       <b-form-input type="password" v-model='password' placeholder="Password" />
       <br>
       <br>
-      <b-form-input type="password" v-model='checkPassword' placeholder="Replay Password" />
+      <b-form-input type="password" v-model='checkPassword' placeholder="Repeat Password" />
       <br>
       <br>
-      <b-button block variant="success" to="/">Register</b-button>
+      <b-button block variant="success" v-on:click="regiterNewAccount()">Register</b-button>
       <b-button block variant="warning" to="/">Go back</b-button>
     </b-row>
   </b-container>
@@ -39,6 +37,22 @@ export default {
       email: '',
       password: '',
       checkPassword: ''
+    }
+  },
+  methods: {
+    regiterNewAccount() {
+      if(this.name != '' && this.surname != '' && this.phone != '' && this.email != '' &&  this.password != '' && this.checkPassword != ''){
+        if(this.password != this.checkPassword){
+          this.$parent.wrongPass = true;
+          this.$parent.noData = false;
+        }else{
+          //console.log("User " + this.name + " registred");
+          this.$router.replace({ name: "home" });
+        }
+      }else{
+        this.$parent.wrongPass = false;
+        this.$parent.noData = true;
+      }
     }
   }
 };
