@@ -2,10 +2,8 @@ package com.pwr.sailapp.data.network.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.pwr.sailapp.data.User
-import com.pwr.sailapp.data.network.sail.response.AllCentreGearResponse
-import com.pwr.sailapp.data.network.sail.response.AllUserRentalsResponse
-import com.pwr.sailapp.data.network.sail.response.CentresResponse
-import com.pwr.sailapp.data.network.sail.response.RegisterUserResponse
+import com.pwr.sailapp.data.UserCredentials
+import com.pwr.sailapp.data.network.sail.response.*
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -39,6 +37,14 @@ interface SailAppApiService {
     fun registerUserAsync(
         @Body user: User
     ):Deferred<RegisterUserResponse>
+
+    @POST("loginUser")
+    fun loginUserAsync(
+        @Body userCredentials: UserCredentials
+    ):Deferred<LoginUserResponse>
+
+    @POST("logoutUser")
+    fun logoutUserAsync():Deferred<LogoutUserResponse>
 
     companion object{
         // syntax: SailAppApiService()

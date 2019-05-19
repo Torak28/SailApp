@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 
 import com.pwr.sailapp.R
+import com.pwr.sailapp.data.AuthenticationState
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
 
@@ -47,7 +48,7 @@ class LoginFragment : Fragment() {
         loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             // when is like match or switch-case
             when(authenticationState){
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> navController.navigate(R.id.destination_main)
+                AuthenticationState.AUTHENTICATED -> navController.navigate(R.id.destination_main)
                 else -> Snackbar.make(view,
                     "Invalid credentials",
                     Snackbar.LENGTH_SHORT).show()

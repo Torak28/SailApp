@@ -5,22 +5,16 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.*
 import com.pwr.sailapp.data.*
-import com.pwr.sailapp.data.mocks.MockCentres
-import com.pwr.sailapp.data.mocks.MockRentalOptions
 import com.pwr.sailapp.data.mocks.MockRentals
 import com.pwr.sailapp.data.mocks.MockUsers
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
-import com.pwr.sailapp.data.network.sail.SailNetworkDataSource
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
 import com.pwr.sailapp.data.repository.MainRepositoryImpl
 import com.pwr.sailapp.utils.CredentialsUtil
 import java.util.*
 import kotlin.collections.ArrayList
-import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.DateUtil.dateToString
-import kotlinx.coroutines.*
-import com.pwr.sailapp.utils.FiltersAndLocationUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
 

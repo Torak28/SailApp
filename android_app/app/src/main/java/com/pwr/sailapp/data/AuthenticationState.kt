@@ -1,4 +1,4 @@
-package com.pwr.sailapp.viewModel
+package com.pwr.sailapp.data
 
 enum class AuthenticationState{
     AUTHENTICATED,

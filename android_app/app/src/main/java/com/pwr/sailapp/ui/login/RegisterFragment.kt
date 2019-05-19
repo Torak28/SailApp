@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 
 import com.pwr.sailapp.R
+import com.pwr.sailapp.data.RegistrationState
 import com.pwr.sailapp.ui.main.ScopedFragment
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -52,15 +53,7 @@ class RegisterFragment : ScopedFragment() {
 
         button_confirm_registration.setOnClickListener {
             textView_registration_error.visibility = View.GONE
-            val firstName = editText_first_name.text.toString()
-            val lastName = editText_second_name.text.toString()
-            val phoneNumber = editText_phone.text.toString()
-            val email = editText_email_register.text.toString()
-            val password = editText_password_register.text.toString()
-            val confirmedPassword = editText_confirm_password_register.text.toString()
-            val hasAgreed = checkBox_licence_agreement.isChecked
-            val isDataCorrect = loginViewModel.validateRegistrationData(firstName, lastName, phoneNumber, email, password, confirmedPassword, hasAgreed)
-            if(!isDataCorrect){
+            if(!isDataCorrect()){
                 // show information about incorrect data
                 Toast.makeText(requireContext(), "Incorrect data", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -68,17 +61,29 @@ class RegisterFragment : ScopedFragment() {
             launch {
                 // Show loading bar
                 val registerOperationAsync = async {
-                    // postUserDataToServer and wait for response
+                    // loginViewModel.registerUser(...)
+                    Toast.makeText(requireContext(), "Correct registration", Toast.LENGTH_SHORT).show()
                 }
                 registerOperationAsync.await()
                 // Hide loading bar
                 // val message : String = loginViewModel.message // Live data ???
-                // if(message = "ok") navController -> navigate(login)
-                // else textView_registration_error.visibility = View.VISIBLE
+                var registrationStatus = RegistrationState.OK
+                // registrationSa
+                if(registrationStatus == RegistrationState.OK) navController.navigate(R.id.destination_login_fragment)
+                else textView_registration_error.visibility = View.VISIBLE
             }
-
-
         }
+    }
+
+    private fun isDataCorrect():Boolean{
+        val firstName = editText_first_name.text.toString()
+        val lastName = editText_second_name.text.toString()
+        val phoneNumber = editText_phone.text.toString()
+        val email = editText_email_register.text.toString()
+        val password = editText_password_register.text.toString()
+        val confirmedPassword = editText_confirm_password_register.text.toString()
+        val hasAgreed = checkBox_licence_agreement.isChecked
+        return loginViewModel.validateRegistrationData(firstName, lastName, phoneNumber, email, password, confirmedPassword, hasAgreed)
     }
 
 

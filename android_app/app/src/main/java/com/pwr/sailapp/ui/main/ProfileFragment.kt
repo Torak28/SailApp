@@ -2,7 +2,6 @@ package com.pwr.sailapp.ui.main
 
 import android.content.Intent
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,11 +18,9 @@ import com.pwr.sailapp.data.Rental
 import com.pwr.sailapp.ui.main.adapters.RentalAdapter
 import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
 import com.pwr.sailapp.utils.formatCoordinate
-import com.pwr.sailapp.viewModel.AuthenticationState
+import com.pwr.sailapp.data.AuthenticationState
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.android.synthetic.main.fragment_rent_master.*
-import java.lang.StringBuilder
 
 // TODO consider using generic adapter for view model
 
