@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 import os
 
 Base = declarative_base()
+
 try:
     DATABASE_URI = os.environ['DATABASE_URL']
 except KeyError:
@@ -149,5 +150,3 @@ class ClassType(Base):
     class_type = Column(String)
 
     class_table = relationship('Class')
-
-recreate_database()

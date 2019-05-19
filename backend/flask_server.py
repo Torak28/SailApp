@@ -1,27 +1,60 @@
 from flask import Flask, request, jsonify
+from flask_restplus import Api, Resource, reqparse, fields
 from flask_cors import CORS, cross_origin
 from backend.login_register_delete import *
 
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__)
+api = Api(app=app, doc='/docs')
 
-# main page
-# przetestowane od endpointy od tego miejsca
+ns_gear = api.namespace('gear', description='Operations on gear')
+ns_user = api.namespace('user', description='Operations involving accounts')
 
 
-@app.route('/registerUser', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def create_user_account():
-    r = request.form
-    try:
-        first_name = r.get('first_name')
-        last_name = r.get('last_name')
-        email = r.get('email')
-        password = r.get('password')
-        phone_number = r.get('phone_number')
-        register_new_person(first_name, last_name, email, password, phone_number)
-        return "ok"
-    except Exception:
-        return "error in create_user_account()"
+@api.route('/')
+class test(Resource):
+    def get(self):
+        return 'TEST OK GET'
+
+    def post(self):
+        return 'test ok post'
+
+
+@ns_user.route('/registerUser')
+class RegisterUser(Resource):
+    resource_fields = api.model('Resource', {
+        'first_name': fields.String,
+        'last_name': fields.String,
+        'email': fields.String,
+        'password': fields.String,
+        'phone_number': fields.String,
+    })
+    @api.doc(body=resource_fields)
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('first_name', type=str, required=True, help='First name of the user, e.g. John.')
+        parser.add_argument('last_name', type=str, required=True, help='Last name of the user, e.g. Doe.')
+        parser.add_argument('email', type=str, required=True, help='E-mail of the user, e.g. john.doe@gmail.com.')
+        parser.add_argument('password', type=str, required=True, help='User password in plaintext.')
+        parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
+        args = parser.parse_args(strict=True)
+        register_new_person(args['first_name'], args['last_name'], args['email'],
+                            args['password'], args['phone_number'], role='User')
+        return jsonify(True)
+
+# @app.route('/registerUser', methods=['POST'])
+# @cross_origin(supports_credentials=True)
+# def create_user_account():
+#     r = request.form
+#     try:
+#         first_name = r.get('first_name')
+#         last_name = r.get('last_name')
+#         email = r.get('email')
+#         password = r.get('password')
+#         phone_number = r.get('phone_number')
+#         register_new_person(first_name, last_name, email, password, phone_number)
+#         return "ok"
+#     except Exception:
+#         return "error in create_user_account()"
 
 
 @app.route('/loginUser', methods=['POST'])
@@ -269,4 +302,3 @@ def all_user_rentals_get():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

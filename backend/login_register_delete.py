@@ -3,7 +3,7 @@ from passlib.hash import sha256_crypt as crypter
 from backend.user import is_user_in_database_by_mail
 from database.create_objects_of_classes import create_user, add_object_to_database, create_gear, create_rental
 from database.database_classes import connection_to_db, Role, User, Gear, GearRental, WaterCentre
-from datetime import datetime                  #do overlap ten i nast import
+from datetime import datetime                  # do overlap ten i nast import
 from collections import namedtuple
 Range = namedtuple('Range', ['start', 'end'])
 
@@ -70,14 +70,14 @@ def get_long(centre_id, session=None):
     return session.query(WaterCentre).filter_by(centre_id=centre_id).first().longitude
 
 
-def register_new_person(first_name, last_name, email, password, phone_number, user_or_admin='User'):
-    if user_or_admin in ['User', 'Admin', 'Owner']:  #dodalem Owner, bo mamy teraz 3 role
+def register_new_person(first_name, last_name, email, password, phone_number, role):
+    if role in ['User', 'Admin', 'Owner']:
         hashed_password = hash_password(password)
-        role_id = get_role_id(user_or_admin)
+        role_id = get_role_id(role)
         if not is_user_in_database_by_mail(email):
             user = create_user(first_name, last_name, email, hashed_password, phone_number, role_id)
             add_object_to_database(user)
-            print("Added new {} - {} {}".format(user_or_admin, first_name, last_name))
+            print("Added new {} - {} {}".format(role, first_name, last_name))
         else:
             print("user already exists!")
     #else:
