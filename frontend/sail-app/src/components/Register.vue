@@ -2,24 +2,12 @@
 <template>
   <b-container class="Register">
     <b-row>
-      <b-form-input type="text" v-model='name' placeholder="First Name" />
-      <br>
-      <br>
-      <b-form-input type="text" v-model='surname' placeholder="Second Name" />
-      <br>
-      <br>
-      <b-form-input type="tel" v-model='phone' placeholder="Phone number" />
-      <br>
-      <br>
-      <b-form-input type="email" v-model='email' placeholder="Email" />
-      <br>
-      <br>
-      <b-form-input type="password" v-model='password' placeholder="Password" />
-      <br>
-      <br>
-      <b-form-input type="password" v-model='checkPassword' placeholder="Repeat Password" />
-      <br>
-      <br>
+      <b-form-input class="block" type="text" v-model='name' placeholder="First Name" />
+      <b-form-input  class="block" type="text" v-model='surname' placeholder="Second Name" />
+      <b-form-input  class="block" type="tel" v-model='phone' placeholder="Phone number" />
+      <b-form-input  class="block" type="email" v-model='email' placeholder="Email" />
+      <b-form-input  class="block" type="password" v-model='password' placeholder="Password" />
+      <b-form-input  class="block" type="password" v-model='checkPassword' placeholder="Repeat Password" />
       <b-button block variant="success" v-on:click="regiterNewAccount()">Register</b-button>
       <b-button block variant="warning" to="/">Go back</b-button>
     </b-row>

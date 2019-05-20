@@ -2,17 +2,11 @@
 <template>
   <b-container id='Login'>
     <b-row>
-      <b-form-input type="text" v-model='login' placeholder="Login" />
-      <br>
-      <br>
-      <b-form-input type="password" v-model='password' placeholder="Password" />
-      <br>
-      <br>
+      <b-form-input class="block" type="text" v-model='login' placeholder="Login" />
+      <b-form-input class="block" type="password" v-model='password' placeholder="Password" />
       <b-button block variant="success" v-on:click="loginToAccount()">Login</b-button>
       <b-button block variant="warning" to="/registration">Register</b-button>
     </b-row>
-    <br>
-    <br>
   </b-container>
 </template>
 
@@ -45,3 +39,9 @@ export default {
   }
 };
 </script>
+
+<style scope>
+  .block {
+    margin-bottom: 10px;
+  }
+</style>
