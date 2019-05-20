@@ -77,16 +77,19 @@ def get_long(centre_id, session=None):
 
 
 def register_new_person(first_name, last_name, email, password, phone_number, role):
-    if role in ['User', 'Admin', 'Owner']:
+    if role.lower() in ['user', 'admin', 'owner']:
         hashed_password = hash_password(password)
         role_id = get_role_id(role)
         if not is_user_in_database_by_mail(email):
             user = create_user(first_name, last_name, email, hashed_password, phone_number, role_id)
             add_object_to_database(user)
             print("Added new {} - {} {}".format(role, first_name, last_name))
+            return True
         else:
             print("user already exists!")
-    #else:
+            return False
+    else:
+        return False
     #    print ("Please provide proper name (User/Admin), not '{}'.".format(user_or_admin))
 
 #tutaj moje nowe funkcje

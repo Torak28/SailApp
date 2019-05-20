@@ -15,16 +15,20 @@ app.config['BUNDLE_ERRORS'] = True
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 api = Api(app=app, doc='/docs')
 jwt = JWTManager(app)
-# app.config['JWT_QUERY_STRING_NAME'] = 'token'
 
 ns_gear = api.namespace('gear', description='Operations on gear')
-ns_user = api.namespace('user', description='Operations involving accounts')
+ns_accounts = api.namespace('accounts', description='Operations involving accounts - registration, login.')
+ns_user = api.namespace('user', description='Endpoints involving user')
+ns_owner = api.namespace('owner', description='Endpoints involving owner')
+ns_admin = api.namespace('admin', description='Endpoints involving admin')
+
 
 @api.route('/test')
 class testowa(Resource):
     @jwt_required  # set authorization on http request as bearer token
     def get(self):
         return "wygranko"
+
 
 @api.route('/main')
 class test123(Resource):
@@ -36,7 +40,7 @@ class test123(Resource):
         return 'test ok post'
 
 
-@ns_user.route('/registerUser')
+@ns_accounts.route('/register')
 class RegisterUser(Resource):
     resource_fields = api.model('registerUser', {
         'first_name': fields.String,
@@ -51,15 +55,18 @@ class RegisterUser(Resource):
     parser.add_argument('email', type=str, required=True, help='E-mail of the user, e.g. john.doe@gmail.com.')
     parser.add_argument('password', type=str, required=True, help='User password in plaintext.')
     parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
+    parser.add_argument('role', type=str, required=True, help='User role: user/owner.')
     @api.doc(body=resource_fields)
     def post(self):
         args = self.parser.parse_args(strict=True)
-        register_new_person(args['first_name'], args['last_name'], args['email'],
-                            args['password'], args['phone_number'], role='User')
-        return jsonify(True)
+        is_registration_successful = register_new_person(args['first_name'], args['last_name'], args['email'],
+                                                         args['password'], args['phone_number'], role=args['role'])
+        if is_registration_successful:
+            return {'message': 'Registered successfully.'}, 200
+        return {'message': 'Failed to register the user. User already exists or bad role given.'}, 401
 
 
-@ns_user.route('/loginUser')
+@ns_accounts.route('/login')
 class UserLogin(Resource):
     resource_fields = api.model('loginUser', {
         'email': fields.String,
@@ -79,49 +86,6 @@ class UserLogin(Resource):
                    }, 200
         else:
             return {'message': 'Login not successful.'}, 401
-
-# def user_login():
-#     r = request.form
-#     try:
-#         email = r.get('email')
-#         password = r.get('password')
-#         login_user(email, password)
-#         return "ok"
-#     except Exception:
-#         return "error in user_login()"
-#
-
-@app.route('/registerOwner', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def owner_user():
-    r = request.form
-    try:
-        first_name = r.get('first_name')
-        last_name = r.get('last_name')
-        email = r.get('email')
-        password = r.get('password')
-        phone_number = r.get('phone_number')
-        register_new_owner(first_name, last_name, email, password, phone_number)
-        return "ok"
-    except Exception:
-        return "error in owner_user()"
-
-
-# w sumie to jest to samo co loginUser, czy trzeba robic to inaczej? jakies print ze jako owner?
-@app.route('/loginOwner', methods=['POST'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def owner_login():
-    r = request.form
-    try:
-        email = r.get('email')
-        password = r.get('password')
-        login_user(email, password)
-        return "ok"
-    except Exception:
-        return "error in owner_login()"
-# przetestowane wszystkie do tego miejsca
-# nie powinno byc jeszcze enpointow z logout? 
-
 
 # owner panel
 # ta sama metoda dla ownera i usera
