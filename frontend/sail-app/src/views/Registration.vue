@@ -6,6 +6,7 @@
     <br>
     <b-alert :show=noData variant="danger">{{noDataMsg}}</b-alert>
     <b-alert :show=wrongPass variant="danger">{{wrongPassMsg}}</b-alert>
+    <b-alert :show=noGear variant="danger">{{noGearMsg}}</b-alert>
     <Register />
   </b-container>
 </template>
@@ -21,8 +22,10 @@ export default {
   data() {
     return {
       noData: false,
+      noGear: false,
       wrongPass: false,
       noDataMsg: "All data must be present",
+      noGearMsg: "No gear type is specified",
       wrongPassMsg: "Passwords do not match",
     }
   }
