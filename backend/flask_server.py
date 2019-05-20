@@ -15,14 +15,14 @@ app.config['BUNDLE_ERRORS'] = True
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 api = Api(app=app, doc='/docs')
 jwt = JWTManager(app)
-app.config['JWT_QUERY_STRING_NAME'] = 'token'
+# app.config['JWT_QUERY_STRING_NAME'] = 'token'
 
 ns_gear = api.namespace('gear', description='Operations on gear')
 ns_user = api.namespace('user', description='Operations involving accounts')
 
 @api.route('/test')
 class testowa(Resource):
-    @jwt_required
+    @jwt_required  # set authorization on http request as bearer token
     def get(self):
         return "wygranko"
 
@@ -31,10 +31,6 @@ class test123(Resource):
     def get(self):
         access_token = create_access_token(identity='janusz', fresh=True)
         refresh_token = create_refresh_token('janusz')
-        return {
-                   'access_token': access_token,
-                   'refresh_token': refresh_token
-               }, 200
 
     def post(self):
         return 'test ok post'
@@ -75,9 +71,14 @@ class UserLogin(Resource):
         parser.add_argument('email', type=str, required=True, help='Email of the user logging in.')
         parser.add_argument('password', type=str, required=True, help='Password of the user logging in.')
         args = parser.parse_args(strict=True)
-        login_user(args['email'], args['password'])
-
-        return 'zaogowanyd'
+        access_token, refresh_token = login_user(args['email'], args['password'])
+        if access_token:
+            return {
+                       'access_token': access_token,
+                       'refresh_token': refresh_token
+                   }, 200
+        else:
+            return {'message': 'Login not successful.'}, 401
 
 # def user_login():
 #     r = request.form

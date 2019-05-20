@@ -6,6 +6,12 @@ from database.database_classes import connection_to_db, Role, User, Gear, GearRe
 from datetime import datetime                  # do overlap ten i nast import
 from collections import namedtuple
 Range = namedtuple('Range', ['start', 'end'])
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    create_refresh_token,
+    jwt_required
+)
 
 
 def hash_password(password):
@@ -260,12 +266,13 @@ def login_user(email, password, session=None):
     hashed_password = hash_password(password)
     user_object = session.query(User).filter_by(email=email, password=hashed_password).first()
     if user_object:
-        token = secrets.token_hex(8)  # TODO: has to be >32, now its easier to verify in DB
-        user_object.auth_token = token
+        access_token = create_access_token(identity=user_object.id, fresh=True)
+        refresh_token = create_refresh_token(user_object.id)
         print("Logged in - token added.")
-        return token
+        return access_token, refresh_token
     else:
         print("Log in not successfull.")
+        return None, None
 
 
 @connection_to_db
