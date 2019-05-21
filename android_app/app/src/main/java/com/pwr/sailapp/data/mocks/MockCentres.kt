@@ -1,6 +1,6 @@
 package com.pwr.sailapp.data.mocks
 
-import com.pwr.sailapp.data.Centre
+import com.pwr.sailapp.data.sail.Centre
 
 object MockCentres {
     val centres = ArrayList<Centre>()

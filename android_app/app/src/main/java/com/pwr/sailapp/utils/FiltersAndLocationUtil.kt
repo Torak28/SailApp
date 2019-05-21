@@ -2,7 +2,7 @@ package com.pwr.sailapp.utils
 
 import android.location.Location
 import android.util.Log
-import com.pwr.sailapp.data.Centre
+import com.pwr.sailapp.data.sail.Centre
 
 object FiltersAndLocationUtil {
 

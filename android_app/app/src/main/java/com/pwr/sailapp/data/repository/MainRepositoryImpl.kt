@@ -2,10 +2,9 @@ package com.pwr.sailapp.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.pwr.sailapp.data.Centre
-import com.pwr.sailapp.data.Equipment
-import com.pwr.sailapp.data.Rental
-import com.pwr.sailapp.data.network.sail.SailAppApiService
+import com.pwr.sailapp.data.sail.Centre
+import com.pwr.sailapp.data.sail.Equipment
+import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

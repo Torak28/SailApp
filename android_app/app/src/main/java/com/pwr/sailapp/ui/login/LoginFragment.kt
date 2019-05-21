@@ -3,7 +3,6 @@ package com.pwr.sailapp.ui.login
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.AuthenticationState
+import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.ui.main.ScopedFragment
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*

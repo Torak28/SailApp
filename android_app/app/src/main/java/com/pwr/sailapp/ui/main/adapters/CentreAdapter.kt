@@ -9,10 +9,8 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.Centre
+import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.utils.formatDistance
-import java.lang.StringBuilder
-import java.util.*
 import kotlin.collections.ArrayList
 
 // https://www.andreasjakl.com/kotlin-recyclerview-for-high-performance-lists-in-android/

@@ -1,6 +1,6 @@
 package com.pwr.sailapp.data.mocks
 
-import com.pwr.sailapp.data.User
+import com.pwr.sailapp.data.sail.User
 
 object MockUsers {
     val usersList = ArrayList<User>()

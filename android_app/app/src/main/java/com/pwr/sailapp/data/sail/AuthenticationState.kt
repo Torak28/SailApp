@@ -1,4 +1,4 @@
-package com.pwr.sailapp.data
+package com.pwr.sailapp.data.sail
 
 enum class AuthenticationState{
     AUTHENTICATED,

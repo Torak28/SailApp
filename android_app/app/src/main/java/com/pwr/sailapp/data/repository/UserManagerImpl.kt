@@ -3,11 +3,10 @@ package com.pwr.sailapp.data.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.pwr.sailapp.data.User
-import com.pwr.sailapp.data.network.sail.SailNetworkDataSource
-import com.pwr.sailapp.data.AuthenticationState
-import com.pwr.sailapp.data.RegistrationState
-import com.pwr.sailapp.data.UserCredentials
+import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.data.sail.AuthenticationState
+import com.pwr.sailapp.data.sail.RegistrationState
+import com.pwr.sailapp.data.sail.UserCredentials
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.internal.NoConnectivityException
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +40,12 @@ class UserManagerImpl(
         // val userWithToken = sailAppApiService.loginUser()
         withContext(Dispatchers.IO) {
             try {
-                val fetchedLoginResponse = sailAppApiService.loginUserAsync(UserCredentials(email, password)).await()
+                val fetchedLoginResponse = sailAppApiService.loginUserAsync(
+                    UserCredentials(
+                        email,
+                        password
+                    )
+                ).await()
                 when (fetchedLoginResponse.message) {
                     LOGIN_OK_MESSAGE -> {
                         _authStatus.postValue(AuthenticationState.AUTHENTICATED)

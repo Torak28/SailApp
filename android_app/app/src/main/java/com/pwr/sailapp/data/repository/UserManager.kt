@@ -1,9 +1,9 @@
 package com.pwr.sailapp.data.repository
 
 import androidx.lifecycle.LiveData
-import com.pwr.sailapp.data.AuthenticationState
-import com.pwr.sailapp.data.RegistrationState
-import com.pwr.sailapp.data.User
+import com.pwr.sailapp.data.sail.AuthenticationState
+import com.pwr.sailapp.data.sail.RegistrationState
+import com.pwr.sailapp.data.sail.User
 
 interface UserManager {
     val authStatus : LiveData<AuthenticationState>

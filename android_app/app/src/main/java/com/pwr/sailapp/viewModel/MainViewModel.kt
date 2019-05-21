@@ -4,7 +4,6 @@ import android.app.Application
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.*
-import com.pwr.sailapp.data.*
 import com.pwr.sailapp.data.mocks.MockRentals
 import com.pwr.sailapp.data.mocks.MockUsers
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
@@ -12,7 +11,10 @@ import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
 import com.pwr.sailapp.data.repository.MainRepositoryImpl
 import com.pwr.sailapp.data.repository.UserManagerImpl
-import com.pwr.sailapp.utils.CredentialsUtil
+import com.pwr.sailapp.data.sail.Centre
+import com.pwr.sailapp.data.sail.Equipment
+import com.pwr.sailapp.data.sail.Rental
+import com.pwr.sailapp.data.sail.User
 import java.util.*
 import kotlin.collections.ArrayList
 import com.pwr.sailapp.utils.DateUtil.dateToString

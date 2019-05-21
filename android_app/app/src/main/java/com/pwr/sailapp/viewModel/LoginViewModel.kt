@@ -3,13 +3,10 @@ package com.pwr.sailapp.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.pwr.sailapp.data.AuthenticationState
-import com.pwr.sailapp.data.mocks.MockUserAuthentication
+import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.repository.UserManagerImpl
-import com.pwr.sailapp.utils.CredentialsUtil
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin

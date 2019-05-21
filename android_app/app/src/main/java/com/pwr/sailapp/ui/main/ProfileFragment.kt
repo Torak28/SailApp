@@ -10,15 +10,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.Rental
+import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.ui.main.adapters.RentalAdapter
 import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
 import com.pwr.sailapp.utils.formatCoordinate
-import com.pwr.sailapp.data.AuthenticationState
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
 
@@ -68,13 +66,13 @@ class ProfileFragment : Fragment() {
 
     private fun showWelcomeMessage() = Toast.makeText(requireContext(), "Welcome to your profile!", Toast.LENGTH_SHORT).show()
 
-    private fun onRentalCancel() = {rental:Rental ->
+    private fun onRentalCancel() = {rental: Rental ->
             mainViewModel.currentRental = rental
         val cancelRentalDialog = CancelRentalDialog()
         fragmentManager.let {cancelRentalDialog.show(it!!, "Sort dialog") }
     }
 
-    private fun onRentalCall() = {rental:Rental ->
+    private fun onRentalCall() = {rental: Rental ->
         val phone = rental.centre.phone
         val uri = Uri.parse("tel:$phone")
         val intent = Intent(Intent.ACTION_DIAL, uri)
@@ -82,7 +80,7 @@ class ProfileFragment : Fragment() {
         else toast("Cannot launch activity")
     }
 
-    private fun onRentalMap() = {rental:Rental ->
+    private fun onRentalMap() = {rental: Rental ->
         val coordinateXFormatted = formatCoordinate(rental.centre.coordinateX, 4)
         val coordinateYFormatted = formatCoordinate(rental.centre.coordinateY, 4)
         val label = rental.centre.name

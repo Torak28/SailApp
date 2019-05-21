@@ -13,7 +13,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.AuthenticationState
+import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigationview_header.view.*

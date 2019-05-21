@@ -1,8 +1,8 @@
 package com.pwr.sailapp.data.network.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.pwr.sailapp.data.User
-import com.pwr.sailapp.data.UserCredentials
+import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.data.sail.UserCredentials
 import com.pwr.sailapp.data.network.sail.response.*
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor

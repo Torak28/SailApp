@@ -1,4 +1,4 @@
-package com.pwr.sailapp.data
+package com.pwr.sailapp.data.sail
 
 import com.google.gson.annotations.SerializedName
 

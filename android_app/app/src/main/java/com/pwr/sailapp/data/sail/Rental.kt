@@ -1,10 +1,8 @@
-package com.pwr.sailapp.data
+package com.pwr.sailapp.data.sail
 
-import androidx.room.Embedded
 import com.google.gson.annotations.SerializedName
 import com.pwr.sailapp.utils.DateUtil
 import java.text.DateFormat
-import java.util.*
 
 // TODO add number of hours
 data class Rental (
