@@ -1,4 +1,4 @@
-from database.create_objects_of_classes import create_role, add_object_to_database
+from database.create_objects_of_classes import create_role, create_centre, add_object_to_database
 from database.database_classes import recreate_database
 from backend.login_register_delete import register_new_person
 recreate_database()

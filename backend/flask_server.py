@@ -3,6 +3,8 @@ from flask_restplus import Api, Resource, reqparse, fields
 from flask_cors import CORS, cross_origin
 from backend.login_register_delete import *
 import backend.user as user
+import backend.water_centre as wc
+import backend.gear as gear
 
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, decode_token, get_jwt_identity
 
@@ -119,7 +121,29 @@ class ChangePassword(Resource):
         return {'message': 'Password changed successfully.'}, 200
 
 
-@ns_owner.route('/addGear')  # TODO: rethink how to write a JOIN.
+@ns_owner.route('/addWaterCentre')
+class AddWaterCentre(Resource):
+    resource_fields = api.model('addWaterCentre', {
+        'centre_name': fields.String,
+        'latitude': fields.String,
+        'longitude': fields.String,
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('centre_name', type=str, required=True, help='New name for the water centre.')
+    parser.add_argument('latitude', type=str, required=True, help='Latitude in DDD.dddd format.')
+    parser.add_argument('longitude', type=str, required=True, help='Longitude in DDD.dddd format.')
+
+    @jwt_required
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id):
+            wc.add_water_centre(user_id, kwargs['centre_name'], kwargs['latitude'], kwargs['longitude'])
+            return {'message': 'Water Centre added successfully.'}, 200
+        return {'message': 'You do not have the proper rights.'}, 403
+
+
+@ns_owner.route('/addGear')
 class AddGear(Resource):
     resource_fields = api.model('addGear', {
         'centre_id': fields.Integer,
@@ -138,9 +162,10 @@ class AddGear(Resource):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id):
-            return 'temp answer', 200
-        else:
-            return {'message': 'Permission denied. You are not the owner.'}, 403
+            if user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
+                gear.add_gear(kwargs['centre_id'], kwargs['gear_name'], kwargs['gear_price'], kwargs['gear_quantity'])
+                return {'message': 'Gear added successfully.'}, 200
+        return {'message': 'Permission denied. You are not the owner.'}, 403
 
 
 @ns_accounts.route('/getUserData')
