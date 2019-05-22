@@ -46,7 +46,6 @@ class User(Base):
     password = Column(String)
     phone_number = Column(String)
     role_id = Column(Integer, ForeignKey('role.id'))
-    auth_token = Column(String)
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
     owner = relationship('WaterCentre')
