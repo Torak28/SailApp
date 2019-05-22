@@ -39,7 +39,10 @@ class RegisterUser(Resource):
     parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
     parser.add_argument('role', type=str, required=True, help='User role: user/owner.')
 
+    @api.expect(parser)
     @api.doc(body=resource_fields)
+    @api.response(200, 'Successful registration.')
+    @api.response(401, 'User already exists/bad role passed.')
     def post(self):
         args = self.parser.parse_args(strict=True)
         is_registration_successful = register_new_person(args['first_name'], args['last_name'], args['email'],
@@ -59,7 +62,10 @@ class UserLogin(Resource):
     parser.add_argument('email', type=str, required=True, help='Email of the user logging in.')
     parser.add_argument('password', type=str, required=True, help='Password of the user logging in.')
 
+    @api.expect(parser)
     @api.doc(body=resource_fields)
+    @api.response(200, 'Successful login, access_token and refresh_token returned.')
+    @api.response(401, 'Login not successful.')
     def post(self):
         args = self.parser.parse_args(strict=True)
         access_token, refresh_token = login_user(args['email'], args['password'])
@@ -86,8 +92,11 @@ class ChangeData(Resource):
     parser.add_argument('email', type=str, required=True, help='E-mail of the user, e.g. john.doe@gmail.com.')
     parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
 
+    @api.expect(parser)
     @api.doc(body=resource_fields)
     @jwt_required
+    @api.response(200, 'Successful data change.')
+    @api.response(409, 'Failed because given email is already taken.')
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
@@ -96,11 +105,11 @@ class ChangeData(Resource):
         if user_object.email == kwargs['email']:
             kwargs.pop('email')
             user.update_user(kwargs)
-            return {'message': 'Data was successfully changed.'}, 200
         elif user_object.email != kwargs['email'] and not user.is_user_in_database_by_mail(kwargs['email']):
             user.update_user(kwargs)
         else:  # mail changed to one already existing in db
             return {'message': 'Email is already taken. Try with another one.'}, 409
+        return {'message': 'Data was successfully changed.'}, 200
 
 
 @ns_accounts.route('/changePassword')
@@ -111,8 +120,10 @@ class ChangePassword(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('password', type=str, required=True, help='New password for the user.')
 
+    @api.expect(parser)
     @api.doc(body=resource_fields)
     @jwt_required
+    @api.response(200, 'Successful password change.')
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
@@ -133,7 +144,11 @@ class AddWaterCentre(Resource):
     parser.add_argument('latitude', type=str, required=True, help='Latitude in DDD.dddd format.')
     parser.add_argument('longitude', type=str, required=True, help='Longitude in DDD.dddd format.')
 
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
     @jwt_required
+    @api.response(200, 'Water centre added successfully.')
+    @api.response(403, 'User does not have the proper rights.')
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
@@ -157,7 +172,11 @@ class AddGear(Resource):
     parser.add_argument('gear_price', type=int, required=True, help='Price of the gear per hour.')
     parser.add_argument('gear_quantity', type=int, required=True, help='Quantity of added gear.')
 
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
     @jwt_required
+    @api.response(200, 'Gear added successfully.')
+    @api.response(403, 'User does not have the proper rights.')
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
@@ -171,6 +190,7 @@ class AddGear(Resource):
 @ns_accounts.route('/getUserData')
 class GetUserData(Resource):
     @jwt_required
+    @api.response(200, 'Data returned successfully.')
     def get(self):
         user_id = get_jwt_identity()
         user_obj = user.get_user_by_id(user_id)
@@ -178,8 +198,10 @@ class GetUserData(Resource):
                      'last_name': user_obj.last_name,
                      'email': user_obj.email,
                      'phone_number': user_obj.phone_number}
-        return jsonify(user_data)
+        return jsonify(user_data), 200
 
+
+# ODTĄD W DÓŁ NIC NIE TYKANE - FILIP.
 
 @app.route('/addGearType', methods=['POST'])
 @cross_origin(supports_credentials=True)
