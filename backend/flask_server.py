@@ -143,6 +143,19 @@ class AddGear(Resource):
             return {'message': 'Permission denied. You are not the owner.'}, 403
 
 
+@ns_accounts.route('/getUserData')
+class GetUserData(Resource):
+    @jwt_required
+    def get(self):
+        user_id = get_jwt_identity()
+        user_obj = user.get_user_by_id(user_id)
+        user_data = {'first_name': user_obj.first_name,
+                     'last_name': user_obj.last_name,
+                     'email': user_obj.email,
+                     'phone_number': user_obj.phone_number}
+        return jsonify(user_data)
+
+
 @app.route('/addGearType', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def add_gear_type():
