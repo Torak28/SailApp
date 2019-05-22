@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify
 from flask_restplus import Api, Resource, reqparse, fields
 from flask_cors import CORS, cross_origin
 from backend.login_register_delete import *
@@ -6,7 +6,7 @@ import backend.user as user
 import backend.water_centre as wc
 import backend.gear as gear
 
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, decode_token, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 
 app = Flask(__name__)
 app.config['BUNDLE_ERRORS'] = True
