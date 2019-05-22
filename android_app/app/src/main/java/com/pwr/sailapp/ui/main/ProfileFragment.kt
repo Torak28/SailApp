@@ -47,6 +47,19 @@ class ProfileFragment : Fragment() {
         */
         mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
 
+        /*
+        1. Check Internet connection
+        2. If no connection inform user that data may by obsolete
+        3. Show loading bar
+        4. Fetch rental data
+        5. For each rental:
+        - calculate dateDiff(today, rentStartDate)
+        - if dateDiff > 10 days -> don't fetch or show weather for rental
+        - dateDiff < 1 day -> fetch forecast and show current weather
+        - 1 day <= dateDiff <= 10 days -> fetch forecast and show weather for nth day
+        5. Wait for
+         */
+
         mainViewModel.rentals.observe(viewLifecycleOwner, Observer {
             adapter.setRentals(it)
             // Show list of rentals or info about no rentals

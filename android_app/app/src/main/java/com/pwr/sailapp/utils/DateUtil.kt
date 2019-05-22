@@ -1,12 +1,12 @@
 package com.pwr.sailapp.utils
 
 import android.annotation.SuppressLint
-import java.text.DateFormat
+import android.util.Log
+import org.joda.time.DateTime
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.format.DateTimeFormatter
 import java.util.*
 
+const val MAX_FORECAST_DAYS = 10
 /*
 Format the date according to format used in JSON
  */
@@ -33,4 +33,16 @@ object DateUtil{
         val minutes:Int = (diffSeconds / 60 % 60 ).toInt()
         return Pair(hours, minutes)
     }
+
+
+    fun isForecastAvailable(dateToCheck: Date?): Boolean {
+        if(dateToCheck == null){Log.e("isForecastAvailable", "dateToCheck = null");return false}
+        val calendar = Calendar.getInstance()
+        val currentTime = calendar.time
+        val dateTimeToCheck = DateTime(dateToCheck)
+        val currentDateTime = DateTime(currentTime)
+        val maxDateTime = currentDateTime.plusDays(MAX_FORECAST_DAYS)
+        return dateTimeToCheck < maxDateTime
+    }
+
 }

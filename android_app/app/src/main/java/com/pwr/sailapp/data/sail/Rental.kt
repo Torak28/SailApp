@@ -3,6 +3,7 @@ package com.pwr.sailapp.data.sail
 import com.google.gson.annotations.SerializedName
 import com.pwr.sailapp.utils.DateUtil
 import java.text.DateFormat
+import java.util.*
 
 // TODO add number of hours
 data class Rental (
@@ -26,6 +27,8 @@ data class Rental (
   //  private val dateFormatTime = DateFormat.getTimeInstance()
   //  private val rentStartDate:Date? = DateUtil.stringToDate(rentStartDateStr)
 
+    val rentStartDate : Date?
+    get() = DateUtil.stringToDate(rentStartDateStr)
 
     val rentDate: String
         get() {

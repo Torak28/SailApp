@@ -87,8 +87,8 @@ dependencies {
     implementation "com.google.code.gson:gson:2.8.5"
 
     // Kotlin Android Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.5.0"
@@ -127,4 +127,7 @@ dependencies {
 
     // Material time picker with intervals
     implementation 'com.wdullaer:materialdatetimepicker:4.2.0'
+
+    // Time manipulation
+    implementation 'net.danlew:android.joda:2.10.1.2'
 }

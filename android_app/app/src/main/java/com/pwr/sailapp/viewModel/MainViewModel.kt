@@ -150,7 +150,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         centres.value = calculateDistances(centres.value, location)
     }
 
-
     fun cancelRental(rental: Rental) {
         rentals.value?.remove(rental)
         /*
@@ -159,6 +158,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          */
         rentals.value = rentals.value
     }
+
 
     private fun fetchUserData(): User = MockUsers.usersList[0]
 

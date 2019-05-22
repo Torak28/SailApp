@@ -1,7 +1,8 @@
-package com.pwr.sailapp.data.network.sail
+package com.pwr.sailapp.data.network.weather
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.pwr.sailapp.data.weather.Forecast
+import com.pwr.sailapp.data.network.sail.ConnectivityInterceptor
+import com.pwr.sailapp.data.weather.Weather
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -10,32 +11,35 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
 /*
-http://api.apixu.com/v1/forecast.json?key=5ba44124a1754dd8919141307192403&q=48.8567,2.3508&days=10
+https://api.darksky.net/forecast/55da7eaf53d41d33ac5f3ecf732b6796/54.692867,18.691693,2019-05-23T15:23:00 // YYYY-MM-DDTHH:MM:SS
+or
+https://api.darksky.net/forecast/55da7eaf53d41d33ac5f3ecf732b6796/54.692867,18.691693,1558617780 // timestamp
  */
 
-const val APIXU_URL = "http://api.apixu.com/v1/forecast.json"
+const val DARK_SKY_URL = "https://api.darksky.net/forecast/55da7eaf53d41d33ac5f3ecf732b6796/"
+// const val DARK_SKY_API_KEY = "55da7eaf53d41d33ac5f3ecf732b6796"
+const val DEFAULT_UNITS = "ca"
 
-const val APIXU_API_KEY = "5ba44124a1754dd8919141307192403"
+interface DarkSkyApiService {
 
-interface ApixuWeatherApiService {
-
-    @GET("getForecast")
+    @GET("{latitude},{longitude},{timestamp}")
     fun getForecast(
-        @Query("q") location: String,
-        @Query("days") days: String
-    ): Deferred<Forecast> // defer - odraczać
+        @Path(value="latitude") latitude:String,
+        @Path(value="longitude") longitude:String,
+        @Path(value = "timestamp") timestamp: String,
+        @Query("units") units: String = DEFAULT_UNITS
+    ): Deferred<Weather>
 
     companion object{
         // syntax: ApixuWeatherApiService()
         operator fun invoke(
             connectivityInterceptor: ConnectivityInterceptor
-        ): ApixuWeatherApiService{
+        ): DarkSkyApiService {
 
             val requestInterceptor = Interceptor{
                 val url = it.request()
                     .url()
                     .newBuilder()
-                    .addQueryParameter("key", APIXU_API_KEY)
                     .build()
 
                 val request = it.request()
@@ -53,11 +57,11 @@ interface ApixuWeatherApiService {
 
             return Retrofit.Builder()
                 .client(okHttpClient)
-                .baseUrl(APIXU_URL)
+                .baseUrl(DARK_SKY_URL)
                 .addCallAdapterFactory(CoroutineCallAdapterFactory()) // to use coroutines instead of of calls
                 .addConverterFactory(GsonConverterFactory.create()) // use Gson to parse Json
                 .build()
-                .create(ApixuWeatherApiService::class.java)
+                .create(DarkSkyApiService::class.java)
         }
     }
 }
