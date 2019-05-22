@@ -3,8 +3,9 @@ from passlib.hash import sha256_crypt as crypter
 from backend.user import is_user_in_database_by_mail
 from database.create_objects_of_classes import create_user, add_object_to_database, create_gear, create_rental
 from database.database_classes import connection_to_db, Role, User, Gear, GearRental, WaterCentre
-from datetime import datetime                  #do overlap ten i nast import
+from datetime import datetime                  # do overlap ten i nast import
 from collections import namedtuple
+from flask_jwt_extended import create_access_token, create_refresh_token
 Range = namedtuple('Range', ['start', 'end'])
 
 
@@ -13,6 +14,11 @@ def hash_password(password):
     hashed_password = (encrypter.hash(password)).split("$")[-1]
     return hashed_password
 
+
+@connection_to_db
+def change_password(kwargs, session=None):
+    kwargs['password'] = hash_password(kwargs['password'])
+    session.query(User).filter_by(id=kwargs['id']).update(kwargs)
 
 @connection_to_db
 def get_role_id(role, session=None):
@@ -70,17 +76,20 @@ def get_long(centre_id, session=None):
     return session.query(WaterCentre).filter_by(centre_id=centre_id).first().longitude
 
 
-def register_new_person(first_name, last_name, email, password, phone_number, user_or_admin='User'):
-    if user_or_admin in ['User', 'Admin', 'Owner']:  #dodalem Owner, bo mamy teraz 3 role
+def register_new_person(first_name, last_name, email, password, phone_number, role):
+    if role.lower() in ['user', 'admin', 'owner']:
         hashed_password = hash_password(password)
-        role_id = get_role_id(user_or_admin)
+        role_id = get_role_id(role.lower().capitalize())
         if not is_user_in_database_by_mail(email):
             user = create_user(first_name, last_name, email, hashed_password, phone_number, role_id)
             add_object_to_database(user)
-            print("Added new {} - {} {}".format(user_or_admin, first_name, last_name))
+            print("Added new {} - {} {}".format(role, first_name, last_name))
+            return True
         else:
             print("user already exists!")
-    #else:
+            return False
+    else:
+        return False
     #    print ("Please provide proper name (User/Admin), not '{}'.".format(user_or_admin))
 
 #tutaj moje nowe funkcje
@@ -99,35 +108,13 @@ def register_new_owner(first_name, last_name, email, password, phone_number, use
     #    "Please provide proper name (User/Admin), not '{}'.".format(user_or_admin)
 
 
-def change_data(user_id, first_name, last_name, email, phone_number, password):
-    fname=get_fname(user_id)  #od tego miejsca
-    lname=get_lname(user_id)
-    pnumer=get_pnumber(user_id)
-    pword=get_password(user_id)
-    fname=first_name
-    lname=last_name
-    pnumer=phone_number
-    pword=hash_password(password) #do tego to  będzie niepotrzebne, jesli session.update dziala
-    mail=get_email(user_id)
-    if mail != email:
-        if  is_user_in_database_by_mail(email):
-            print("mail already exists!")
-        else:
-            mail=email
-            print("data changed")
-    print("ok")
-    update_user()     #tutaj cos sie wysypuje, to session.update
-    print("ok")
-    #tutaj cos sie wysypuje, to session...
-
-
-def change_data_rental(centre_id,name,latitude,longitude):
-    nazwa=get_name(centre_id)#
+def change_data_rental(centre_id, name, latitude, longitude):
+    nazwa=get_name(centre_id)
     lat=get_lat(centre_id)
     long=get_long(centre_id)
     nazwa=name
     lat=latitude
-    long=longitude# to wszystko niepotezebne jeśli upadte dziala dobrze, tak samo funkcje
+    long=longitude  # to wszystko niepotezebne jeśli upadte dziala dobrze, tak samo funkcje
     update_centre(centre_id)
 
 
@@ -260,12 +247,11 @@ def login_user(email, password, session=None):
     hashed_password = hash_password(password)
     user_object = session.query(User).filter_by(email=email, password=hashed_password).first()
     if user_object:
-        token = secrets.token_hex(8)  # TODO: has to be >32, now its easier to verify in DB
-        user_object.auth_token = token
-        print("Logged in - token added.")
-        return token
+        access_token = create_access_token(identity=user_object.id, fresh=True)
+        refresh_token = create_refresh_token(user_object.id)
+        return access_token, refresh_token
     else:
-        print("Log in not successfull.")
+        return None, None
 
 
 @connection_to_db

@@ -23,8 +23,8 @@ def create_rental(user_id, gear_id, centre_id, start, end):
     return rental
 
 
-def create_centre(name):
-    centre = db.WaterCentre(name=name)
+def create_centre(owner_id, name, latitude, longitude):
+    centre = db.WaterCentre(owner_id=owner_id, name=name, latitude=latitude, longitude=longitude)
     return centre
 
 
@@ -40,4 +40,5 @@ def create_class_type(class_type):
 
 @connection_to_db
 def add_object_to_database(obj, session=None):
+    print("Adding object: {}".format(obj))
     session.add(obj)
