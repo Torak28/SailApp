@@ -9,19 +9,18 @@
       <b-form-input  class="block" type="password" v-model='form.password' placeholder="Password" />
       <b-form-input  class="block" type="password" v-model='form.checkPassword' placeholder="Repeat Password" />
       <b-form-checkbox class="block" v-model="form.type" unchecked-value="Owner" value="User" name="check-button" switch> {{ form.type }} </b-form-checkbox>
-
       <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model='form.companyName' placeholder="Company Name" />
+      <!--TODO: zmienić to--> 
       <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model='form.lattitude' placeholder="Lattitude" />
       <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model='form.longtitude' placeholder="Longtitude" />
-
-      <b-button v-if="form.type == 'Owner'" block variant="primary" v-on:click="addGear()">Add new Gear</b-button>
-      <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear()">Delete Last Gear</b-button>
       <b-container v-for="gear in form.gears" :key="gear.id">
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+        <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete Last Gear</b-button>
         <hr>
       </b-container>
+      <b-button id="Add" v-if="form.type == 'Owner'" block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button>
 
       <b-button block variant="success" v-on:click="regiterNewAccount()">Register</b-button>
       <b-button block variant="warning" to="/">Go back</b-button>
@@ -48,7 +47,9 @@ export default {
         howManyGear: null,
         gears: []
       },
+      howManyNow: 0,
       counter: 0
+
     }
   },
   methods: {
@@ -103,13 +104,18 @@ export default {
     },
     addGear(){
       this.form.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
+      this.howManyNow++;
       this.counter++;
     },
-    deleteGear(){
-      this.form.gears.pop();
-      this.counter--;
-      if(this.counter < 0){
-        this.counter = 0;  
+    deleteGear(elemId){
+      const index = this.form.gears.map(e => e.id).indexOf(elemId);
+      console.log('Id: ' + elemId);
+      console.log('Gear before: ' + this.form.gears);
+      this.form.gears.splice(index, 1);
+      console.log('Gear after: ' + this.form.gears);
+      this.howManyNow--;
+      if(this.howManyNow < 0){
+        this.howManyNow = 0;  
       }
     }
   }
