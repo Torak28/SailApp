@@ -2,8 +2,8 @@
 <template>
   <b-container id='Login'>
     <b-row>
-      <b-form-input class="block" type="text" v-model='login' placeholder="Login" />
-      <b-form-input class="block" type="password" v-model='password' placeholder="Password" />
+      <b-form-input class="block" type="text" v-model='form.login' placeholder="Login" />
+      <b-form-input class="block" type="password" v-model='form.password' placeholder="Password" />
       <b-button block variant="success" v-on:click="loginToAccount()">Login</b-button>
       <b-button block variant="warning" to="/registration">Register</b-button>
     </b-row>
@@ -15,18 +15,24 @@ export default {
   name: "Login",
   data() {
     return {
-      login: '',
-      password: '',
-      user: ''
+      form: {
+        login: '',
+        password: '',
+        role: ''
+      }
     }
   },
   methods: {
     loginToAccount() {
-      if(this.login != "" && this.password != "") {
-        if(this.login == this.$parent.mockAccount.login && this.password == this.$parent.mockAccount.password) {
+      let databaseLogin = this.$parent.mockAccount1.login;
+      let databasePass = this.$parent.mockAccount1.password;
+      let databaseRole = this.$parent.mockAccount1.role;
+      this.form.role = databaseRole;
+      if(this.form.login != "" && this.form.password != "") {
+        if(this.form.login == databaseLogin && this.form.password == databasePass) {
           this.$parent.authenticated = true;
-          this.user = JSON.parse('{"login": "' + this.login + '", "password": "' + this.password + '"}');
-          this.$router.push({ name: "UserPanel", params: {user: this.user} });
+          this.user = JSON.parse('{"login": "' + this.form.login + '", "password": "' + this.form.password + '"}');
+          this.$router.push({ name: "UserPanel", params: {user: this.form} });
         } else {
           this.$parent.wrongData = true;
           this.$parent.noData = false;

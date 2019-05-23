@@ -7,6 +7,7 @@
     <br>
     <h3> Login: {{user.login}} </h3>
     <h3> Password: {{user.login}} </h3>
+    <h3> Role: {{user.role}} </h3>
   </b-container>
 </template>
 

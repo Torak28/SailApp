@@ -30,9 +30,16 @@ export default {
       wrongData: false,
       noDataMsg: "A login and password must be present",
       wrongDataMsg: "The login and / or password is incorrect",
-      mockAccount: {
+      // TODO: zmienić
+      mockAccount1: {
         login: "dupa",
-        password: "dupa"
+        password: "dupa",
+        role: 'User'
+      },
+      mockAccount2: {
+        login: "asd",
+        password: "asd",
+        role: 'Owner'
       }
     }
   }
