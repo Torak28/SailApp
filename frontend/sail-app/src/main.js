@@ -15,6 +15,15 @@ Vue.config.productionTip = false;
 
 export const eventBus = new Vue();
 
+import * as VueGoogleMaps from 'vue2-google-maps';
+import json from './json/secret.json';
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: json.API_KEY,
+    libraries: "places"
+  }
+});
+
 new Vue({
   router,
   render: h => h(App)

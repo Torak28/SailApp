@@ -11,8 +11,15 @@
       <b-form-checkbox class="block" v-model="form.type" unchecked-value="Owner" value="User" name="check-button" switch> {{ form.type }} </b-form-checkbox>
       <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model='form.companyName' placeholder="Company Name" />
       <!--TODO: zmienić to--> 
-      <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model='form.lattitude' placeholder="Lattitude" />
-      <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model='form.longtitude' placeholder="Longtitude" />
+      <gmap-map :center= "{lat: 0, lng: 0}" :zoom= "1" style="width:100%;  height: 600px;" />
+      <!--gmap-marker v-for="(marker, index) in markers"
+        :key="index"
+        :position="marker.position"
+      /-->
+      <b-form-input v-if="form.type == 'Owner'" class="block" type="text" v-model='form.place' placeholder="Place" />
+      <b-form-input readonly v-if="form.type == 'Owner'" class="block" type="text" v-model='form.lattitude' placeholder="Lattitude" />
+      <b-form-input readonly v-if="form.type == 'Owner'" class="block" type="text" v-model='form.longtitude' placeholder="Longtitude" />
+
       <b-container v-for="gear in form.gears" :key="gear.id">
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
@@ -42,13 +49,15 @@ export default {
         password: '',
         checkPassword: '',
         companyName: '',
+        place: '',
         lattitude: '',
         longtitude: '',
         howManyGear: null,
         gears: []
       },
       howManyNow: 0,
-      counter: 0
+      counter: 0,
+      markers: []
 
     }
   },
@@ -109,10 +118,7 @@ export default {
     },
     deleteGear(elemId){
       const index = this.form.gears.map(e => e.id).indexOf(elemId);
-      console.log('Id: ' + elemId);
-      console.log('Gear before: ' + this.form.gears);
       this.form.gears.splice(index, 1);
-      console.log('Gear after: ' + this.form.gears);
       this.howManyNow--;
       if(this.howManyNow < 0){
         this.howManyNow = 0;  
