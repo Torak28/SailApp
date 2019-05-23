@@ -1,24 +1,34 @@
 package com.pwr.sailapp.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.pwr.sailapp.data.RentalSummary
 import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSource
+import com.pwr.sailapp.data.network.weather.DarkSkyApiService
+import com.pwr.sailapp.data.network.weather.WeatherNetworkDataSource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 // https://developer.android.com/jetpack/docs/guide
 // https://medium.com/androiddevelopers/coroutines-on-android-part-i-getting-the-background-3e0e54d20bb
 
 class MainRepositoryImpl(
-    private val sailNetworkDataSource: SailNetworkDataSource
+    private val sailNetworkDataSource: SailNetworkDataSource,
+    // private val weatherNetworkDataSource: WeatherNetworkDataSource? = null
+    private val darkSkyApiService: DarkSkyApiService? = null
 ) : MainRepository {
 
     private val centres = MutableLiveData<ArrayList<Centre>>()
     private val allCentreGear = MutableLiveData<ArrayList<Equipment>>()
     private val allUserRentals = MutableLiveData<ArrayList<Rental>>()
+    private val rentalSummaries = MutableLiveData<ArrayList<RentalSummary>>()
 
     init {
         // observe forever (repos don't have lifecycle) changes in live data (responses)
@@ -33,6 +43,7 @@ class MainRepositoryImpl(
                 allUserRentals.postValue(it.rentals)
             }
         }
+
     }
 
     override suspend fun getAllUserRentals(userID: Int): LiveData<ArrayList<Rental>> {
@@ -41,7 +52,6 @@ class MainRepositoryImpl(
             fetchAllUserRentals(userID)
             allUserRentals
         }
-
     }
 
     override suspend fun getAllCentreGear(centreID: Int): LiveData<ArrayList<Equipment>> {
@@ -58,7 +68,30 @@ class MainRepositoryImpl(
         }
     }
 
-    private suspend fun fetchCentres(){ sailNetworkDataSource.fetchCentres() }
-    private suspend fun fetchAllCentreGear(centreID: Int){ sailNetworkDataSource.fetchAllCentreGear(centreID) }
-    private suspend fun fetchAllUserRentals(rentalID: Int){ sailNetworkDataSource.fetchAllUserRentals(rentalID) }
+    suspend fun getRentalSummary(rental: Rental) : RentalSummary{
+        if(darkSkyApiService == null){
+            Log.e("getRentalSummary", "darkSkyApiService = null")
+            return RentalSummary(rental, null)
+        }
+        if(rental.timestampSecs == null){
+            Log.e("getRentalSummary", "rental.timestamp = null")
+            return RentalSummary(rental, null)
+        }
+        return withContext(Dispatchers.IO){
+            val forecast = darkSkyApiService.getForecast(rental.latitude, rental.longitude, rental.timestampSecs!!).await()
+            RentalSummary(rental, forecast.currently)
+        }
+    }
+
+    private suspend fun fetchCentres() {
+        sailNetworkDataSource.fetchCentres()
+    }
+
+    private suspend fun fetchAllCentreGear(centreID: Int) {
+        sailNetworkDataSource.fetchAllCentreGear(centreID)
+    }
+
+    private suspend fun fetchAllUserRentals(rentalID: Int) {
+        sailNetworkDataSource.fetchAllUserRentals(rentalID)
+    }
 }

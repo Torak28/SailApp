@@ -4,22 +4,25 @@ import android.app.Application
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.*
-import com.pwr.sailapp.data.mocks.MockRentals
+import com.pwr.sailapp.data.RentalSummary
 import com.pwr.sailapp.data.mocks.MockUsers
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
+import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.MainRepositoryImpl
 import com.pwr.sailapp.data.repository.UserManagerImpl
 import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.sail.User
-import java.util.*
-import kotlin.collections.ArrayList
-import com.pwr.sailapp.utils.DateUtil.dateToString
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.ArrayList
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -31,7 +34,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // TODO move repo to constructor, use dependency injection
     private val mainRepositoryImpl =
-        MainRepositoryImpl(SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext))))
+        MainRepositoryImpl(
+            SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
+            , DarkSkyApiService(ConnectivityInterceptorImpl(appContext))
+            )
     private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
 
     companion object {
@@ -50,7 +56,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     Mediator - combines multiple live data sources into single live data
      */
     lateinit var centres : MediatorLiveData<ArrayList<Centre>>
-    lateinit var allCentres: LiveData<ArrayList<Centre>>
+    private lateinit var allCentres: LiveData<ArrayList<Centre>>
 
 
     val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
@@ -70,11 +76,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val endTime = MutableLiveData<Date>()
 
     // Profile fragment
-    val rentals = MutableLiveData<ArrayList<Rental>>()
+    // val rentals = MutableLiveData<ArrayList<Rental>>()
+    lateinit var rentals : LiveData<ArrayList<Rental>>
+    lateinit var rentalSummaries : MediatorLiveData<ArrayList<RentalSummary>>
 
     init {
         currentUser = fetchUserData()
-        rentals.value = ArrayList<Rental>()
+     //   rentals.value = ArrayList<Rental>()
     }
 
     suspend fun logOut() { userManagerImp.logoutUser() }
@@ -97,28 +105,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if(centreEquipment.value == null) {Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")}
     }
 
+    suspend fun fetchRentals(userID : Int){
+        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(userID)
+        rentals = fetchedRentals
+        if(rentals.value == null) {Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")}
+        rentalSummaries = MediatorLiveData()
+        rentalSummaries.addSource(rentals){
+            viewModelScope.launch {
+                val rentalSums = ArrayList<RentalSummary>()
+                for(rental in it){
+                    val summary = withContext(Dispatchers.IO) { summariseRental(rental) }
+                    rentalSums.add(summary)
+                }
+                rentalSummaries.value = rentalSums
+            }
+        }
+    }
+
+    private suspend fun summariseRental(rental: Rental):RentalSummary = mainRepositoryImpl.getRentalSummary(rental)
+
     fun selectCentre(centre: Centre) { selectedCentre.value = centre }
 
     fun confirmRental(): Boolean {
         if(centreEquipment.value == null) {Log.e("MainViewModel", "confirmRental: equipment.options = null"); return false}
-        return if (selectedCentre.value != null
-            && startTime.value != null
-            && endTime.value != null
-            && selectedEquipment.value != null
-            && selectedEquipment.value != null
-        ) {
-            MockRentals.counter++ // mock ID
-            rentals.value?.add(
-                Rental(
-                    MockRentals.counter,
-                    selectedCentre.value!!,
-                    dateToString(startTime.value!!)!!,
-                    dateToString(endTime.value!!)!!,
-                    selectedEquipment.value!!.equipmentID,
-                    selectedEquipment.value!!.toString()
-                )
-            ); true
-        } else false
+        return (selectedCentre.value != null
+                && startTime.value != null
+                && endTime.value != null
+                && selectedEquipment.value != null
+                && selectedEquipment.value != null)
     }
 
     // Search (filter) centres by name
@@ -150,14 +164,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         centres.value = calculateDistances(centres.value, location)
     }
 
-    fun cancelRental(rental: Rental) {
-        rentals.value?.remove(rental)
-        /*
-        Necessary to notify that live data changed.
-        Since live data is an object (arrayList), adding nor removing will not cause the data change (still the same reference)
-         */
-        rentals.value = rentals.value
-    }
+    fun cancelRental(rental: Rental) {}
 
 
     private fun fetchUserData(): User = MockUsers.usersList[0]

@@ -1,6 +1,7 @@
 package com.pwr.sailapp.data.repository
 
 import androidx.lifecycle.LiveData
+import com.pwr.sailapp.data.RentalSummary
 import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
@@ -8,5 +9,6 @@ import com.pwr.sailapp.data.sail.Rental
 interface MainRepository{
     suspend fun getCentres(): LiveData<ArrayList<Centre>>
     suspend fun getAllUserRentals(userID: Int): LiveData<ArrayList<Rental>>
+    // suspend fun getRentalSummaries(userID: Int): LiveData<ArrayList<RentalSummary>>
     suspend fun getAllCentreGear(centreID: Int) : LiveData<ArrayList<Equipment>>
 }

@@ -1,5 +1,6 @@
 package com.pwr.sailapp.data.sail
 
+import android.util.Log
 import com.google.gson.annotations.SerializedName
 import com.pwr.sailapp.utils.DateUtil
 import java.text.DateFormat
@@ -43,6 +44,21 @@ data class Rental (
             val date = DateUtil.stringToDate(rentStartDateStr)
             return dateFormatTime.format(date)
         }
+
+    val latitude: String
+        get() = centre.coordinateX.toString()
+
+    val longitude: String
+        get() = centre.coordinateY.toString()
+
+    val timestampSecs: String?
+        get() {
+            val timeMillis = rentStartDate?.time
+            if(timeMillis == null){Log.e("timestamp.get()", "rentStartDate?.time = null")}
+            val timeSecs = timeMillis!!/1000
+            return timeSecs.toString()
+        }
+
 
     // Required for correctly removing rentals from array list
     override fun equals(other: Any?): Boolean {

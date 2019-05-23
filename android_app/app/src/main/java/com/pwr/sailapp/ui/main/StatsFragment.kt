@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 
 import com.pwr.sailapp.R
@@ -36,7 +37,8 @@ class StatsFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // val mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
+        val mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
+        /*
         val apiService = DarkSkyApiService(ConnectivityInterceptorImpl(requireContext()))
         launch {
 
@@ -45,6 +47,12 @@ class StatsFragment : Fragment(), CoroutineScope {
                 "54.692867", "18.691693", "1558617780"
             ).await()
             textView_stats_fragment.text = response.toString()
+        } */
+        launch {
+            mainViewModel.fetchRentals(userID = 1)
+            mainViewModel.rentals.observe(viewLifecycleOwner, Observer {
+                textView_stats_fragment.text = it.toString()
+            })
         }
     }
 
