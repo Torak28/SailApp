@@ -24,15 +24,18 @@ export default {
   },
   methods: {
     loginToAccount() {
-      let databaseLogin = this.$parent.mockAccount1.login;
-      let databasePass = this.$parent.mockAccount1.password;
-      let databaseRole = this.$parent.mockAccount1.role;
+      let databaseLogin = this.$parent.mockAccount2.login;
+      let databasePass = this.$parent.mockAccount2.password;
+      let databaseRole = this.$parent.mockAccount2.role;
       this.form.role = databaseRole;
       if(this.form.login != "" && this.form.password != "") {
         if(this.form.login == databaseLogin && this.form.password == databasePass) {
           this.$parent.authenticated = true;
-          this.user = JSON.parse('{"login": "' + this.form.login + '", "password": "' + this.form.password + '"}');
-          this.$router.push({ name: "UserPanel", params: {user: this.form} });
+          if(this.form.role == 'User'){
+            this.$router.push({ name: "UserPanel", params: {user: this.form} });
+          }else{
+            this.$router.push({ name: "OwnerPanel", params: {user: this.form} });
+          }
         } else {
           this.$parent.wrongData = true;
           this.$parent.noData = false;

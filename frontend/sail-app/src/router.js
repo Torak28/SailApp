@@ -21,6 +21,13 @@ export default new Router({
         import("./views/UserPanel.vue")
     },
     {
+      path: "/ownerPanel",
+      name: "OwnerPanel",
+      props: true,
+      component: () =>
+        import("./views/OwnerPanel.vue")
+    },
+    {
       path: "/registration",
       name: "Registration",
       component: () =>
