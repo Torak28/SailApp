@@ -3,6 +3,20 @@ package com.pwr.sailapp.data
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.weather.Currently
 
+const val CLEAR_DAY = "clear-day"
+const val CLEAR_NIGHT = "clear-night"
+const val RAIN = "rain"
+const val SNOW = "snow"
+const val SLEET= "sleet"
+const val WIND = "wind"
+const val FOG = "fog"
+const val CLOUDY = "cloudy"
+const val PARTLY_CLOUDY_DAY = "partly-cloudy-day"
+const val PARTLY_CLOUDY_NIGHT = "partly-cloudy-night"
+
+const val CELSIOUS = "°C"
+const val KPH = "kph"
+
 data class RentalSummary(
     val rental: Rental,
     private val currently: Currently?
@@ -17,14 +31,23 @@ data class RentalSummary(
     val startTime: String
         get() = rental.rentStartTime
 
+    val endTime: String
+        get() = rental.rentEndTime
+
     //  val endTime : String
     //    get()  = rental. //...
 
     val temperature: String?
-        get() = currently?.temperature.toString()
+        get() {
+            val tempInt = currently?.temperature?.toInt()
+            return "$tempInt$CELSIOUS"
+        }
 
     val wind: String?
-        get() = currently?.windSpeed.toString()
+        get() {
+            val tempInt = currently?.windSpeed?.toInt()
+            return "$tempInt $KPH"
+        }
 
     val iconName: String?
         get() = currently?.icon

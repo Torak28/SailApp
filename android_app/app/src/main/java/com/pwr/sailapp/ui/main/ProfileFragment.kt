@@ -69,56 +69,13 @@ class ProfileFragment : ScopedFragment() {
 
         launch {
             // show loading bar
-
+            linearLayout_rentals_loading.visibility = View.VISIBLE
             withContext(Dispatchers.Default) { mainViewModel.fetchRentals(userID = 1) }
 
             // hide loading bar ?
             mainViewModel.rentalSummaries.observe(viewLifecycleOwner, Observer {
                 adapter.setRentals(it)
-                /*
-                1. launch {}
-                2. val rentalSummaries = ArrayList()
-                3. for rental in rental summaries :
-                    - val operation = async(getSummary(rental))
-                    - operation.await()
-                4. adapter.setRentals(rentalSummaries)
-                 */
-
-
-                /*
-                val summaries = ArrayList<RentalSummary>()
-                for(rental in it){
-                    val summary = RentalSummary(rental, null)
-                    summaries.add(summary)
-                }
-                adapter.setRentals(summaries)
-
-
-                launch {
-                    val rentalSummaries = ArrayList<RentalSummary>()
-                    for (rental in it) {
-                        lateinit var fetchedSummary: RentalSummary
-                        val operationSummaries = async {
-                            fetchedSummary = mainViewModel.summariseRental(rental)
-                        }
-                        operationSummaries.await()
-                        rentalSummaries.add(fetchedSummary)
-                    }
-                    adapter.setRentals(rentalSummaries)
-                    // hide loading bar
-
-                    if (it.size > 0) {
-                        imageView_no_rentals.visibility = View.GONE
-                        textView_no_rentals.visibility = View.GONE
-                        recyclerView_rentals.visibility = View.VISIBLE
-                    } else {
-                        imageView_no_rentals.visibility = View.VISIBLE
-                        textView_no_rentals.visibility = View.VISIBLE
-                        recyclerView_rentals.visibility = View.GONE
-                    }
-                }
-                */
-
+                linearLayout_rentals_loading.visibility = View.GONE
                 if (it.size > 0) {
                     imageView_no_rentals.visibility = View.GONE
                     textView_no_rentals.visibility = View.GONE

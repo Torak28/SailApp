@@ -11,6 +11,7 @@ import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSource
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.network.weather.WeatherNetworkDataSource
+import com.pwr.sailapp.utils.DateUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -77,10 +78,17 @@ class MainRepositoryImpl(
             Log.e("getRentalSummary", "rental.timestamp = null")
             return RentalSummary(rental, null)
         }
-        return withContext(Dispatchers.IO){
-            val forecast = darkSkyApiService.getForecast(rental.latitude, rental.longitude, rental.timestampSecs!!).await()
-            RentalSummary(rental, forecast.currently)
+        if(rental.rentStartDate == null){
+            Log.e("getRentalSummary", "rental.rentStartDate= null")
+            return RentalSummary(rental, null)
         }
+        return if(DateUtil.isForecastAvailable(rental.rentStartDate)){
+            withContext(Dispatchers.IO){
+                val forecast = darkSkyApiService.getForecast(rental.latitude, rental.longitude, rental.timestampSecs!!).await()
+                RentalSummary(rental, forecast.currently)
+            }
+        } else RentalSummary(rental, null)
+
     }
 
     private suspend fun fetchCentres() {

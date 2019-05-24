@@ -45,6 +45,13 @@ data class Rental (
             return dateFormatTime.format(date)
         }
 
+    val rentEndTime: String
+        get() {
+            val dateFormatTime = DateFormat.getTimeInstance()
+            val date = DateUtil.stringToDate(rentEndDateStr)
+            return dateFormatTime.format(date)
+        }
+
     val latitude: String
         get() = centre.coordinateX.toString()
 
