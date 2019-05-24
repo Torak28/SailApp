@@ -2,10 +2,10 @@ from sqlalchemy import Column, Integer, String, Date, Sequence, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-import os
+from database.DATABASE_URI import *
 
 Base = declarative_base()
-DATABASE_URI = os.environ['DATABASE_URL']
+
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
@@ -42,7 +42,6 @@ class User(Base):
     password = Column(String)
     phone_number = Column(String)
     role_id = Column(Integer, ForeignKey('role.id'))
-    auth_token = Column(String)
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
     owner = relationship('WaterCentre')
@@ -146,5 +145,3 @@ class ClassType(Base):
     class_type = Column(String)
 
     class_table = relationship('Class')
-
-recreate_database()

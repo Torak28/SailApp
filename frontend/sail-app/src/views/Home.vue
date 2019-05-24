@@ -1,18 +1,40 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <b-container class="home">
+    <b-row>
+      <b-col lg='8' order='2' order-lg='1'>
+        <Ads />
+      </b-col>
+      <b-col align-self="center" lg='4' order='1' order-lg='2'>
+        <b-alert :show=noData variant="danger">{{noDataMsg}}</b-alert>
+        <b-alert :show=wrongData variant="danger">{{wrongDataMsg}}</b-alert>
+        <Login />
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import Login from "@/components/Login.vue";
+import Ads from "@/components/Ads.vue";
 
 export default {
   name: "home",
   components: {
-    HelloWorld
+    Login,
+    Ads
+  },
+  data() {
+    return {
+      authenticated: false,
+      noData: false,
+      wrongData: false,
+      noDataMsg: "A login and password must be present",
+      wrongDataMsg: "The login and / or password is incorrect",
+      mockAccount: {
+        login: "dupa",
+        password: "dupa"
+      }
+    }
   }
 };
 </script>
