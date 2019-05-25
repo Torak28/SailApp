@@ -1,5 +1,5 @@
 from database.create_objects_of_classes import create_gear, add_object_to_database
-from database.database_classes import connection_to_db, Gear
+from database.database_classes import connection_to_db, Gear, GearRental
 
 
 def add_gear(centre_id, gear_name, gear_price, gear_quantity):
@@ -30,3 +30,10 @@ def get_all_gear(centre_id, session=None):
                     'id': gear.id}
         list_of_all_gears.append(one_gear)
     return list_of_all_gears
+
+@connection_to_db
+def get_rented_gear_by_user(user_id, session=None):
+    rented_gear = session.query(GearRental).filter_by(user_id).all()
+    current_rented_gear = []
+    for rent in rented_gear:
+        pass
