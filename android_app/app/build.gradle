@@ -130,4 +130,7 @@ dependencies {
 
     // Time manipulation
     implementation 'net.danlew:android.joda:2.10.1.2'
+
+    // Graphs
+    implementation 'com.jjoe64:graphview:4.2.2'
 }

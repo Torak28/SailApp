@@ -1,11 +1,11 @@
-from sqlalchemy import Column, Integer, String, Date, Sequence, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Sequence, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from database.DATABASE_URI import *
+import os
 
 Base = declarative_base()
-
+DATABASE_URI = 'postgres+psycopg2://docker:docker@localhost:5432/sailappdb'  #nazwa baza musi byc taka sama jak w pliku create_db.py
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
@@ -42,6 +42,7 @@ class User(Base):
     password = Column(String)
     phone_number = Column(String)
     role_id = Column(Integer, ForeignKey('role.id'))
+    auth_token = Column(String)
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
     owner = relationship('WaterCentre')
@@ -93,8 +94,8 @@ class GearRental(Base):
     user_id = Column(Integer, ForeignKey('user_account.id'))
     gear_id = Column(Integer, ForeignKey('gear.id'))
     centre_id = Column(Integer, ForeignKey('centre.id'))
-    rent_start = Column(Date)
-    rent_end = Column(Date)
+    rent_start = Column(DateTime)
+    rent_end = Column(DateTime)
     rent_amount = Column(Integer)
 
 
@@ -145,3 +146,5 @@ class ClassType(Base):
     class_type = Column(String)
 
     class_table = relationship('Class')
+
+recreate_database() ##

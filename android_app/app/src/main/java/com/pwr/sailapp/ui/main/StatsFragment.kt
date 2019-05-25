@@ -38,19 +38,10 @@ class StatsFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
-        /*
-        val apiService = DarkSkyApiService(ConnectivityInterceptorImpl(requireContext()))
-        launch {
 
-            // mainViewModel.fetchEquipment(1)
-            val response = apiService.getForecast(
-                "54.692867", "18.691693", "1558617780"
-            ).await()
-            textView_stats_fragment.text = response.toString()
-        } */
         launch {
-            mainViewModel.fetchRentals(userID = 1)
-            mainViewModel.rentals.observe(viewLifecycleOwner, Observer {
+            mainViewModel.fetchStats(userID = 1)
+            mainViewModel.rentalStats.observe(viewLifecycleOwner, Observer {
                 textView_stats_fragment.text = it.toString()
             })
         }

@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.log
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -37,7 +38,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         MainRepositoryImpl(
             SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
             , DarkSkyApiService(ConnectivityInterceptorImpl(appContext))
-            )
+        )
     private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
 
     companion object {
@@ -55,7 +56,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     Transformations.switchMap lets you create a new LiveData that reacts to changes of other LiveData instances. It also allows carrying over the observer Lifecycle information across the chain:
     Mediator - combines multiple live data sources into single live data
      */
-    lateinit var centres : MediatorLiveData<ArrayList<Centre>>
+    lateinit var centres: MediatorLiveData<ArrayList<Centre>>
     private lateinit var allCentres: LiveData<ArrayList<Centre>>
 
 
@@ -69,7 +70,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var isByRating = false
 
     // Rent details fragment
-    lateinit var centreEquipment : LiveData<ArrayList<Equipment>>
+    lateinit var centreEquipment: LiveData<ArrayList<Equipment>>
     val selectedEquipment = MutableLiveData<Equipment>()
 
     val startTime = MutableLiveData<Date>()
@@ -77,57 +78,89 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Profile fragment
     // val rentals = MutableLiveData<ArrayList<Rental>>()
-    lateinit var rentals : LiveData<ArrayList<Rental>>
-    lateinit var rentalSummaries : MediatorLiveData<ArrayList<RentalSummary>>
+    lateinit var rentals: LiveData<ArrayList<Rental>>
+    lateinit var rentalSummaries: MediatorLiveData<ArrayList<RentalSummary>>
+    lateinit var rentalStats: MediatorLiveData<ArrayList<Rental>>
 
     init {
         currentUser = fetchUserData()
-     //   rentals.value = ArrayList<Rental>()
+        //   rentals.value = ArrayList<Rental>()
     }
 
-    suspend fun logOut() { userManagerImp.logoutUser() }
+    suspend fun logOut() {
+        userManagerImp.logoutUser()
+    }
 
-    suspend fun fetchCentres(){
+    suspend fun fetchCentres() {
         val fetchedCentres = mainRepositoryImpl.getCentres()
         allCentres = fetchedCentres
-        if(allCentres.value == null) {Log.e("MainViewModel", "fetchCentres: allCentres.value = null")}
+        if (allCentres.value == null) {
+            Log.e("MainViewModel", "fetchCentres: allCentres.value = null")
+        }
         // Transformation of live data
         // centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)}
-         centres = MediatorLiveData()
-         centres.addSource(allCentres){ inputCentres ->
-             val centresDist = calculateDistances(inputCentres, location)
-             centres.value = filterAndSortCentres(centresDist, minRating, isByRating, actualDistance)}
+        centres = MediatorLiveData()
+        centres.addSource(allCentres) { inputCentres ->
+            val centresDist = calculateDistances(inputCentres, location)
+            centres.value = filterAndSortCentres(centresDist, minRating, isByRating, actualDistance)
+        }
     }
 
-    suspend fun fetchEquipment(centreID: Int){
+    suspend fun fetchEquipment(centreID: Int) {
         val fetchedEquipment = mainRepositoryImpl.getAllCentreGear(centreID)
         centreEquipment = fetchedEquipment
-        if(centreEquipment.value == null) {Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")}
+        if (centreEquipment.value == null) {
+            Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")
+        }
     }
 
-    suspend fun fetchRentals(userID : Int){
+    suspend fun fetchRentals(userID: Int) {
         val fetchedRentals = mainRepositoryImpl.getAllUserRentals(userID)
         rentals = fetchedRentals
-        if(rentals.value == null) {Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")}
+        if (rentals.value == null) {
+            Log.e("MainViewModel", "fetchRentals: rentals.value = null)")
+        }
         rentalSummaries = MediatorLiveData()
-        rentalSummaries.addSource(rentals){
+        val today = Calendar.getInstance().time
+        rentalSummaries.addSource(rentals) {
             viewModelScope.launch {
                 val rentalSums = ArrayList<RentalSummary>()
-                for(rental in it){
-                    val summary = withContext(Dispatchers.IO) { summariseRental(rental) }
-                    rentalSums.add(summary)
+                for (rental in it) {
+                    if (rental.rentStartDate == null) Log.e("fetchRentals", "rental.rentStartDay = null")
+                    else if (rental.rentStartDate!! == today || rental.rentStartDate!!.after(today)) {
+                        val summary = withContext(Dispatchers.IO) { summariseRental(rental) }
+                        rentalSums.add(summary)
+                    }
                 }
                 rentalSummaries.value = rentalSums
             }
         }
     }
 
-    private suspend fun summariseRental(rental: Rental):RentalSummary = mainRepositoryImpl.getRentalSummary(rental)
+    private suspend fun summariseRental(rental: Rental): RentalSummary = mainRepositoryImpl.getRentalSummary(rental)
 
-    fun selectCentre(centre: Centre) { selectedCentre.value = centre }
+    suspend fun fetchStats(userID: Int) {
+        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(userID)
+        rentals = fetchedRentals
+        if (rentals.value == null) { Log.e("MainViewModel", "fetchStats: rentals.value = null") }
+        rentalStats = MediatorLiveData()
+        val today = Calendar.getInstance().time
+        rentalStats.addSource(rentals) {
+            val previousRentals = it.filter { rental ->
+                rental.rentStartDate != null && rental.rentStartDate!!.before(today)
+            }
+            rentalStats.value = ArrayList(previousRentals)
+        }
+    }
+
+    fun selectCentre(centre: Centre) {
+        selectedCentre.value = centre
+    }
 
     fun confirmRental(): Boolean {
-        if(centreEquipment.value == null) {Log.e("MainViewModel", "confirmRental: equipment.options = null"); return false}
+        if (centreEquipment.value == null) {
+            Log.e("MainViewModel", "confirmRental: equipment.options = null"); return false
+        }
         return (selectedCentre.value != null
                 && startTime.value != null
                 && endTime.value != null
@@ -137,11 +170,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Search (filter) centres by name
     fun search(query: String?) {
-        if(query == null) {Log.e("MainViewModel", "search: query = null"); return }
-        if(centres.value == null) {Log.e("MainViewModel", "search: centres.value = null"); return }
+        if (query == null) {
+            Log.e("MainViewModel", "search: query = null"); return
+        }
+        if (centres.value == null) {
+            Log.e("MainViewModel", "search: centres.value = null"); return
+        }
         val queryLowerCase = query.toLowerCase(Locale.getDefault())
         if (queryLowerCase.isNotEmpty()) {
-            val filteredCentres = centres.value!!.filter { centre : Centre ->
+            val filteredCentres = centres.value!!.filter { centre: Centre ->
                 centre.name.toLowerCase(Locale.getDefault()).contains(queryLowerCase) // && centre.rating>minRating
             }
             centres.value = ArrayList(filteredCentres)
@@ -149,18 +186,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun applyFilter(){
-        if(allCentres.value == null) {Log.e("MainViewModel", "applyFilter: allCentres.value = null"); return }
+    fun applyFilter() {
+        if (allCentres.value == null) {
+            Log.e("MainViewModel", "applyFilter: allCentres.value = null"); return
+        }
         centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
     }
 
-    fun applySort(){
-        if(centres.value == null) {Log.e("MainViewModel", "applySort: allCentres.value = null"); return}
+    fun applySort() {
+        if (centres.value == null) {
+            Log.e("MainViewModel", "applySort: allCentres.value = null"); return
+        }
         centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
     }
 
-    fun applyLocation(){
-        if(location == null){ Log.e("MainViewModel", "calculateDistances: location = null"); return }
+    fun applyLocation() {
+        if (location == null) {
+            Log.e("MainViewModel", "calculateDistances: location = null"); return
+        }
         centres.value = calculateDistances(centres.value, location)
     }
 
