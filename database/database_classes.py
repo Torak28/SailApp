@@ -115,7 +115,7 @@ class WaterCentre(Base):
 
     gear = relationship("Gear")
     gear_rental = relationship("GearRental")
-    file_path = relationship("Picture", back_populates="WaterCentre")
+    file_path = relationship("Picture", back_populates="parent")
 
 
 class Picture(Base):
@@ -131,7 +131,7 @@ class Picture(Base):
 
     file_path = Column(String)
     water_centre_id = Column(Integer, ForeignKey('centre.id'))
-    parent = relationship("WaterCentre", back_populates="FilePath")
+    parent = relationship("WaterCentre")
 
 
 class Class(Base):
