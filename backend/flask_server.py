@@ -258,32 +258,6 @@ def delete_gear():
         return "error in delete_gear()"
 
 
-# dla ownera
-@app.route('/getGearOwner', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def owner_get_gear():
-    r = request.form
-    try:
-        centre_id = r.get('centre_id')
-        gear_id = r.get('gear_id')
-        get_gear_owner(centre_id, gear_id)
-        return "ok"
-    except Exception:
-        return "error in owner_get_gear()"
-
-
-@app.route('/getAllGear', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def owner_get_all_gear():
-    r = request.form
-    try:
-        centre_id = r.get('centre_id')
-        all_gear_owner(centre_id)
-        return "ok"
-    except Exception:
-        return "error in owner_get_all_gear()"
-
-
 # client panel
 @app.route('/changeDataClient', methods=['POST'])
 @cross_origin(supports_credentials=True)
