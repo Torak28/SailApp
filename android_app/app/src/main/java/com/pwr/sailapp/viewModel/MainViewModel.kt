@@ -16,6 +16,7 @@ import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.log
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -80,11 +80,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // val rentals = MutableLiveData<ArrayList<Rental>>()
     lateinit var rentals: LiveData<ArrayList<Rental>>
     lateinit var rentalSummaries: MediatorLiveData<ArrayList<RentalSummary>>
-    lateinit var rentalStats: MediatorLiveData<ArrayList<Rental>>
+    lateinit var rentalHistory: MediatorLiveData<ArrayList<Rental>>
+    var rentalNumbers = ArrayList<Int>()
 
     init {
         currentUser = fetchUserData()
-        //   rentals.value = ArrayList<Rental>()
     }
 
     suspend fun logOut() {
@@ -143,13 +143,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val fetchedRentals = mainRepositoryImpl.getAllUserRentals(userID)
         rentals = fetchedRentals
         if (rentals.value == null) { Log.e("MainViewModel", "fetchStats: rentals.value = null") }
-        rentalStats = MediatorLiveData()
+        rentalHistory = MediatorLiveData()
         val today = Calendar.getInstance().time
-        rentalStats.addSource(rentals) {
+
+        rentalHistory.addSource(rentals) {
             val previousRentals = it.filter { rental ->
                 rental.rentStartDate != null && rental.rentStartDate!!.before(today)
             }
-            rentalStats.value = ArrayList(previousRentals)
+            rentalHistory.value = ArrayList(previousRentals)
+        }
+
+    }
+
+    fun prepareGraphData():Boolean{
+        if(rentalHistory.value ==  null){ Log.e("isGraphAvailable", "rentalHistory.value = null"); return false}
+        if(rentalHistory.value!!.size == 0) return false
+        else{
+            val calendar = Calendar.getInstance()
+            val today = calendar.time
+            val currentMonth = calendar.get(Calendar.MONTH)
+
+            val occurrences = Array(currentMonth+1){0}
+            for(rental in rentalHistory.value!!){
+                if(rental.rentStartDate == null) Log.e("fetchStats", "rental.rentStartDate = null")
+                else if(DateUtil.isTheSameYear(rental.rentStartDate!!, today)){
+                    if (DateUtil.getMonth(rental.rentStartDate!!) > occurrences.size) Log.e("fetchStats", "rental.rentStartDate!!.year >= occurrences.size")
+                    else{
+                        val rentalMonth = DateUtil.getMonth(rental.rentStartDate!!)
+                        occurrences[rentalMonth-1]++
+                    }
+                }
+            }
+            rentalNumbers = ArrayList(occurrences.toList())
+            return true
         }
     }
 

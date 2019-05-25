@@ -11,7 +11,7 @@ const val MAX_FORECAST_DAYS = 10
 Format the date according to format used in JSON
  */
 object DateUtil{
-    const val DATE_PATTERN = "dd-MM-yyyy'T'HH:mm:ss"
+    private const val DATE_PATTERN = "dd-MM-yyyy'T'HH:mm:ss"
 
     @SuppressLint("SimpleDateFormat")
     fun dateToString(date: Date?): String? {
@@ -44,5 +44,27 @@ object DateUtil{
         val maxDateTime = currentDateTime.plusDays(MAX_FORECAST_DAYS)
         return dateTimeToCheck < maxDateTime
     }
+
+    fun isOneYearBefore(dateToCheck: Date, today: Date):Boolean{
+        val dateTimeToCheck = DateTime(dateToCheck)
+        val currentDateTime = DateTime(today)
+        val yearBeforeDateTime = currentDateTime.minusYears(1)
+        return dateTimeToCheck > yearBeforeDateTime
+    }
+
+    fun isTheSameYear(date1: Date, date2: Date):Boolean{
+        val dateTime1 = DateTime(date1)
+        val dateTime2 = DateTime(date2)
+        return dateTime1.year == dateTime2.year
+    }
+
+    fun getMonth(date: Date):Int = DateTime(date).monthOfYear
+
+    fun getYear(date: Date):Int = DateTime(date).year
+
+
+
+
+
 
 }
