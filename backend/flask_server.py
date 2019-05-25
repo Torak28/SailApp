@@ -17,11 +17,12 @@ jwt = JWTManager(app)
 jwt._set_error_handler_callbacks(api)
 
 
-ns_gear = api.namespace('gear', description='Operations on gear')
+ns_gear = api.namespace('gear', description='Operations on gear.')
 ns_accounts = api.namespace('accounts', description='Operations involving accounts - registration, login.')
-ns_user = api.namespace('user', description='Endpoints involving user')
-ns_owner = api.namespace('owner', description='Endpoints involving owner')
-ns_admin = api.namespace('admin', description='Endpoints involving admin')
+ns_user = api.namespace('user', description='Endpoints involving user.')
+ns_owner = api.namespace('owner', description='Endpoints involving owner.')
+ns_admin = api.namespace('admin', description='Endpoints involving admin.')
+ns_rental = api.namespace('rental', description='Endpoints involving renting.')
 
 
 @ns_accounts.route('/register')
@@ -155,11 +156,13 @@ class AddWaterCentre(Resource):
         'centre_name': fields.String,
         'latitude': fields.String,
         'longitude': fields.String,
+        'phone_number': fields.String,
     })
     parser = reqparse.RequestParser()
     parser.add_argument('centre_name', type=str, required=True, help='New name for the water centre.')
     parser.add_argument('latitude', type=str, required=True, help='Latitude in DDD.dddd format.')
     parser.add_argument('longitude', type=str, required=True, help='Longitude in DDD.dddd format.')
+    parser.add_argument('phone_number', type=str, required=True, help='Contact number for the Water Centre.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -170,12 +173,13 @@ class AddWaterCentre(Resource):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id):
-            wc.add_water_centre(user_id, kwargs['centre_name'], kwargs['latitude'], kwargs['longitude'])
+            wc.add_water_centre(user_id, kwargs['centre_name'], kwargs['latitude'],
+                                kwargs['longitude'], kwargs['phone_number'])
             return {'msg': 'Water Centre added successfully.'}, 200
         return {'msg': 'You do not have the proper rights.'}, 403
 
 
-@ns_owner.route('/addGear')
+@ns_gear.route('/addGear')  # for Owner
 class AddGear(Resource):
     resource_fields = api.model('addGear', {
         'centre_id': fields.Integer,
@@ -203,7 +207,7 @@ class AddGear(Resource):
         return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
-@ns_owner.route('/editGear')
+@ns_gear.route('/editGear')   # for Owner
 class EditGear(Resource):
     resource_fields = api.model('editGear', {
         'centre_id': fields.Integer,
@@ -233,7 +237,7 @@ class EditGear(Resource):
         return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
-@ns_owner.route('/deleteGear')
+@ns_gear.route('/deleteGear')   # for Owner
 class DeleteGear(Resource):
     resource_fields = api.model('editGear', {
         'centre_id': fields.Integer,
@@ -257,15 +261,22 @@ class DeleteGear(Resource):
         return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
-@api.route('/getAllGear/<int:centre_id>')
+@ns_gear.route('/getAllGear/<int:centre_id>')
 class GetAllGear(Resource):
-    @api.response(200, 'Data returned successfully.')
+    resource_fields = api.model('editGear', {
+        'gear_name': fields.String,
+        'gear_price': fields.Integer,
+        'gear_quantity': fields.Integer,
+        'gear_id': fields.Integer
+    })
+
+    @api.response(200, 'Data returned successfully.', [resource_fields])
     def get(self, centre_id):
         all_gear = gear.get_all_gear(centre_id)
         return jsonify(all_gear)
 
 
-@ns_user.route('/rentGear')
+@ns_rental.route('/rentGear')
 class RentGear(Resource):
     resource_fields = api.model('rentGear', {
         'centre_id': fields.Integer,
@@ -293,16 +304,108 @@ class RentGear(Resource):
             rental.create_rental(user_id, kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
                                  kwargs['rent_start'], kwargs['rent_end'])
             return {'msg': 'Rent was successful.'}, 200
-        return {'msg': 'Permission denied. You are not the owner.'}, 403
+        return {'msg': 'Permission denied. You are not the user.'}, 403
 
 
-@ns_user.route('/getRentedGear')
-class GetRentedGear(Resource):
+@ns_gear.route('/getCurrentlyRentedGear')  # for User
+class GetCurrentlyRentedGear(Resource):
+    resource_fields = api.model('currentlyRentedGear', {
+        'centre_id': fields.Integer,
+        'centre_name':  fields.String,
+        'rent_id': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+        'rent_quantity': fields.Integer,
+        'gear_name': fields.String
+    })
+
     @jwt_required
-    @api.response(200, 'Rent was successful.')
-    @api.response(403, 'User does not have the proper rights.')
+    @api.response(200, 'List of currently rented gear by user returned successfully.', [resource_fields])
     def get(self):
-        pass
+        user_id = get_jwt_identity()
+        current_gear = gear.get_currently_rented_gear_by_user(user_id)
+        return jsonify(current_gear), 200
+
+
+@ns_gear.route('/getRentedGear')  # for User
+class GetRentedGear(Resource):
+    resource_fields = api.model('RentedGear', {
+        'centre_id': fields.Integer,
+        'centre_name':  fields.String,
+        'rent_id': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+        'rent_quantity': fields.Integer,
+        'gear_name': fields.String
+    })
+
+    @jwt_required
+    @api.response(200, 'List of rented gear by user returned successfully.', [resource_fields])
+    def get(self):
+        user_id = get_jwt_identity()
+        current_gear = gear.get_rented_gear_by_user(user_id)
+        return jsonify(current_gear), 200
+
+
+@ns_owner.route('/getCentres')
+class GetMyCentres(Resource):
+    resource_fields = api.model('getOwnerCentres', {
+        "centre_id": fields.Integer,
+        "latitude": fields.String,
+        "longitude": fields.String,
+        "name": fields.String,
+        "phone_number": fields.String
+    })
+
+    @jwt_required
+    @api.response(200, 'List of currently rented gear returned successfully.', [resource_fields])
+    def get(self):
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id):
+            a = wc.get_water_centres_by_owner_id(user_id)
+            return jsonify(a), 200
+
+
+@ns_rental.route('/getRentals/<int:centre_id>')  # dla wypozyczen trwajacych i przyszlych
+class GetRentedGearByCentre(Resource):
+    resource_fields = api.model('RentalsByCentreId', {
+        # 'centre_id': fields.Integer,
+        # 'centre_name':  fields.String,
+        # 'rent_id': fields.Integer,
+        # 'rent_start': fields.DateTime,
+        # 'rent_end': fields.DateTime,
+        # 'rent_quantity': fields.Integer,
+        # 'gear_name': fields.String
+    })
+
+    # @jwt_required
+    @api.response(200, 'List of currently rented gear returned successfully.', [resource_fields])
+    def get(self, centre_id):
+        current_rentals = rental.get_rentals_by_water_centre_id(centre_id)
+        return jsonify(current_rentals), 200
+
+
+@ns_rental.route('/cancelRent')
+class CancelRent(Resource):
+    resource_fields = api.model('cancelRent', {
+        'rent_id': fields.Integer,
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('rent_id', type=int, required=True, help='Rent ID you want to cancel (delete).')
+
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @api.response(200, 'Cancelation was successful.')
+    @api.response(403, 'User does not have the proper rights.')
+    @jwt_required
+    def delete(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        if rental.is_user_allowed_to_delete_rental(user_id, kwargs['rent_id']):
+            rental.delete_rental()
+            return {'msg': 'Cancellation was successful.'}, 200
+        return {'msg': 'Permission denied. You are not the user nor the owner.'}, 403
+
 
 
 
