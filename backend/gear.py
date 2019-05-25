@@ -29,4 +29,4 @@ def get_all_gear(centre_id, session=None):
                     'total_quantity': gear.total_quantity,
                     'id': gear.id}
         list_of_all_gears.append(one_gear)
-    return {'all_gear': list_of_all_gears}
+    return list_of_all_gears

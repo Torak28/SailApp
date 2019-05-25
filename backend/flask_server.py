@@ -5,6 +5,7 @@ from backend.login_register_delete import *
 import backend.user as user
 import backend.water_centre as wc
 import backend.gear as gear
+import backend.rentals as rental
 
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 
@@ -13,6 +14,8 @@ app.config['BUNDLE_ERRORS'] = True
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 api = Api(app=app, doc='/docs')
 jwt = JWTManager(app)
+jwt._set_error_handler_callbacks(api)
+
 
 ns_gear = api.namespace('gear', description='Operations on gear')
 ns_accounts = api.namespace('accounts', description='Operations involving accounts - registration, login.')
@@ -48,8 +51,8 @@ class RegisterUser(Resource):
         is_registration_successful = register_new_person(args['first_name'], args['last_name'], args['email'],
                                                          args['password'], args['phone_number'], role=args['role'])
         if is_registration_successful:
-            return {'message': 'Registered successfully.'}, 200
-        return {'message': 'Failed to register the user. User already exists or bad role given.'}, 401
+            return {'msg': 'Registered successfully.'}, 200
+        return {'msg': 'Failed to register the user. User already exists or bad role given.'}, 401
 
 
 @ns_accounts.route('/login')
@@ -75,7 +78,7 @@ class UserLogin(Resource):
                        'refresh_token': refresh_token
                    }, 200
         else:
-            return {'message': 'Login not successful.'}, 401
+            return {'msg': 'Login not successful.'}, 401
 
 
 @ns_accounts.route('/changeData')
@@ -108,8 +111,8 @@ class ChangeData(Resource):
         elif user_object.email != kwargs['email'] and not user.is_user_in_database_by_mail(kwargs['email']):
             user.update_user(kwargs)
         else:  # mail changed to one already existing in db
-            return {'message': 'Email is already taken. Try with another one.'}, 409
-        return {'message': 'Data was successfully changed.'}, 200
+            return {'msg': 'Email is already taken. Try with another one.'}, 409
+        return {'msg': 'Data was successfully changed.'}, 200
 
 
 @ns_accounts.route('/changePassword')
@@ -129,7 +132,7 @@ class ChangePassword(Resource):
         user_id = get_jwt_identity()
         kwargs['id'] = user_id
         change_password(kwargs)
-        return {'message': 'Password changed successfully.'}, 200
+        return {'msg': 'Password changed successfully.'}, 200
 
 
 @ns_accounts.route('/getUserData')
@@ -168,8 +171,8 @@ class AddWaterCentre(Resource):
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id):
             wc.add_water_centre(user_id, kwargs['centre_name'], kwargs['latitude'], kwargs['longitude'])
-            return {'message': 'Water Centre added successfully.'}, 200
-        return {'message': 'You do not have the proper rights.'}, 403
+            return {'msg': 'Water Centre added successfully.'}, 200
+        return {'msg': 'You do not have the proper rights.'}, 403
 
 
 @ns_owner.route('/addGear')
@@ -196,8 +199,8 @@ class AddGear(Resource):
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
             gear.add_gear(kwargs['centre_id'], kwargs['gear_name'], kwargs['gear_price'], kwargs['gear_quantity'])
-            return {'message': 'Gear added successfully.'}, 200
-        return {'message': 'Permission denied. You are not the owner.'}, 403
+            return {'msg': 'Gear added successfully.'}, 200
+        return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
 @ns_owner.route('/editGear')
@@ -226,8 +229,8 @@ class EditGear(Resource):
         if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
             gear.update_gear(kwargs['centre_id'], kwargs['gear_id'], kwargs['gear_name'],
                              kwargs['gear_price'], kwargs['gear_quantity'])
-            return {'message': 'Gear updated successfully.'}, 200
-        return {'message': 'Permission denied. You are not the owner.'}, 403
+            return {'msg': 'Gear updated successfully.'}, 200
+        return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
 @ns_owner.route('/deleteGear')
@@ -250,8 +253,8 @@ class DeleteGear(Resource):
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
             gear.delete_gear(kwargs['centre_id'], kwargs['gear_id'])
-            return {'message': 'Gear deleted successfully.'}, 200
-        return {'message': 'Permission denied. You are not the owner.'}, 403
+            return {'msg': 'Gear deleted successfully.'}, 200
+        return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
 @api.route('/getAllGear/<int:centre_id>')
@@ -259,59 +262,47 @@ class GetAllGear(Resource):
     @api.response(200, 'Data returned successfully.')
     def get(self, centre_id):
         all_gear = gear.get_all_gear(centre_id)
-        return all_gear
-
-# @app.route('/addGearType', methods=['POST'])
-# @cross_origin(supports_credentials=True)
-# def add_gear_type():
-#     r = request.form
-#     try:
-#         name = r.get('name')
-#         price = r.get('price')
-#         centre_id = r.get('centre_id')
-#         gear_type_add(centre_id, name, price)
-#         return "ok"
-#     except Exception:
-#         return "error in add_gear_type()"
-#
-#
-# @app.route('/deleteGearType', methods=['POST'])
-# @cross_origin(supports_credentials=True)
-# def delete_gear_type():
-#     r = request.form
-#     try:
-#         name = r.get('name')
-#         centre_id = r.get('centre_id')
-#         gear_type_delete(centre_id, name)
-#         return "ok"
-#     except Exception:
-#         return "error in delete_gear_type()"
+        return jsonify(all_gear)
 
 
-# dla ownera
-# @app.route('/getGearOwner', methods=['GET'])
-# @cross_origin(supports_credentials=True)
-# def owner_get_gear():
-#     r = request.form
-#     try:
-#         centre_id = r.get('centre_id')
-#         gear_id = r.get('gear_id')
-#         get_gear_owner(centre_id, gear_id)
-#         return "ok"
-#     except Exception:
-#         return "error in owner_get_gear()"
+@ns_user.route('/rentGear')
+class RentGear(Resource):
+    resource_fields = api.model('rentGear', {
+        'centre_id': fields.Integer,
+        'gear_id': fields.Integer,
+        'rent_amount': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('centre_id', type=int, required=True, help='Centre ID.')
+    parser.add_argument('gear_id', type=int, required=True, help='ID of the gear you wish to rent.')
+    parser.add_argument('rent_amount', type=int, required=True, help='Amount of gear you want to rent.')
+    parser.add_argument('rent_start', type=datetime, required=True, help='Start of the rent datetime.')
+    parser.add_argument('rent_end', type=datetime, required=True, help='End of the rent datetime.')
+
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @jwt_required
+    @api.response(200, 'Rent was successful.')
+    @api.response(403, 'User does not have the proper rights.')
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        if not user.is_user_the_owner(user_id):
+            rental.create_rental(user_id, kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
+                                 kwargs['rent_start'], kwargs['rent_end'])
+            return {'msg': 'Rent was successful.'}, 200
+        return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
-# @app.route('/getAllGear', methods=['GET'])
-# @cross_origin(supports_credentials=True)
-# def owner_get_all_gear():
-#     r = request.form
-#     try:
-#         centre_id = r.get('centre_id')
-#         all_gear_owner(centre_id)
-#         return "ok"
-#     except Exception:
-#         return "error in owner_get_all_gear()"
+@ns_user.route('/getRentedGear')
+class GetRentedGear(Resource):
+    @jwt_required
+    @api.response(200, 'Rent was successful.')
+    @api.response(403, 'User does not have the proper rights.')
+    def get(self):
+        pass
 
 
 
@@ -325,16 +316,6 @@ def get_gear():
         return "ok"
     except Exception:
         return "error in get_gear()"
-
-
-# @app.route('/getAllGear', methods=['GET'])
-# @cross_origin(supports_credentials=True)  # to jest potrzebne
-# def get_all_gear():
-#     try:
-#         all_gear_client()
-#         return "ok"
-#     except Exception:
-#         return "error in get_all_gear()"
 
 
 @app.route('/rentGear', methods=['GET'])

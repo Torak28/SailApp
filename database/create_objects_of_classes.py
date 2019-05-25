@@ -18,8 +18,9 @@ def create_gear(centre_id, name, quantity, price):
     return gear
 
 
-def create_rental(user_id, gear_id, centre_id, start, end):
-    rental = db.GearRental(user_id=user_id, gear_id=gear_id, centre_id=centre_id, rent_start=start, rent_end=end)
+def create_rental(user_id, gear_id, centre_id, start, end, amount):
+    rental = db.GearRental(user_id=user_id, gear_id=gear_id, centre_id=centre_id,
+                           rent_start=start, rent_end=end, rent_amount=amount)
     return rental
 
 
