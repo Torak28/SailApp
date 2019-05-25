@@ -132,6 +132,20 @@ class ChangePassword(Resource):
         return {'message': 'Password changed successfully.'}, 200
 
 
+@ns_accounts.route('/getUserData')
+class GetUserData(Resource):
+    @jwt_required
+    @api.response(200, 'Data returned successfully.')
+    def get(self):
+        user_id = get_jwt_identity()
+        user_obj = user.get_user_by_id(user_id)
+        user_data = {'first_name': user_obj.first_name,
+                     'last_name': user_obj.last_name,
+                     'email': user_obj.email,
+                     'phone_number': user_obj.phone_number}
+        return jsonify(user_data), 200
+
+
 @ns_owner.route('/addWaterCentre')
 class AddWaterCentre(Resource):
     resource_fields = api.model('addWaterCentre', {
@@ -180,126 +194,125 @@ class AddGear(Resource):
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
-        if user.is_user_the_owner(user_id):
-            if user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
-                gear.add_gear(kwargs['centre_id'], kwargs['gear_name'], kwargs['gear_price'], kwargs['gear_quantity'])
-                return {'message': 'Gear added successfully.'}, 200
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
+            gear.add_gear(kwargs['centre_id'], kwargs['gear_name'], kwargs['gear_price'], kwargs['gear_quantity'])
+            return {'message': 'Gear added successfully.'}, 200
         return {'message': 'Permission denied. You are not the owner.'}, 403
 
 
-@ns_accounts.route('/getUserData')
-class GetUserData(Resource):
+@ns_owner.route('/editGear')
+class EditGear(Resource):
+    resource_fields = api.model('editGear', {
+        'centre_id': fields.Integer,
+        'gear_id': fields.Integer,
+        'gear_price': fields.Integer,
+        'gear_quantity': fields.Integer
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('centre_id', type=int, required=True, help='Centre ID.')
+    parser.add_argument('gear_id', type=int, required=True, help='ID of the gear you wish to change.')
+    parser.add_argument('gear_name', type=str, required=True, help='New gear name.')
+    parser.add_argument('gear_price', type=int, required=True, help='Price of the gear per hour.')
+    parser.add_argument('gear_quantity', type=int, required=True, help='Quantity of the gear.')
+
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
     @jwt_required
-    @api.response(200, 'Data returned successfully.')
-    def get(self):
+    @api.response(200, 'Gear updated successfully.')
+    @api.response(403, 'User does not have the proper rights.')
+    def put(self):
+        kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
-        user_obj = user.get_user_by_id(user_id)
-        user_data = {'first_name': user_obj.first_name,
-                     'last_name': user_obj.last_name,
-                     'email': user_obj.email,
-                     'phone_number': user_obj.phone_number}
-        return jsonify(user_data), 200
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
+            gear.update_gear(kwargs['centre_id'], kwargs['gear_id'], kwargs['gear_name'],
+                             kwargs['gear_price'], kwargs['gear_quantity'])
+            return {'message': 'Gear updated successfully.'}, 200
+        return {'message': 'Permission denied. You are not the owner.'}, 403
 
 
-# ODTĄD W DÓŁ NIC NIE TYKANE - FILIP.
+@ns_owner.route('/deleteGear')
+class DeleteGear(Resource):
+    resource_fields = api.model('editGear', {
+        'centre_id': fields.Integer,
+        'gear_id': fields.Integer,
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('centre_id', type=int, required=True, help='Centre ID.')
+    parser.add_argument('gear_id', type=int, required=True, help='ID of the gear you wish to delete.')
 
-@app.route('/addGearType', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def add_gear_type():
-    r = request.form
-    try:
-        name = r.get('name')
-        price = r.get('price')
-        centre_id = r.get('centre_id')
-        gear_type_add(centre_id, name, price)
-        return "ok"
-    except Exception:
-        return "error in add_gear_type()"
-
-
-@app.route('/deleteGearType', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def delete_gear_type():
-    r = request.form
-    try:
-        name = r.get('name')
-        centre_id = r.get('centre_id')
-        gear_type_delete(centre_id, name)
-        return "ok"
-    except Exception:
-        return "error in delete_gear_type()"
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @jwt_required
+    @api.response(200, 'Gear deleted successfully.')
+    @api.response(403, 'User does not have the proper rights.')
+    def delete(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
+            gear.delete_gear(kwargs['centre_id'], kwargs['gear_id'])
+            return {'message': 'Gear deleted successfully.'}, 200
+        return {'message': 'Permission denied. You are not the owner.'}, 403
 
 
-@app.route('/addGear', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def add_gear():
-    r = request.form
-    try:
-        quantity = r.get('quantity')
-        centre_id = r.get('centre_id')
-        name = r.get('name')
-        gear_add(centre_id, name, quantity)
-        return "ok"
-    except Exception:
-        return "error in add_gear()"
+@api.route('/getAllGear/<int:centre_id>')
+class GetAllGear(Resource):
+    @api.response(200, 'Data returned successfully.')
+    def get(self, centre_id):
+        all_gear = gear.get_all_gear(centre_id)
+        return all_gear
 
-
-@app.route('/deleteGear', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def delete_gear():
-    r = request.form
-    try:
-        quantity = r.get('quantity')
-        centre_id = r.get('centre_id')
-        name = r.get('name')
-        gear_delete(centre_id, name, quantity)
-        return "ok"
-    except Exception:
-        return "error in delete_gear()"
+# @app.route('/addGearType', methods=['POST'])
+# @cross_origin(supports_credentials=True)
+# def add_gear_type():
+#     r = request.form
+#     try:
+#         name = r.get('name')
+#         price = r.get('price')
+#         centre_id = r.get('centre_id')
+#         gear_type_add(centre_id, name, price)
+#         return "ok"
+#     except Exception:
+#         return "error in add_gear_type()"
+#
+#
+# @app.route('/deleteGearType', methods=['POST'])
+# @cross_origin(supports_credentials=True)
+# def delete_gear_type():
+#     r = request.form
+#     try:
+#         name = r.get('name')
+#         centre_id = r.get('centre_id')
+#         gear_type_delete(centre_id, name)
+#         return "ok"
+#     except Exception:
+#         return "error in delete_gear_type()"
 
 
 # dla ownera
-@app.route('/getGearOwner', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def owner_get_gear():
-    r = request.form
-    try:
-        centre_id = r.get('centre_id')
-        gear_id = r.get('gear_id')
-        get_gear_owner(centre_id, gear_id)
-        return "ok"
-    except Exception:
-        return "error in owner_get_gear()"
+# @app.route('/getGearOwner', methods=['GET'])
+# @cross_origin(supports_credentials=True)
+# def owner_get_gear():
+#     r = request.form
+#     try:
+#         centre_id = r.get('centre_id')
+#         gear_id = r.get('gear_id')
+#         get_gear_owner(centre_id, gear_id)
+#         return "ok"
+#     except Exception:
+#         return "error in owner_get_gear()"
 
 
-@app.route('/getAllGear', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def owner_get_all_gear():
-    r = request.form
-    try:
-        centre_id = r.get('centre_id')
-        all_gear_owner(centre_id)
-        return "ok"
-    except Exception:
-        return "error in owner_get_all_gear()"
+# @app.route('/getAllGear', methods=['GET'])
+# @cross_origin(supports_credentials=True)
+# def owner_get_all_gear():
+#     r = request.form
+#     try:
+#         centre_id = r.get('centre_id')
+#         all_gear_owner(centre_id)
+#         return "ok"
+#     except Exception:
+#         return "error in owner_get_all_gear()"
 
-
-# client panel
-@app.route('/changeDataClient', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def data_change():            # bierzemy id bo nie mozemy usera o to pytac
-    r = request.form
-    try:
-        first_name = r.get('first_name')
-        last_name = r.get('last_name')
-        email = r.get('email')
-        phone_number = r.get('phone_number')
-        password = r.get('password')
-        user_id=r.get('user_id')
-        change_data(user_id, first_name, last_name, email, phone_number, password)
-        return "ok"
-    except Exception:
-        return "error in data_change()"
 
 
 @app.route('/getGearClient', methods=['GET'])
@@ -314,14 +327,14 @@ def get_gear():
         return "error in get_gear()"
 
 
-@app.route('/getAllGear', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def get_all_gear():
-    try:
-        all_gear_client()
-        return "ok"
-    except Exception:
-        return "error in get_all_gear()"
+# @app.route('/getAllGear', methods=['GET'])
+# @cross_origin(supports_credentials=True)  # to jest potrzebne
+# def get_all_gear():
+#     try:
+#         all_gear_client()
+#         return "ok"
+#     except Exception:
+#         return "error in get_all_gear()"
 
 
 @app.route('/rentGear', methods=['GET'])
