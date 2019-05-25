@@ -1,5 +1,6 @@
 from database.create_objects_of_classes import create_gear, add_object_to_database
-from database.database_classes import connection_to_db, Gear, GearRental
+from database.database_classes import connection_to_db, Gear, GearRental, WaterCentre
+import datetime
 
 
 def add_gear(centre_id, gear_name, gear_price, gear_quantity):
@@ -24,16 +25,45 @@ def get_all_gear(centre_id, session=None):
     all_gear = session.query(Gear).filter_by(centre_id=centre_id).all()
     list_of_all_gears = []
     for gear in all_gear:
-        one_gear = {'name': gear.name,
+        one_gear = {'gear_name': gear.name,
                     'gear_price': gear.price_hour,
-                    'total_quantity': gear.total_quantity,
-                    'id': gear.id}
+                    'gear_quantity': gear.total_quantity,
+                    'gear_id': gear.id}
         list_of_all_gears.append(one_gear)
     return list_of_all_gears
 
+
+@connection_to_db
+def get_currently_rented_gear_by_user(user_id):
+    rented_gears = get_rented_gear_by_user(user_id)
+    currently_rented_gear = []
+    now = datetime.datetime.now()
+    for one_gear in rented_gears:
+        if one_gear.GearRental.rent_start < now < one_gear.GearRental.rent_end:
+            currently_rented_gear.append(one_gear)
+    return currently_rented_gear
+
+
 @connection_to_db
 def get_rented_gear_by_user(user_id, session=None):
-    rented_gear = session.query(GearRental).filter_by(user_id).all()
-    current_rented_gear = []
-    for rent in rented_gear:
-        pass
+    rented_gears = session.query(GearRental, WaterCentre, Gear).filter(GearRental.user_id == user_id,
+                                                                       WaterCentre.id == GearRental.centre_id,
+                                                                       Gear.id == GearRental.gear_id).all()
+    formatted_rented_gears = []
+    for one_gear in rented_gears:
+        one_gear_dict = dict()
+        one_gear_dict['centre_id'] = one_gear.WaterCentre.id
+        one_gear_dict['centre_name'] = one_gear.WaterCentre.name
+        one_gear_dict['rent_id'] = one_gear.GearRental.id
+        one_gear_dict['rent_start'] = one_gear.GearRental.rent_start
+        one_gear_dict['rent_end'] = one_gear.GearRental.rent_end
+        one_gear_dict['rent_quantity'] = one_gear.GearRental.rent_amount
+        one_gear_dict['gear_name'] = one_gear.Gear.name
+        formatted_rented_gears.append(one_gear_dict)
+    return formatted_rented_gears
+
+
+@connection_to_db
+def get_rented_gear_by_centre(centre_id, session=None):  # TODO
+    session.query(GearRental, WaterCentre, Gear).filter(WaterCentre.id == centre_id,
+                                                        Gear.id == GearRental.gear_id).all()

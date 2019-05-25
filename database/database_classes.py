@@ -112,6 +112,7 @@ class WaterCentre(Base):
     owner_id = Column(Integer, ForeignKey('user_account.id'))
     latitude = Column(String)
     longitude = Column(String)
+    contact_number = Column(String)
 
     gear = relationship("Gear")
     gear_rental = relationship("GearRental")

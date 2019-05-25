@@ -14,15 +14,14 @@ add_object_to_database(role2)
 add_object_to_database(role3)
 
 register_new_person('Jan', 'Kowalski', 'jan.kowalski@test.com', 'testowe_haslo', '500101900', 'user')
-register_new_person('Przemysław', 'Schrekwentke', 'swamp.admin@test.com', 'haslo_admina', '500600700', 'owner')
+register_new_person('Przemysław', 'Schrekwentke', 'swamp.admin@test.com', 'haslo_ownera', '500600700', 'owner')
 
-centre1 = create_centre(2, 'Wodna Nuta', '2137', '420')
+centre1 = create_centre(2, 'Wodna Nuta', '2137', '420', '500600701')
 centre2 = create_gear(1, 'Kajak', '10', '15')
 centre3 = create_gear(1, 'Rower wodny', '30', '12')
 add_object_to_database(centre1)
 add_object_to_database(centre2)
 add_object_to_database(centre3)
-
 
 now = datetime.datetime.now()
 future_datetime = now + datetime.timedelta(days=3)

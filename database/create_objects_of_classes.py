@@ -24,8 +24,9 @@ def create_rental(user_id, gear_id, centre_id, start, end, amount):
     return rental
 
 
-def create_centre(owner_id, name, latitude, longitude):
-    centre = db.WaterCentre(owner_id=owner_id, name=name, latitude=latitude, longitude=longitude)
+def create_centre(owner_id, name, latitude, longitude, telephone_number):
+    centre = db.WaterCentre(owner_id=owner_id, name=name, latitude=latitude, longitude=longitude,
+                            contact_number=telephone_number)
     return centre
 
 
