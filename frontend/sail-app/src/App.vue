@@ -49,8 +49,6 @@ export default {
     color: #222;
   }
   .cont {
-    /*padding-left: 0 !important;
-    padding-right: 0 !important;*/
     background: 0;
   }
   .text {

@@ -10,16 +10,18 @@
       <b-form-input  class="block" type="password" v-model='form.checkPassword' placeholder="Repeat Password" />
       <b-form-checkbox class="block" v-model="form.type" unchecked-value="Owner" value="User" name="check-button" switch> {{ form.type }} </b-form-checkbox>
       <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model='form.companyName' placeholder="Company Name" />
-      <!--TODO: zmienić to--> 
-      <gmap-map :center= "{lat: 0, lng: 0}" :zoom= "1" style="width:100%;  height: 600px;" />
-      <!--gmap-marker v-for="(marker, index) in markers"
-        :key="index"
-        :position="marker.position"
-      /-->
-      <b-form-input v-if="form.type == 'Owner'" class="block" type="text" v-model='form.place' placeholder="Place" />
-      <b-form-input readonly v-if="form.type == 'Owner'" class="block" type="text" v-model='form.lattitude' placeholder="Lattitude" />
-      <b-form-input readonly v-if="form.type == 'Owner'" class="block" type="text" v-model='form.longtitude' placeholder="Longtitude" />
 
+      <GmapAutocomplete v-if="form.type == 'Owner'" class="AutoBlock" placeholder="Place" @place_changed="setPlace" />
+
+      <gmap-map class='block' v-if="form.type == 'Owner'" :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
+      <gmap-marker
+        v-if="this.place"
+        :position="{
+          lat: this.place.geometry.location.lat(),
+          lng: this.place.geometry.location.lng(),
+        }"
+        />
+      </gmap-map>
       <b-container v-for="gear in form.gears" :key="gear.id">
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
@@ -57,17 +59,21 @@ export default {
       },
       howManyNow: 0,
       counter: 0,
-      markers: []
-
+      place: null,
+      center: { lat: 52.237049, lng: 21.017532 },
+      zoom: 6
     }
   },
   methods: {
-    regiterNewAccount() {
+      regiterNewAccount() {
+      let cancelScroll = VueScrollTo.scrollTo(element)
+      cancelScroll = this.$scrollTo(element)
       if(this.form.type == 'User'){
         if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != ''){
           if(this.form.password != this.form.checkPassword){
             this.$parent.wrongPass = true;
             this.$parent.noData = false;
+            cancelScroll();
           }else{
             //console.log("User " + JSON.stringify(this.form) + " registred");
             this.$router.replace({ name: "home" });
@@ -123,12 +129,69 @@ export default {
       if(this.howManyNow < 0){
         this.howManyNow = 0;  
       }
+    },
+    setPlace(place) {
+      this.place = place;
+      this.form.place = place.address_components[0].long_name;
+      this.form.lattitude = this.place.geometry.location.lat();
+      this.form.longtitude = this.place.geometry.location.lng();
     }
   }
 };
 </script>
 
 <style scope>
+  .AutoBlock{
+    background-clip: padding-box;
+    background-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(206, 212, 218);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-image-outset: 0;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    border-left-color: rgb(206, 212, 218);
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-right-color: rgb(206, 212, 218);
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-top-color: rgb(206, 212, 218);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-top-style: solid;
+    border-top-width: 1px;
+    box-sizing: border-box;
+    color: rgb(73, 80, 87);
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    height: 38px;
+    line-height: 24px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    overflow: visible;
+    overflow-x: visible;
+    overflow-y: visible;
+    padding-bottom: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 6px;
+    text-align: start;
+    text-justify: inter-word;
+    transition-delay: 0s, 0s, 0s;
+    transition-duration: 0.15s, 0.15s, 0.15s;
+    /*transition-property: border-color, box-shadow, box-shadow;*/
+    transition-timing-function: ease-in-out, ease-in-out, ease-in-out;
+    width: 632.667px;
+  }
   .title {
     background: linear-gradient(180deg, rgba(255,255,255,0) 65%, #FFD0AE 65%);
     display: inline;
