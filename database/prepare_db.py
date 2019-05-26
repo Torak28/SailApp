@@ -30,11 +30,11 @@ def prepare_db():
     future_datetime = now + datetime.timedelta(hours=3)
     more_future_datetime = now + datetime.timedelta(hours=6)
     past_datetime = now - datetime.timedelta(hours=3)
-    rental1 = create_rental(1, 1, 1, now, future_datetime, 1)  # Jan Kowalski kajak Wodna_Nuta 1szt.
+    rental1 = create_rental(1, 1, 1, now, future_datetime, 1)  # Jan Kowalski kajak Wodna_Nuta 1szt. W TRAKCIE
     rental2 = create_rental(3, 1, 1, now, future_datetime, 15)  # Jerzy Dudek kajak Wodna_Nuta 15szt. W TRAKCIE
     rental3 = create_rental(1, 1, 1, past_datetime, now, 2)  # Jan Kowalski kajak Wodna_Nuta 2szt.  STARE
     rental4 = create_rental(3, 1, 1, past_datetime, future_datetime, 3)  # Jerzy Dudek kajak Wodna_Nuta 3szt.  W TRAKCIE
-    rental5 = create_rental(1, 1, 1, future_datetime, more_future_datetime, 3)  # Jerzy Dudek kajak Wodna_Nuta 3szt. PRZYSZ
+    rental5 = create_rental(1, 1, 1, future_datetime, more_future_datetime, 3)  # Jan Kowalski kajak Wodna_Nuta 3szt. PRZYSZ
     add_object_to_database(rental1)
     add_object_to_database(rental2)
     add_object_to_database(rental3)

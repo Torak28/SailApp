@@ -3,6 +3,7 @@ from database.database_classes import connection_to_db, GearRental, User, WaterC
 import datetime
 from pprint import pprint
 
+
 def create_rental(user_id, centre_id, gear_id, rent_amount, rent_start, rent_end):
     create_rent(user_id, gear_id, centre_id, rent_start, rent_end, rent_amount)
 
@@ -10,6 +11,11 @@ def create_rental(user_id, centre_id, gear_id, rent_amount, rent_start, rent_end
 @connection_to_db
 def delete_rental(rental_id, session=None):
     session.query(GearRental).filter_by(id=rental_id).delete()
+
+
+@connection_to_db
+def edit_rental(rent_id, kwargs, session=None):
+    session.query(GearRental).filter_by(id=rent_id).update(kwargs)
 
 
 @connection_to_db
@@ -22,6 +28,11 @@ def is_user_allowed_to_delete_rental(user_id, rental_id, session=None):
         return True
     return False
 
+
+@connection_to_db
+def is_user_rent_owner(user_id, rental_id, session=None):
+    rental = session.query(GearRental).filter_by(id=rental_id).first()
+    return True if rental.user_id == user_id else False
 
 @connection_to_db
 def get_rentals_by_water_centre_id(centre_id, session=None):
@@ -55,3 +66,8 @@ def get_rentals_for_centre_owner(centre_id, session=None):
         rental['phone_number'] = renting_person.User.phone_number
         pprint(rental)
     return rentals
+
+
+@connection_to_db
+def get_centre_id(rental_id, session=None):
+    return session.query(GearRental).filter_by(id=rental_id).first().centre_id

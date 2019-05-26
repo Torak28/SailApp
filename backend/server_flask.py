@@ -462,71 +462,35 @@ class CancelRent(Resource):
         return {'msg': 'Permission denied. You are not the user nor the owner.'}, 403
 
 
+@ns_rental.route('/editRent')
+class EditRent(Resource):
+    resource_fields = api.model('editRent', {
+        'rent_id': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+        'rent_amount': fields.Integer
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('rent_id', type=int, required=True, help='Rent ID you want to upload.')
+    parser.add_argument('rent_start', type=datetime, required=True, help='New rent start (If not changed send old value).')
+    parser.add_argument('rent_end', type=datetime, required=True, help='New rent end (If not changed send old value).')
+    parser.add_argument('rent_amount', type=int, required=True, help='New rent amount (If not changed send old value).')
 
-# PONIZEJ NIE TYKANE.
-@app.route('/getGearClient', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def get_gear():
-    r = request.form
-    try:
-        gear_id = r.get('gear_id')
-        get_gear_client(gear_id)
-        return "ok"
-    except Exception:
-        return "error in get_gear()"
-
-
-@app.route('/rentGear', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def rent_gear():
-    r = request.form
-    try:
-        user_id = r.get('user_id')
-        centre_id = r.get('centre_id')
-        gear_id = r.get('gear_id')
-        start = r.get('start')
-        end = r.get('end')
-        rent_amount = r.get('rent_amount')
-        gear_rent(user_id, gear_id, centre_id, start, end, rent_amount)
-        return "ok"
-    except Exception:  # tak sie nie do konca powinno robic. Jak sie wyjebie keyword to powinno sie
-                            # zwracac czytelny blad
-        return "error in rent_gear()"
-
-
-@app.route('/getCentres', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def centres_get():
-    try:
-        get_all_centres()
-        return "ok"
-    except Exception as e:  # tak sie nie do konca powinno robic. Jak sie wyjebie keyword to powinno sie
-                            # zwracac czytelny blad
-        return "error in centres_get()"
-
-
-@app.route('/getAllCentreGear', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def all_centre_gear_get():
-    r = request.form
-    try:
-        centre_id = r.get('centre_id')
-        get_all_centre_gear(centre_id)
-        return "ok"
-    except Exception:
-        return "error in all_centre_gear_get()"
-
-
-@app.route('/getAllUserRentals', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def all_user_rentals_get():
-    r = request.form
-    try:
-        user_id = r.get('user_id')
-        get_all_user_rentals(user_id)
-        return "ok"
-    except Exception:
-        return "error in all_centre_gear_get()"
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @api.response(200, 'Edit was successful.')
+    @api.response(403, 'User does not have the proper rights.')
+    @jwt_required
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        print(user_id)
+        centre_id = rental.get_centre_id(kwargs['rent_id'])
+        if rental.is_user_rent_owner(user_id, kwargs['rent_id']) or user.is_owner_the_centre_owner(user_id, centre_id):
+            rent_id = kwargs.pop('rent_id')
+            rental.edit_rental(rent_id, kwargs)
+            return {'msg': 'Edit was successful.'}, 200
+        return {'msg': 'Permission denied. You are not the user nor the owner.'}, 403
 
 
 if __name__ == '__main__':
