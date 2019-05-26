@@ -1,11 +1,13 @@
 from database.create_objects_of_classes import create_rental as create_rent
+from database.create_objects_of_classes import add_object_to_database
 from database.database_classes import connection_to_db, GearRental, User, WaterCentre, Gear
 import datetime
 from pprint import pprint
 
 
 def create_rental(user_id, centre_id, gear_id, rent_amount, rent_start, rent_end):
-    create_rent(user_id, gear_id, centre_id, rent_start, rent_end, rent_amount)
+    rental = create_rent(user_id, gear_id, centre_id, rent_start, rent_end, rent_amount)
+    add_object_to_database(rental)
 
 
 @connection_to_db

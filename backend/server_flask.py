@@ -1,12 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 from flask_restplus import Api, Resource, reqparse, fields
-from flask_cors import CORS, cross_origin
 from backend.login_register_delete import *
 from database.prepare_db import prepare_db
+from werkzeug.datastructures import FileStorage
 import backend.user as user
 import backend.water_centre as wc
 import backend.gear as gear
 import backend.rentals as rental
+import backend.pictures as pictures
 
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, jwt_refresh_token_required
 
@@ -37,6 +38,7 @@ class PopulateDb(Resource):
     def get(self):
         prepare_db()
 
+
 @api.route('/refreshToken')
 class RefreshToken(Resource):
     resource_fields = api.model('refreshToken', {
@@ -61,12 +63,18 @@ class RegisterUser(Resource):
         'role': fields.String
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('first_name', type=str, required=True, help='First name of the user, e.g. John.')
-    parser.add_argument('last_name', type=str, required=True, help='Last name of the user, e.g. Doe.')
-    parser.add_argument('email', type=str, required=True, help='E-mail of the user, e.g. john.doe@gmail.com.')
-    parser.add_argument('password', type=str, required=True, help='User password in plaintext.')
-    parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
-    parser.add_argument('role', type=str, required=True, help='User role: user/owner.')
+    parser.add_argument('first_name', type=str, required=True, location='form',
+                        help='First name of the user, e.g. John.')
+    parser.add_argument('last_name', type=str, required=True, location='form',
+                        help='Last name of the user, e.g. Doe.')
+    parser.add_argument('email', type=str, required=True, location='form',
+                        help='E-mail of the user, e.g. john.doe@gmail.com.')
+    parser.add_argument('password', type=str, required=True, location='form',
+                        help='User password in plaintext.')
+    parser.add_argument('phone_number', type=str, required=True, location='form',
+                        help='User phone number.')
+    parser.add_argument('role', type=str, required=True, location='form',
+                        help='User role: user/owner.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -88,8 +96,8 @@ class UserLogin(Resource):
         'password': fields.String
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('email', type=str, required=True, help='Email of the user logging in.')
-    parser.add_argument('password', type=str, required=True, help='Password of the user logging in.')
+    parser.add_argument('email', type=str, required=True, location='form', help='Email of the user logging in.')
+    parser.add_argument('password', type=str, required=True, location='form', help='Password of the user logging in.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -116,10 +124,14 @@ class ChangeData(Resource):
         'phone_number': fields.String
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('first_name', type=str, required=True, help='First name of the user, e.g. John.')
-    parser.add_argument('last_name', type=str, required=True, help='Last name of the user, e.g. Doe.')
-    parser.add_argument('email', type=str, required=True, help='E-mail of the user, e.g. john.doe@gmail.com.')
-    parser.add_argument('phone_number', type=str, required=True, help='User phone number.')
+    parser.add_argument('first_name', type=str, required=True, location='form',
+                        help='First name of the user, e.g. John.')
+    parser.add_argument('last_name', type=str, required=True, location='form',
+                        help='Last name of the user, e.g. Doe.')
+    parser.add_argument('email', type=str, required=True, location='form',
+                        help='E-mail of the user, e.g. john.doe@gmail.com.')
+    parser.add_argument('phone_number', type=str, required=True, location='form',
+                        help='User phone number.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -147,7 +159,7 @@ class ChangePassword(Resource):
         'password': fields.String
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('password', type=str, required=True, help='New password for the user.')
+    parser.add_argument('password', type=str, required=True, location='form', help='New password for the user.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -191,10 +203,11 @@ class AddWaterCentre(Resource):
         'phone_number': fields.String,
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('centre_name', type=str, required=True, help='New name for the water centre.')
-    parser.add_argument('latitude', type=str, required=True, help='Latitude in DDD.dddd format.')
-    parser.add_argument('longitude', type=str, required=True, help='Longitude in DDD.dddd format.')
-    parser.add_argument('phone_number', type=str, required=True, help='Contact number for the Water Centre.')
+    parser.add_argument('centre_name', type=str, required=True, location='form', help='New name for the water centre.')
+    parser.add_argument('latitude', type=str, required=True, location='form', help='Latitude in DDD.dddd format.')
+    parser.add_argument('longitude', type=str, required=True, location='form', help='Longitude in DDD.dddd format.')
+    parser.add_argument('phone_number', type=str, required=True, location='form',
+                        help='Contact number for the Water Centre.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -220,10 +233,10 @@ class AddGear(Resource):
         'gear_quantity': fields.Integer
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('centre_id', type=int, required=True, help='Centre ID.')
-    parser.add_argument('gear_name', type=str, required=True, help='Name of the gear.')
-    parser.add_argument('gear_price', type=int, required=True, help='Price of the gear per hour.')
-    parser.add_argument('gear_quantity', type=int, required=True, help='Quantity of added gear.')
+    parser.add_argument('centre_id', type=int, required=True, location='form', help='Centre ID.')
+    parser.add_argument('gear_name', type=str, required=True, location='form', help='Name of the gear.')
+    parser.add_argument('gear_price', type=int, required=True, location='form', help='Price of the gear per hour.')
+    parser.add_argument('gear_quantity', type=int, required=True, location='form', help='Quantity of added gear.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -318,11 +331,16 @@ class RentGear(Resource):
         'rent_end': fields.DateTime,
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('centre_id', type=int, required=True, help='Centre ID.')
-    parser.add_argument('gear_id', type=int, required=True, help='ID of the gear you wish to rent.')
-    parser.add_argument('rent_amount', type=int, required=True, help='Amount of gear you want to rent.')
-    parser.add_argument('rent_start', type=datetime, required=True, help='Start of the rent datetime.')
-    parser.add_argument('rent_end', type=datetime, required=True, help='End of the rent datetime.')
+    parser.add_argument('centre_id', type=int, required=True, location='form',
+                        help='Centre ID.')
+    parser.add_argument('gear_id', type=int, required=True, location='form',
+                        help='ID of the gear you wish to rent.')
+    parser.add_argument('rent_amount', type=int, required=True, location='form',
+                        help='Amount of gear you want to rent.')
+    parser.add_argument('rent_start', type=datetime, required=True, location='form',
+                        help='Start of the rent datetime.')
+    parser.add_argument('rent_end', type=datetime, required=True, location='form',
+                        help='End of the rent datetime.')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -446,7 +464,8 @@ class CancelRent(Resource):
         'rent_id': fields.Integer,
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('rent_id', type=int, required=True, help='Rent ID you want to cancel (delete).')
+    parser.add_argument('rent_id', type=int, required=True, location='form',
+                        help='Rent ID you want to cancel (delete).')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -471,10 +490,13 @@ class EditRent(Resource):
         'rent_amount': fields.Integer
     })
     parser = reqparse.RequestParser()
-    parser.add_argument('rent_id', type=int, required=True, help='Rent ID you want to upload.')
-    parser.add_argument('rent_start', type=datetime, required=True, help='New rent start (If not changed send old value).')
-    parser.add_argument('rent_end', type=datetime, required=True, help='New rent end (If not changed send old value).')
-    parser.add_argument('rent_amount', type=int, required=True, help='New rent amount (If not changed send old value).')
+    parser.add_argument('rent_id', type=int, required=True, location='form', help='Rent ID you want to upload.')
+    parser.add_argument('rent_start', type=datetime, required=True, location='form',
+                        help='New rent start (If not changed send old value).')
+    parser.add_argument('rent_end', type=datetime, required=True, location='form',
+                        help='New rent end (If not changed send old value).')
+    parser.add_argument('rent_amount', type=int, required=True, location='form',
+                        help='New rent amount (If not changed send old value).')
 
     @api.expect(parser)
     @api.doc(body=resource_fields)
@@ -491,6 +513,33 @@ class EditRent(Resource):
             rental.edit_rental(rent_id, kwargs)
             return {'msg': 'Edit was successful.'}, 200
         return {'msg': 'Permission denied. You are not the user nor the owner.'}, 403
+
+
+@ns_owner.route('/addPicture')
+class AddPicture(Resource):
+    resource_fields = api.model('editRent', {
+        'centre_id': fields.String,
+        'file': FileStorage})
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('centre_id', type=int, required=True, location='form',
+                        help='New rent end (If not changed send old value).')
+    parser.add_argument('file', type=FileStorage, required=True, location='files')
+
+    @api.expect(parser)
+    @jwt_required
+    @api.response(201, 'Picture was saved and added to database.')
+    @api.response(403, 'User does not have the proper rights.')
+    @api.doc(body=resource_fields)
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        uploaded_file = kwargs['file']  # This is FileStorage instance
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
+            filepath = pictures.save_file(uploaded_file)
+            pictures.add_picture_to_centre(kwargs['centre_id'], filepath)
+            return {'msg': 'Picture was saved and added.'}, 201
+        return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
 if __name__ == '__main__':
