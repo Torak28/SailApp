@@ -1,6 +1,7 @@
 from database.create_objects_of_classes import create_rental as create_rent
 from database.database_classes import connection_to_db, GearRental, User, WaterCentre, Gear
 import datetime
+from pprint import pprint
 
 
 def create_rental(user_id, centre_id, gear_id, rent_amount, rent_start, rent_end):
@@ -13,6 +14,11 @@ def delete_rental(rental_id, session=None):
 
 
 @connection_to_db
+def edit_rental(rent_id, kwargs, session=None):
+    session.query(GearRental).filter_by(id=rent_id).update(kwargs)
+
+
+@connection_to_db
 def is_user_allowed_to_delete_rental(user_id, rental_id, session=None):
     rental = session.query(GearRental).filter_by(id=rental_id).first()
     centre_id = rental.centre_id
@@ -22,6 +28,11 @@ def is_user_allowed_to_delete_rental(user_id, rental_id, session=None):
         return True
     return False
 
+
+@connection_to_db
+def is_user_rent_owner(user_id, rental_id, session=None):
+    rental = session.query(GearRental).filter_by(id=rental_id).first()
+    return True if rental.user_id == user_id else False
 
 @connection_to_db
 def get_rentals_by_water_centre_id(centre_id, session=None):
@@ -40,3 +51,23 @@ def get_rentals_by_water_centre_id(centre_id, session=None):
         formatted_rental['rent_quantity'] = rental.GearRental.rent_amount
         list_of_formatted_rentals.append(formatted_rental)
     return list_of_formatted_rentals
+
+
+@connection_to_db
+def get_rentals_for_centre_owner(centre_id, session=None):
+    rentals = get_rentals_by_water_centre_id(centre_id)
+
+    for rental in rentals:
+        renting_person = session.query(User, GearRental).filter(GearRental.id == rental['rent_id'],
+                                                                GearRental.user_id == User.id).first()
+        rental['first_name'] = renting_person.User.first_name
+        rental['last_name'] = renting_person.User.last_name
+        rental['email'] = renting_person.User.email
+        rental['phone_number'] = renting_person.User.phone_number
+        pprint(rental)
+    return rentals
+
+
+@connection_to_db
+def get_centre_id(rental_id, session=None):
+    return session.query(GearRental).filter_by(id=rental_id).first().centre_id

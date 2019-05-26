@@ -33,13 +33,12 @@ def get_all_gear(centre_id, session=None):
     return list_of_all_gears
 
 
-@connection_to_db
 def get_currently_rented_gear_by_user(user_id):
     rented_gears = get_rented_gear_by_user(user_id)
     currently_rented_gear = []
     now = datetime.datetime.now()
     for one_gear in rented_gears:
-        if one_gear.GearRental.rent_start < now < one_gear.GearRental.rent_end:
+        if one_gear['rent_start'] < now < one_gear['rent_end']:
             currently_rented_gear.append(one_gear)
     return currently_rented_gear
 

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restplus import Api, Resource, reqparse, fields
 from flask_cors import CORS, cross_origin
 from backend.login_register_delete import *
+from database.prepare_db import prepare_db
 import backend.user as user
 import backend.water_centre as wc
 import backend.gear as gear
@@ -23,12 +24,18 @@ ns_user = api.namespace('user', description='Endpoints involving user.')
 ns_owner = api.namespace('owner', description='Endpoints involving owner.')
 ns_admin = api.namespace('admin', description='Endpoints involving admin.')
 ns_rental = api.namespace('rental', description='Endpoints involving renting.')
+ns_test = api.namespace('POPULATING_DB', description='Endpoints to populate DB. TEST PURPOSES ONLY.')
 
 
 @app.route('/helloheroku')
 def hello_heroku():
     return "Hello Heroku!"
 
+
+@ns_test.route('/ClearAndPopulateDb')
+class PopulateDb(Resource):
+    def get(self):
+        prepare_db()
 
 @api.route('/refreshToken')
 class RefreshToken(Resource):
@@ -156,8 +163,15 @@ class ChangePassword(Resource):
 
 @ns_accounts.route('/getUserData')
 class GetUserData(Resource):
+    resource_fields = api.model('getUserData', {
+        'first_name': fields.String,
+        'last_name': fields.String,
+        'email': fields.String,
+        'phone_number': fields.String,
+    })
+
     @jwt_required
-    @api.response(200, 'Data returned successfully.')
+    @api.response(200, 'User data returned successfully.', resource_fields)
     def get(self):
         user_id = get_jwt_identity()
         user_obj = user.get_user_by_id(user_id)
@@ -325,7 +339,7 @@ class RentGear(Resource):
         return {'msg': 'Permission denied. You are not the user.'}, 403
 
 
-@ns_gear.route('/getCurrentlyRentedGear')  # for User
+@ns_gear.route('/getMyCurrentlyRentedGear')  # for User
 class GetCurrentlyRentedGear(Resource):
     resource_fields = api.model('currentlyRentedGear', {
         'centre_id': fields.Integer,
@@ -345,7 +359,7 @@ class GetCurrentlyRentedGear(Resource):
         return jsonify(current_gear)
 
 
-@ns_gear.route('/getRentedGear')  # for User
+@ns_gear.route('/getMyRentedGear')  # for User
 class GetRentedGear(Resource):
     resource_fields = api.model('RentedGear', {
         'centre_id': fields.Integer,
@@ -384,7 +398,7 @@ class GetMyCentres(Resource):
             return jsonify(owner_centres)
 
 
-@ns_rental.route('/getRentals/<int:centre_id>')  # dla wypozyczen trwajacych i przyszlych
+@ns_rental.route('/getCurrentAndFutureRentals/<int:centre_id>')  # dla wypozyczen trwajacych i przyszlych
 class GetRentedGearByCentre(Resource):
     resource_fields = api.model('RentalsByCentreId', {
         'rent_id': fields.Integer,
@@ -396,10 +410,34 @@ class GetRentedGearByCentre(Resource):
     })
 
     @jwt_required
-    @api.response(200, 'List of currently rented gear returned successfully.', [resource_fields])
+    @api.response(200, 'List of current and future rentals returned successfully.', [resource_fields])
     def get(self, centre_id):
         current_rentals = rental.get_rentals_by_water_centre_id(centre_id)
         return jsonify(current_rentals)
+
+
+@ns_owner.route('/getRentalsForCentre/<int:centre_id>')
+class GetRentalsForCentre(Resource):
+    resource_fields = api.model('RentalsByCentreId', {
+        'rent_id': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+        'rent_quantity': fields.Integer,
+        'gear_name': fields.String,
+        'gear_id': fields.Integer,
+        'first_name': fields.String,
+        'last_name': fields.String,
+        'email': fields.String,
+        'phone_number': fields.String
+    })
+
+    @jwt_required
+    @api.response(200, 'List of rentals returned successfully.', [resource_fields])
+    def get(self, centre_id):
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, centre_id):
+            rentals = rental.get_rentals_for_centre_owner(centre_id)
+            return jsonify(rentals)
 
 
 @ns_rental.route('/cancelRent')
@@ -424,71 +462,35 @@ class CancelRent(Resource):
         return {'msg': 'Permission denied. You are not the user nor the owner.'}, 403
 
 
+@ns_rental.route('/editRent')
+class EditRent(Resource):
+    resource_fields = api.model('editRent', {
+        'rent_id': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+        'rent_amount': fields.Integer
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('rent_id', type=int, required=True, help='Rent ID you want to upload.')
+    parser.add_argument('rent_start', type=datetime, required=True, help='New rent start (If not changed send old value).')
+    parser.add_argument('rent_end', type=datetime, required=True, help='New rent end (If not changed send old value).')
+    parser.add_argument('rent_amount', type=int, required=True, help='New rent amount (If not changed send old value).')
 
-# PONIZEJ NIE TYKANE.
-@app.route('/getGearClient', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def get_gear():
-    r = request.form
-    try:
-        gear_id = r.get('gear_id')
-        get_gear_client(gear_id)
-        return "ok"
-    except Exception:
-        return "error in get_gear()"
-
-
-@app.route('/rentGear', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def rent_gear():
-    r = request.form
-    try:
-        user_id = r.get('user_id')
-        centre_id = r.get('centre_id')
-        gear_id = r.get('gear_id')
-        start = r.get('start')
-        end = r.get('end')
-        rent_amount = r.get('rent_amount')
-        gear_rent(user_id, gear_id, centre_id, start, end, rent_amount)
-        return "ok"
-    except Exception:  # tak sie nie do konca powinno robic. Jak sie wyjebie keyword to powinno sie
-                            # zwracac czytelny blad
-        return "error in rent_gear()"
-
-
-@app.route('/getCentres', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def centres_get():
-    try:
-        get_all_centres()
-        return "ok"
-    except Exception as e:  # tak sie nie do konca powinno robic. Jak sie wyjebie keyword to powinno sie
-                            # zwracac czytelny blad
-        return "error in centres_get()"
-
-
-@app.route('/getAllCentreGear', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def all_centre_gear_get():
-    r = request.form
-    try:
-        centre_id = r.get('centre_id')
-        get_all_centre_gear(centre_id)
-        return "ok"
-    except Exception:
-        return "error in all_centre_gear_get()"
-
-
-@app.route('/getAllUserRentals', methods=['GET'])
-@cross_origin(supports_credentials=True)  # to jest potrzebne
-def all_user_rentals_get():
-    r = request.form
-    try:
-        user_id = r.get('user_id')
-        get_all_user_rentals(user_id)
-        return "ok"
-    except Exception:
-        return "error in all_centre_gear_get()"
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @api.response(200, 'Edit was successful.')
+    @api.response(403, 'User does not have the proper rights.')
+    @jwt_required
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        print(user_id)
+        centre_id = rental.get_centre_id(kwargs['rent_id'])
+        if rental.is_user_rent_owner(user_id, kwargs['rent_id']) or user.is_owner_the_centre_owner(user_id, centre_id):
+            rent_id = kwargs.pop('rent_id')
+            rental.edit_rental(rent_id, kwargs)
+            return {'msg': 'Edit was successful.'}, 200
+        return {'msg': 'Permission denied. You are not the user nor the owner.'}, 403
 
 
 if __name__ == '__main__':
