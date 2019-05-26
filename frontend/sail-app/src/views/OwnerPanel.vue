@@ -112,7 +112,8 @@ export default {
       this.form.longtitude = this.place.geometry.location.lng();
     },
     Change(){
-      console.log("User " + JSON.stringify(this.form) + " changed");
+      // TODO: zmienić
+      //console.log("User " + JSON.stringify(this.form) + " changed");
     }
   }
 };
