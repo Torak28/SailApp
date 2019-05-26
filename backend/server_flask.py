@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restplus import Api, Resource, reqparse, fields
 from flask_cors import CORS, cross_origin
 from backend.login_register_delete import *
+from database.prepare_db import prepare_db
 import backend.user as user
 import backend.water_centre as wc
 import backend.gear as gear
@@ -23,12 +24,18 @@ ns_user = api.namespace('user', description='Endpoints involving user.')
 ns_owner = api.namespace('owner', description='Endpoints involving owner.')
 ns_admin = api.namespace('admin', description='Endpoints involving admin.')
 ns_rental = api.namespace('rental', description='Endpoints involving renting.')
+ns_test = api.namespace('POPULATING_DB', description='Endpoints to populate DB. TEST PURPOSES ONLY.')
 
 
 @app.route('/helloheroku')
 def hello_heroku():
     return "Hello Heroku!"
 
+
+@ns_test.route('/ClearAndPopulateDb')
+class PopulateDb(Resource):
+    def get(self):
+        prepare_db()
 
 @api.route('/refreshToken')
 class RefreshToken(Resource):
