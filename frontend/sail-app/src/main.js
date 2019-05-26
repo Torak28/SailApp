@@ -9,7 +9,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 var VueScrollTo = require('vue-scrollto');
 
 Vue.use(BootstrapVue);
-Vue.use(VueScrollTo)
+Vue.use(VueScrollTo);
 
 Vue.config.productionTip = false;
 

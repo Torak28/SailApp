@@ -25,7 +25,7 @@ export default {
       noGear: false,
       wrongPass: false,
       noDataMsg: "All data must be present",
-      noGearMsg: "No gear type is specified",
+      noGearMsg: "Gear tab is not filled properly",
       wrongPassMsg: "Passwords do not match",
     }
   }
