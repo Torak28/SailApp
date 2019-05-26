@@ -193,7 +193,7 @@ export default {
     transition-duration: 0.15s, 0.15s, 0.15s;
     /*transition-property: border-color, box-shadow, box-shadow;*/
     transition-timing-function: ease-in-out, ease-in-out, ease-in-out;
-    width: 632.667px;
+    width: 1110px;
   }
   .title {
     background: linear-gradient(180deg, rgba(255,255,255,0) 65%, #FFD0AE 65%);
