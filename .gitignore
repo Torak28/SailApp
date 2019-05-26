@@ -11,3 +11,9 @@ node_modules
 
 # Log files
 npm-debug.log*
+
+#Random files
+.idea/*
+
+#Database URI
+DATABASE_URI.py

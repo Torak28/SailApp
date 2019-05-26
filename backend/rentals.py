@@ -1,7 +1,7 @@
 from database.create_objects_of_classes import create_rental as create_rent
 from database.database_classes import connection_to_db, GearRental, User, WaterCentre, Gear
 import datetime
-
+from pprint import pprint
 
 def create_rental(user_id, centre_id, gear_id, rent_amount, rent_start, rent_end):
     create_rent(user_id, gear_id, centre_id, rent_start, rent_end, rent_amount)
@@ -40,3 +40,18 @@ def get_rentals_by_water_centre_id(centre_id, session=None):
         formatted_rental['rent_quantity'] = rental.GearRental.rent_amount
         list_of_formatted_rentals.append(formatted_rental)
     return list_of_formatted_rentals
+
+
+@connection_to_db
+def get_rentals_for_centre_owner(centre_id, session=None):
+    rentals = get_rentals_by_water_centre_id(centre_id)
+
+    for rental in rentals:
+        renting_person = session.query(User, GearRental).filter(GearRental.id == rental['rent_id'],
+                                                                GearRental.user_id == User.id).first()
+        rental['first_name'] = renting_person.User.first_name
+        rental['last_name'] = renting_person.User.last_name
+        rental['email'] = renting_person.User.email
+        rental['phone_number'] = renting_person.User.phone_number
+        pprint(rental)
+    return rentals

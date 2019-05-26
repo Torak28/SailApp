@@ -156,8 +156,15 @@ class ChangePassword(Resource):
 
 @ns_accounts.route('/getUserData')
 class GetUserData(Resource):
+    resource_fields = api.model('getUserData', {
+        'first_name': fields.String,
+        'last_name': fields.String,
+        'email': fields.String,
+        'phone_number': fields.String,
+    })
+
     @jwt_required
-    @api.response(200, 'Data returned successfully.')
+    @api.response(200, 'User data returned successfully.', resource_fields)
     def get(self):
         user_id = get_jwt_identity()
         user_obj = user.get_user_by_id(user_id)
@@ -384,7 +391,7 @@ class GetMyCentres(Resource):
             return jsonify(owner_centres)
 
 
-@ns_rental.route('/getRentals/<int:centre_id>')  # dla wypozyczen trwajacych i przyszlych
+@ns_rental.route('/getCurrentAndFutureRentals/<int:centre_id>')  # dla wypozyczen trwajacych i przyszlych
 class GetRentedGearByCentre(Resource):
     resource_fields = api.model('RentalsByCentreId', {
         'rent_id': fields.Integer,
@@ -396,10 +403,34 @@ class GetRentedGearByCentre(Resource):
     })
 
     @jwt_required
-    @api.response(200, 'List of currently rented gear returned successfully.', [resource_fields])
+    @api.response(200, 'List of current and future rentals returned successfully.', [resource_fields])
     def get(self, centre_id):
         current_rentals = rental.get_rentals_by_water_centre_id(centre_id)
         return jsonify(current_rentals)
+
+
+@ns_owner.route('/getRentalsForCentre/<int:centre_id>')
+class GetRentalsForCentre(Resource):
+    resource_fields = api.model('RentalsByCentreId', {
+        'rent_id': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+        'rent_quantity': fields.Integer,
+        'gear_name': fields.String,
+        'gear_id': fields.Integer,
+        'first_name': fields.String,
+        'last_name': fields.String,
+        'email': fields.String,
+        'phone_number': fields.String
+    })
+
+    @jwt_required
+    @api.response(200, 'List of rentals returned successfully.', [resource_fields])
+    def get(self, centre_id):
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, centre_id):
+            rentals = rental.get_rentals_for_centre_owner(centre_id)
+            return jsonify(rentals)
 
 
 @ns_rental.route('/cancelRent')
