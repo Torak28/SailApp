@@ -339,7 +339,7 @@ class RentGear(Resource):
         return {'msg': 'Permission denied. You are not the user.'}, 403
 
 
-@ns_gear.route('/getCurrentlyRentedGear')  # for User
+@ns_gear.route('/getMyCurrentlyRentedGear')  # for User
 class GetCurrentlyRentedGear(Resource):
     resource_fields = api.model('currentlyRentedGear', {
         'centre_id': fields.Integer,
@@ -359,7 +359,7 @@ class GetCurrentlyRentedGear(Resource):
         return jsonify(current_gear)
 
 
-@ns_gear.route('/getRentedGear')  # for User
+@ns_gear.route('/getMyRentedGear')  # for User
 class GetRentedGear(Resource):
     resource_fields = api.model('RentedGear', {
         'centre_id': fields.Integer,
