@@ -7,7 +7,7 @@ import backend.water_centre as wc
 import backend.gear as gear
 import backend.rentals as rental
 
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, jwt_refresh_token_required
 
 app = Flask(__name__)
 app.config['BUNDLE_ERRORS'] = True
@@ -28,6 +28,20 @@ ns_rental = api.namespace('rental', description='Endpoints involving renting.')
 @app.route('/helloheroku')
 def hello_heroku():
     return "Hello Heroku!"
+
+
+@api.route('/refreshToken')
+class RefreshToken(Resource):
+    resource_fields = api.model('refreshToken', {
+        'access_token': fields.String,
+    })
+
+    @api.response(200, 'Refreshed access token.', [resource_fields])
+    @jwt_refresh_token_required
+    def get(self):
+        user_id = get_jwt_identity()
+        return {'access_token': create_access_token(identity=user_id)}, 200
+
 
 @ns_accounts.route('/register')
 class RegisterUser(Resource):
