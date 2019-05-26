@@ -151,7 +151,7 @@ class GetUserData(Resource):
                      'last_name': user_obj.last_name,
                      'email': user_obj.email,
                      'phone_number': user_obj.phone_number}
-        return jsonify(user_data), 200
+        return jsonify(user_data)
 
 
 @ns_owner.route('/addWaterCentre')
@@ -328,7 +328,7 @@ class GetCurrentlyRentedGear(Resource):
     def get(self):
         user_id = get_jwt_identity()
         current_gear = gear.get_currently_rented_gear_by_user(user_id)
-        return jsonify(current_gear), 200
+        return jsonify(current_gear)
 
 
 @ns_gear.route('/getRentedGear')  # for User
@@ -348,7 +348,7 @@ class GetRentedGear(Resource):
     def get(self):
         user_id = get_jwt_identity()
         current_gear = gear.get_rented_gear_by_user(user_id)
-        return jsonify(current_gear), 200
+        return jsonify(current_gear)
 
 
 @ns_owner.route('/getCentres')
@@ -366,27 +366,26 @@ class GetMyCentres(Resource):
     def get(self):
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id):
-            a = wc.get_water_centres_by_owner_id(user_id)
-            return jsonify(a), 200
+            owner_centres = wc.get_water_centres_by_owner_id(user_id)
+            return jsonify(owner_centres)
 
 
 @ns_rental.route('/getRentals/<int:centre_id>')  # dla wypozyczen trwajacych i przyszlych
 class GetRentedGearByCentre(Resource):
     resource_fields = api.model('RentalsByCentreId', {
-        # 'centre_id': fields.Integer,
-        # 'centre_name':  fields.String,
-        # 'rent_id': fields.Integer,
-        # 'rent_start': fields.DateTime,
-        # 'rent_end': fields.DateTime,
-        # 'rent_quantity': fields.Integer,
-        # 'gear_name': fields.String
+        'rent_id': fields.Integer,
+        'rent_start': fields.DateTime,
+        'rent_end': fields.DateTime,
+        'rent_quantity': fields.Integer,
+        'gear_name': fields.String,
+        'gear_id': fields.Integer
     })
 
-    # @jwt_required
+    @jwt_required
     @api.response(200, 'List of currently rented gear returned successfully.', [resource_fields])
     def get(self, centre_id):
         current_rentals = rental.get_rentals_by_water_centre_id(centre_id)
-        return jsonify(current_rentals), 200
+        return jsonify(current_rentals)
 
 
 @ns_rental.route('/cancelRent')
@@ -412,7 +411,7 @@ class CancelRent(Resource):
 
 
 
-
+# PONIZEJ NIE TYKANE.
 @app.route('/getGearClient', methods=['GET'])
 @cross_origin(supports_credentials=True)  # to jest potrzebne
 def get_gear():
