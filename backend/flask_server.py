@@ -25,6 +25,10 @@ ns_admin = api.namespace('admin', description='Endpoints involving admin.')
 ns_rental = api.namespace('rental', description='Endpoints involving renting.')
 
 
+@app.route('/helloheroku')
+def hello_heroku():
+    return "Hello Heroku!"
+
 @ns_accounts.route('/register')
 class RegisterUser(Resource):
     resource_fields = api.model('registerUser', {
