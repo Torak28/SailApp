@@ -20,60 +20,10 @@ def change_password(kwargs, session=None):
     kwargs['password'] = hash_password(kwargs['password'])
     session.query(User).filter_by(id=kwargs['id']).update(kwargs)
 
+
 @connection_to_db
 def get_role_id(role, session=None):
     return session.query(Role).filter_by(role_name=role).first().id
-
-#pobranie dancyh usera z bazy
-@connection_to_db
-def get_fname(id, session=None):
-    return session.query(User).filter_by(id=id).first().first_name
-
-@connection_to_db
-def get_lname(id, session=None):
-    return session.query(User).filter_by(id=id).first().last_name
-
-@connection_to_db
-def get_email(id, session=None):
-    return session.query(User).filter_by(id=id).first().email
-
-@connection_to_db
-def get_pnumber(id, session=None):
-    return session.query(User).filter_by(id=id).first().phone_number
-
-@connection_to_db
-def get_password(id, session=None):
-    return session.query(User).filter_by(id=id).first().password
-
-
-#tutaj blad
-@connection_to_db
-def update_user(id, session=None):
-    return session.update(User).where(id=id).value(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, password=hash_password(password))
-
-#tu tez
-@connection_to_db
-def update_centre(centre_id, session=None):
-    return session.update(WaterCentre).where(id=centre_id).value(name=name, latitude=latitude, longitude=longitude)
-
-
-#get dla gear
-@connection_to_db
-def get_quantity(centre_id, name, session=None):
-    return session.query(Gear).filter_by(centre_id=centre_id).filter_by(name=name).first().quantity
-
-#get dla WaterCentre
-@connection_to_db
-def get_name(centre_id, session=None):
-    return session.query(WaterCentre).filter_by(centre_id=centre_id).first().name
-
-@connection_to_db
-def get_lat(centre_id, session=None):
-    return session.query(WaterCentre).filter_by(centre_id=centre_id).first().latitude
-
-@connection_to_db
-def get_long(centre_id, session=None):
-    return session.query(WaterCentre).filter_by(centre_id=centre_id).first().longitude
 
 
 def register_new_person(first_name, last_name, email, password, phone_number, role):
@@ -90,78 +40,6 @@ def register_new_person(first_name, last_name, email, password, phone_number, ro
             return False
     else:
         return False
-    #    print ("Please provide proper name (User/Admin), not '{}'.".format(user_or_admin))
-
-#tutaj moje nowe funkcje
-#czy jest potrzebna??
-def register_new_owner(first_name, last_name, email, password, phone_number, user_or_admin='Owner'):
-    if user_or_admin in ['User', 'Admin', 'Owner']:
-        hashed_password = hash_password(password)
-        role_id = get_role_id(user_or_admin)
-        if not is_user_in_database_by_mail(email):
-            user = create_user(first_name, last_name, email, hashed_password, phone_number, role_id)
-            add_object_to_database(user)
-            print("Added new {} - {} {}".format(user_or_admin, first_name, last_name))
-        else:
-            print("user already exists!")
-    #else:
-    #    "Please provide proper name (User/Admin), not '{}'.".format(user_or_admin)
-
-
-def change_data_rental(centre_id, name, latitude, longitude):
-    nazwa=get_name(centre_id)
-    lat=get_lat(centre_id)
-    long=get_long(centre_id)
-    nazwa=name
-    lat=latitude
-    long=longitude  # to wszystko niepotezebne jeśli upadte dziala dobrze, tak samo funkcje
-    update_centre(centre_id)
-
-
-def gear_type_add(centre_id, name, price, quantity=0):
-    gear = create_gear(centre_id, name, quantity, price)
-    add_object_to_database(gear)
-    print("Added new {} - quantity:{}, price:{}".format(gear, quantity, price_hour))
-
-@connection_to_db
-def gear_type_delete(centre_id, name, session=None):
-    session.query(Gear).filter_by(centre_id=centre_id).filter_by(name=name).delete()
-    print("Deleted a gear type.")
-
-@connection_to_db
-def gear_add(centre_id, name, quantity):
-    q=get_quantity(centre_id, name, session=None)
-    q += quantity
-    session.update(WaterCentre).where(id=centre_id).value(quantity=q)
-    print("Current quantiry of {}: {}".format(name, quantity))
-
-@connection_to_db
-def gear_delete(centre_id, name, quantity, session=None):
-    q=get_quantity(centre_id, name, session=None)
-    q -= quantity
-    session.update(WaterCentre).where(id=centre_id).value(quantity=q)
-    print("Current quantiry of {}: {}".format(name, quantity))
-
-
-#czy to jest ok?
-@connection_to_db
-def get_gear_owner(centre_id,gear_id, session=None):
-    return session.query(Gear).filter_by(centre_id=centre_id).filter_by(id=gear_id).all()
-
-
-@connection_to_db
-def all_gear_owner(centre_id, session=None):
-    return session.query(Gear).filter_by(centre_id=centre_id).all()
-
-
-@connection_to_db
-def get_gear_client(gear_id, session=None):
-    return session.query(Gear).filter_by(id=gear_id).all()
-
-
-@connection_to_db
-def all_gear_client(session=None):
-    return session.query(Gear).all()
 
 
 #nast 3 funkcje do sprawdzenia, wzsystkie do rent gear prze usera
@@ -171,8 +49,6 @@ def is_overlapped(start1,end1, start2, end2, rent_amount, quantity_gear): #wszys
     x=0
     q=0
     while x<len(start2):
-        #print(r2.start[x])
-        #print(r2.end[x])
         latest_start = max(r1.start, r2.start[x])
         earliest_end = min(r1.end, r2.end[x])
         if(latest_start < earliest_end):   #jesli range podany przez usera sie naklada z jakimkolwiek gearRental z bazy

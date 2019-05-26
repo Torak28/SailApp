@@ -40,6 +40,10 @@ def create_class_type(class_type):
     return class_type
 
 
+def create_picture(filepath, centre_id):
+    picture = db.Picture(file_path=filepath, water_centre_id=centre_id)
+    return picture
+
 @connection_to_db
 def add_object_to_database(obj, session=None):
     print("Adding object: {}".format(obj))
