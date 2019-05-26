@@ -1,5 +1,5 @@
 from database.create_objects_of_classes import create_rental as create_rent
-from database.database_classes import connection_to_db, GearRental, User, WaterCentre
+from database.database_classes import connection_to_db, GearRental, User, WaterCentre, Gear
 import datetime
 
 
@@ -26,7 +26,17 @@ def is_user_allowed_to_delete_rental(user_id, rental_id, session=None):
 @connection_to_db
 def get_rentals_by_water_centre_id(centre_id, session=None):
     now = datetime.datetime.now()
-    rentals = session.query(WaterCentre, GearRental).filter(WaterCentre.id == centre_id,
-                                                            GearRental.rent_end > now).all()
+    rentals = session.query(WaterCentre, GearRental, Gear).filter(WaterCentre.id == centre_id,
+                                                                  GearRental.rent_end > now,
+                                                                  Gear.id == GearRental.gear_id).all()
+    list_of_formatted_rentals = []
     for rental in rentals:
-        pass
+        formatted_rental = dict()
+        formatted_rental['gear_id'] = rental.Gear.id
+        formatted_rental['gear_name'] = rental.Gear.name
+        formatted_rental['rent_id'] = rental.GearRental.id
+        formatted_rental['rent_start'] = rental.GearRental.rent_start
+        formatted_rental['rent_end'] = rental.GearRental.rent_end
+        formatted_rental['rent_quantity'] = rental.GearRental.rent_amount
+        list_of_formatted_rentals.append(formatted_rental)
+    return list_of_formatted_rentals
