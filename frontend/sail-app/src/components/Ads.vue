@@ -6,7 +6,7 @@
     <h1 class='title'>{{title}}</h1>
     <br>
     <br>
-    <img src="https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-684639.jpg" class="align-centre" alt="Logo">
+    <img src="../assets/promo.png" class="align-centre" alt="Logo">
     <br>
     <br>
     <p>{{text}}</p>
@@ -19,7 +19,7 @@ export default {
   data() {
     return {
       title: 'Sail with us!',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultrices, purus vel vulputate vehicula, quam ligula ornare nunc, ac consequat ligula enim sit amet ex. Donec suscipit a magna sed porttitor. Sed vel ex consectetur, pellentesque dui a, sollicitudin ipsum. Praesent consectetur, nibh nec ornare vestibulum, urna elit molestie ex, vitae hendrerit dolor nisl quis libero. Aliquam tincidunt imperdiet congue. Aenean ut lectus ac metus euismod euismod in eget velit. Morbi suscipit finibus est ut maximus. Pellentesque sed tellus vitae sapien luctus sodales ornare ut enim. Cras imperdiet eros dui, et aliquet quam tincidunt ut. Sed arcu nunc, tincidunt eleifend orci ut, sagittis fringilla eros. Nullam sed elit imperdiet, suscipit erat sit amet, consequat ipsum.'
+      text: 'Want to renta a boat or a kayak? We got You covered! Use our app to search for a perfect match between You and your dream sailboat! There are no such thing as a failure with us. Above one hundret places to choose from, above five hundrets boats to rent and prices from twenty PLN for hour up! Want to spend time on a lake, but don\'t now how and where? Don\'t worry, We got You covered. Sail app for the rescue!'
     }
   }
 };
