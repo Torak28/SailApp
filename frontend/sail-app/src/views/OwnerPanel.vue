@@ -11,19 +11,29 @@
         <b-card no-body class="overflow-hidden">
           <b-row no-gutters>
             <b-col md="6">
-              <b-card-img src="https://picsum.photos/400/400/?image=20" class="rounded-0"></b-card-img>
+              <b-card-img :src=form.photoFile class="rounded-0" style='max-height: 250px;'></b-card-img>
             </b-col>
             <b-col md="6">
-              <b-card-body title="Horizontal Card">
+              <b-card-body :title="form.companyName">
                 <b-card-text>
-                  This is a wider card with supporting text as a natural lead-in to additional content.
-                  This content is a little bit longer.
+                  <font-awesome-icon icon="phone" /> {{form.companyTel}}
+                  <br>
+                  <font-awesome-icon icon="map-marker-alt" /> {{place}}
+                  <br>
+                  <br>
+                  Gear:
+                  <ul>
+                    <li v-for="(gear, index) in this.gearTypes" :key="index">
+                      {{ gear }}
+                    </li>
+                  </ul>
                 </b-card-text>
               </b-card-body>
             </b-col>
           </b-row>
         </b-card>
         <!--TODO-->
+        <br>
         <b-form-file class="block" v-model="form.photoFile" placeholder="Company photo" drop-placeholder="Drop file here..." />
       </b-col>
     </b-row>
@@ -41,7 +51,7 @@
         <b-button block class="block" variant="info" v-on:click="changeCompanyTelProp()">Change</b-button>
       </b-col>
       <b-col>
-      <gmap-map class='block' v-if="form.type == 'Owner'" :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
+      <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
       <gmap-marker
         :position="{
           lat: Number(this.form.lattitude),
@@ -51,13 +61,14 @@
       </gmap-map>
       <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
       <b-container v-for="gear in form.gears" :key="gear.id">
-        <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
-        <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
-        <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
-        <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
+        <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
+        <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
+        <b-form-input class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+        <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
         <hr>
       </b-container>
-      <b-button block variant="primary" v-on:click="addGear()">Add new Gear</b-button>
+      <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000, offset: -210}">Add new Gear</b-button>
+      <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
       </b-col>
     </b-row>
     <br>
@@ -109,12 +120,12 @@ export default {
         checkPassword: 'dupa123',
         companyName: 'KajaX',
         companyTel: '123 123 123',
-        photoFile: 'xd',
+        photoFile: 'https://picsum.photos/400/400/?image=20',
         lattitude: '51.1078852',
         longtitude: '17.03853760000004',
-        howManyGear: null,
         gears: [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
       },
+      howManyNow: 0,
       counter: 0,
       changeName: true,
       changeSurname: true,
@@ -125,59 +136,80 @@ export default {
       changeCompanyTel: true,
       place: null,
       center: { lat: 52.237049, lng: 21.017532 },
-      zoom: 6
+      zoom: 6,
+      gearTypes: '',
     }
   },
   methods: {
     addGear(){
       this.form.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
+      this.howManyNow++;
       this.counter++;
     },
-    deleteGear(){
-      this.form.gears.pop();
-      this.counter--;
-      if(this.counter < 0){
-        this.counter = 0;  
+    deleteGear(elemId){
+      const index = this.form.gears.map(e => e.id).indexOf(elemId);
+      this.form.gears.splice(index, 1);
+      this.howManyNow--;
+      if(this.howManyNow < 0){
+        this.howManyNow = 0;  
       }
     },
+    saveGear(){
+      let tmp = [];
+      for (let i = 0; i < this.form.gears.length; i++) {
+        tmp.push(Object.values(this.form.gears[i])[1]);
+      }
+      this.gearTypes = tmp;
+    },
     changeNameProp(){
-      this.changeName = false;
+      this.changeName = !this.changeName;
     },
     changeSurnameProp(){
-      this.changeSurname = false;
+      this.changeSurname = !this.changeSurname;
     },
     changeTelProp(){
-      this.changeTel = false;
+      this.changeTel = !this.changeTel;
     },
     changeEmailProp(){
-      this.changeEmail = false;
+      this.changeEmail = !this.changeEmail;
     },
     changeCompanyNameProp(){
-      this.changeCompanyName = false;
+      this.changeCompanyName = !this.changeCompanyName;
     },
     changeCompanyTelProp(){
-      this.changeCompanyTel = false;
+      this.changeCompanyTel = !this.changeCompanyTel;
     },
     changePasswordProp(){
-      this.changePassword = false;
+      this.changePassword = !this.changePassword;
     },
     setPlace(place) {
-      this.place = place;
-      //this.form.place = place.address_components[0].long_name;
-      this.form.lattitude = this.place.geometry.location.lat();
-      this.form.longtitude = this.place.geometry.location.lng();
+      let tmp = place;
+      this.form.lattitude = tmp.geometry.location.lat();
+      this.form.longtitude = tmp.geometry.location.lng();
+      this.place = tmp.address_components[1].long_name;
     },
     Change(){
       // TODO: zmienić
       //console.log("User " + JSON.stringify(this.form) + " changed");
     }
   },
-  mounted () {
+  created () {
+    let tmp = [];
+    for (let i = 0; i < this.form.gears.length; i++) {
+      tmp.push(Object.values(this.form.gears[i])[1]);
+    }
+    this.gearTypes = tmp;
+    this.howManyNow = this.form.gears.length;
+    this.counter = this.form.gears.length;
     this.axios
-      .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.form.lattitude + "," + this.form.longtitude + "&key=" + apiKey.API_KEY)
-      .then((response) => {
-        this.place = response.data.results[0].address_components[3].long_name
-      })
+      .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.form.lattitude + "," + this.form.longtitude + "&key=" + apiKey.API_KEY2)
+      .then(
+        (response) => {
+          this.place = response.data.results[0].address_components[3].long_name;
+        },
+        (error) => { 
+          console.log(error) 
+        })
   }
 };
 </script>
@@ -186,6 +218,9 @@ export default {
   .title {
     background: linear-gradient(180deg, rgba(255,255,255,0) 65%, #FFD0AE 65%);
     display: inline;
+  }
+  .img-card{
+    width: 150px;
   }
   .AutoBlockOff{
     background-clip: padding-box;

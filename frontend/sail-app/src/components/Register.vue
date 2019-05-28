@@ -57,7 +57,6 @@ export default {
         photoFile: null,
         lattitude: '',
         longtitude: '',
-        howManyGear: null,
         gears: []
       },
       howManyNow: 0,
@@ -138,7 +137,6 @@ export default {
     },
     setPlace(place) {
       this.place = place;
-      //this.form.place = place.address_components[0].long_name;
       this.form.lattitude = this.place.geometry.location.lat();
       this.form.longtitude = this.place.geometry.location.lng();
     }
