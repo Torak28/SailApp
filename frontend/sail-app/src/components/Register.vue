@@ -10,7 +10,8 @@
       <b-form-input class="block" type="password" v-model='form.checkPassword' placeholder="Repeat Password" />
       <b-form-checkbox class="block" v-model="form.type" unchecked-value="Owner" value="User" name="check-button" switch> {{ form.type }} </b-form-checkbox>
       <b-form-input v-if="form.type == 'Owner'" class="block" type="text" v-model='form.companyName' placeholder="Company Name" />
-
+      <b-form-input v-if="form.type == 'Owner'" class="block" type="tel" v-model='form.companyTel' placeholder="Company Phone Number" />
+      <b-form-file v-if="form.type == 'Owner'" class="block" v-model="form.photoFile" placeholder="Company photo" drop-placeholder="Drop file here..." />
       <GmapAutocomplete v-if="form.type == 'Owner'" class="AutoBlock" placeholder="Place" @place_changed="setPlace" />
 
       <gmap-map class='block' v-if="form.type == 'Owner'" :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
@@ -26,13 +27,14 @@
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
-        <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete Last Gear</b-button>
+        <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
         <hr>
       </b-container>
-      <b-button id="Add" v-if="form.type == 'Owner'" block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button>
-
-      <b-button block variant="success" v-on:click="regiterNewAccount()">Register</b-button>
-      <b-button block variant="warning" to="/">Go back</b-button>
+    </b-row>
+    <b-row>
+      <b-button id="Add" class='btnClass' v-if="form.type == 'Owner'" block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button>
+      <b-button block class='btnClass' variant="success" v-on:click="regiterNewAccount()">Register</b-button>
+      <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
     </b-row>
   </b-container>
 </template>
@@ -51,10 +53,10 @@ export default {
         password: '',
         checkPassword: '',
         companyName: '',
-        place: '',
+        companyTel: '',
+        photoFile: null,
         lattitude: '',
         longtitude: '',
-        howManyGear: null,
         gears: []
       },
       howManyNow: 0,
@@ -82,7 +84,7 @@ export default {
           this.$scrollTo('#alert', 200, {offset: -500});
         }
       }else{
-        if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != '' && this.form.companyName != '' &&  this.form.lattitude != '' &&  this.form.longtitude != ''){
+        if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != '' && this.form.companyName != '' &&  this.form.lattitude != '' &&  this.form.longtitude != '' &&  this.form.companyTel != '' &&  this.form.photoFile != ''){
           if(this.form.password != this.form.checkPassword){
             this.$parent.wrongPass = true;
             this.$parent.noData = false;
@@ -135,7 +137,6 @@ export default {
     },
     setPlace(place) {
       this.place = place;
-      this.form.place = place.address_components[0].long_name;
       this.form.lattitude = this.place.geometry.location.lat();
       this.form.longtitude = this.place.geometry.location.lng();
     }
@@ -179,7 +180,7 @@ export default {
     margin-bottom: 10px;
     margin-left: 0px;
     margin-right: 0px;
-    margin-top: 0px;
+    margin-top: 10px;
     overflow: visible;
     overflow-x: visible;
     overflow-y: visible;
