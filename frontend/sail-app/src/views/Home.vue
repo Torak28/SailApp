@@ -32,14 +32,10 @@ export default {
       wrongDataMsg: "The login and / or password is incorrect",
       // TODO: zmienić
       mockAccount1: {
-        login: "dupa",
-        password: "dupa",
-        role: 'User'
-      },
-      mockAccount2: {
         login: "asd",
         password: "asd",
-        role: 'Owner'
+        role: 'User'
+        //role: 'Owner'
       }
     }
   }
