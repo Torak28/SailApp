@@ -7,6 +7,7 @@
     <b-alert :show=noData variant="danger">{{noDataMsg}}</b-alert>
     <b-alert :show=wrongPass variant="danger">{{wrongPassMsg}}</b-alert>
     <b-alert :show=noGear variant="danger">{{noGearMsg}}</b-alert>
+    <b-alert :show=cookieData variant="danger">{{cookieDataMsg}}</b-alert>
     <Register />
   </b-container>
 </template>
@@ -24,6 +25,8 @@ export default {
       noData: false,
       noGear: false,
       wrongPass: false,
+      cookieData: false,
+      cookieDataMsg: "Accept terms and use",
       noDataMsg: "All data must be present",
       noGearMsg: "Gear tab is not filled properly",
       wrongPassMsg: "Passwords do not match",

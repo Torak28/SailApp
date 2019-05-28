@@ -33,6 +33,7 @@
     </b-row>
     <b-row>
       <b-button id="Add" class='btnClass' v-if="form.type == 'Owner'" block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button>
+      <b-form-checkbox id="checkbox-1" v-model="status" name="checkbox-1" class='block'> I accept the <b-link href="https://ezelechowska-psycholog.pl/PolitykaPrywatnosci.pdf">terms and use</b-link> </b-form-checkbox>
       <b-button block class='btnClass' variant="success" v-on:click="regiterNewAccount()">Register</b-button>
       <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
     </b-row>
@@ -62,64 +63,82 @@ export default {
       howManyNow: 0,
       counter: 0,
       place: null,
+      status: false,
       center: { lat: 52.237049, lng: 21.017532 },
       zoom: 6
     }
   },
   methods: {
-      regiterNewAccount() {
-      if(this.form.type == 'User'){
-        if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != ''){
-          if(this.form.password != this.form.checkPassword){
-            this.$parent.wrongPass = true;
-            this.$parent.noData = false;
-            this.$scrollTo('#alert', 200, {offset: -500});
-          }else{
-            //console.log("User " + JSON.stringify(this.form) + " registred");
-            this.$router.replace({ name: "home" });
-          }
-        }else{
-          this.$parent.wrongPass = false;
-          this.$parent.noData = true;
-          this.$scrollTo('#alert', 200, {offset: -500});
-        }
-      }else{
-        if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != '' && this.form.companyName != '' &&  this.form.lattitude != '' &&  this.form.longtitude != '' &&  this.form.companyTel != '' &&  this.form.photoFile != ''){
-          if(this.form.password != this.form.checkPassword){
-            this.$parent.wrongPass = true;
-            this.$parent.noData = false;
-            this.$parent.noGear = false;
-            this.$scrollTo('#alert', 200, {offset: -500});
-          }else{
-            if(this.form.gears.length == 0){
-              this.$parent.wrongPass = false;
-              this.$parent.noGear = true;
+    regiterNewAccount() {
+      if(this.status == true){
+        if(this.form.type == 'User'){
+          if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != ''){
+            if(this.form.password != this.form.checkPassword){
+              this.$parent.wrongPass = true;
               this.$parent.noData = false;
+              this.$parent.noGear = false;
+              this.$parent.cookieData = false;
               this.$scrollTo('#alert', 200, {offset: -500});
             }else{
-              let flag = false;
-              for (var i = 0; i < this.form.gears.length; ++i) {
-                if(Object.values(this.form.gears[i]).includes('') == true){
-                  flag = true;
-                }
-              }
-              if(flag == false) {
-                //console.log("Owner " + JSON.stringify(this.form) + " registred");
-                this.$router.replace({ name: "home" });
-              }else{
+              //console.log("User " + JSON.stringify(this.form) + " registred");
+              this.$router.replace({ name: "home" });
+            }
+          }else{
+            this.$parent.wrongPass = false;
+            this.$parent.noData = true;
+            this.$parent.noGear = false;
+            this.$parent.cookieData = false;
+            this.$scrollTo('#alert', 200, {offset: -500});
+          }
+        }else{
+          if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != '' && this.form.companyName != '' &&  this.form.lattitude != '' &&  this.form.longtitude != '' &&  this.form.companyTel != '' &&  this.form.photoFile != ''){
+            if(this.form.password != this.form.checkPassword){
+              this.$parent.wrongPass = true;
+              this.$parent.noData = false;
+              this.$parent.noGear = false;
+              this.$parent.cookieData = false;
+              this.$scrollTo('#alert', 200, {offset: -500});
+            }else{
+              if(this.form.gears.length == 0){
                 this.$parent.wrongPass = false;
                 this.$parent.noGear = true;
                 this.$parent.noData = false;
+                this.$parent.cookieData = false;
                 this.$scrollTo('#alert', 200, {offset: -500});
+              }else{
+                let flag = false;
+                for (var i = 0; i < this.form.gears.length; ++i) {
+                  if(Object.values(this.form.gears[i]).includes('') == true){
+                    flag = true;
+                  }
+                }
+                if(flag == false) {
+                  //console.log("Owner " + JSON.stringify(this.form) + " registred");
+                  this.$router.replace({ name: "home" });
+                }else{
+                  this.$parent.wrongPass = false;
+                  this.$parent.noGear = true;
+                  this.$parent.noData = false;
+                  this.$parent.cookieData = false;
+                  this.$scrollTo('#alert', 200, {offset: -500});
+                }
               }
             }
+          }else{
+            this.$parent.wrongPass = false;
+            this.$parent.noGear = false;
+            this.$parent.noData = true;
+            this.$parent.cookieData = false;
+            this.$scrollTo('#alert', 200, {offset: -500});
           }
-        }else{
-          this.$parent.wrongPass = false;
-          this.$parent.noGear = false;
-          this.$parent.noData = true;
-          this.$scrollTo('#alert', 200, {offset: -500});
         }
+      }else{
+        console.log('xd');
+        this.$parent.cookieData = true;
+        this.$parent.wrongPass = false;
+        this.$parent.noGear = false;
+        this.$parent.noData = false;
+        this.$scrollTo('#alert', 200, {offset: -500});
       }
     },
     addGear(){
