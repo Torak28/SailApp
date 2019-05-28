@@ -7,6 +7,7 @@
     <br>
     <b-row>
       <b-col>
+        <!--TODO-->
         <b-card no-body class="overflow-hidden">
           <b-row no-gutters>
             <b-col md="6">
@@ -22,6 +23,7 @@
             </b-col>
           </b-row>
         </b-card>
+        <!--TODO-->
         <b-form-file class="block" v-model="form.photoFile" placeholder="Company photo" drop-placeholder="Drop file here..." />
       </b-col>
     </b-row>
@@ -41,7 +43,6 @@
       <b-col>
       <gmap-map class='block' v-if="form.type == 'Owner'" :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
       <gmap-marker
-        v-if="this.form.place"
         :position="{
           lat: Number(this.form.lattitude),
           lng: Number(this.form.longtitude),
@@ -49,14 +50,14 @@
         />
       </gmap-map>
       <GmapAutocomplete class="AutoBlockOff" :placeholder="form.place" @place_changed="setPlace" />
-      <b-button block variant="primary" v-on:click="addGear()">Add new Gear</b-button>
-      <b-button class='block' block variant="danger" v-on:click="deleteGear()">Delete Last Gear</b-button>
       <b-container v-for="gear in form.gears" :key="gear.id">
-        <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
-        <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
-        <b-form-input class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+        <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
+        <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
+        <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+        <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
         <hr>
       </b-container>
+      <b-button block variant="primary" v-on:click="addGear()">Add new Gear</b-button>
       </b-col>
     </b-row>
     <br>
@@ -84,6 +85,8 @@
     <b-row>
       
     </b-row>
+      <br>
+      <br>
       <b-button block variant="success" v-on:click="Change()">Change</b-button>
       <b-button block variant="warning" to="/">Go back</b-button>
   </b-container>
@@ -108,9 +111,8 @@ export default {
         photoFile: 'xd',
         lattitude: '51.1078852',
         longtitude: '17.03853760000004',
-        place: 'Wrocław',
         howManyGear: null,
-        gears: []
+        gears: [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
       },
       counter: 0,
       changeName: true,
@@ -160,7 +162,7 @@ export default {
     },
     setPlace(place) {
       this.place = place;
-      this.form.place = place.address_components[0].long_name;
+      //this.form.place = place.address_components[0].long_name;
       this.form.lattitude = this.place.geometry.location.lat();
       this.form.longtitude = this.place.geometry.location.lng();
     },

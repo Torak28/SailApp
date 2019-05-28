@@ -27,13 +27,14 @@
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
-        <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete Last Gear</b-button>
+        <b-button v-if="form.type == 'Owner'" class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
         <hr>
       </b-container>
-      <b-button id="Add" v-if="form.type == 'Owner'" block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button>
-
-      <b-button block variant="success" v-on:click="regiterNewAccount()">Register</b-button>
-      <b-button block variant="warning" to="/">Go back</b-button>
+    </b-row>
+    <b-row>
+      <b-button id="Add" class='btnClass' v-if="form.type == 'Owner'" block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button>
+      <b-button block class='btnClass' variant="success" v-on:click="regiterNewAccount()">Register</b-button>
+      <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
     </b-row>
   </b-container>
 </template>
@@ -54,7 +55,6 @@ export default {
         companyName: '',
         companyTel: '',
         photoFile: null,
-        place: '',
         lattitude: '',
         longtitude: '',
         howManyGear: null,
@@ -138,7 +138,7 @@ export default {
     },
     setPlace(place) {
       this.place = place;
-      this.form.place = place.address_components[0].long_name;
+      //this.form.place = place.address_components[0].long_name;
       this.form.lattitude = this.place.geometry.location.lat();
       this.form.longtitude = this.place.geometry.location.lng();
     }
