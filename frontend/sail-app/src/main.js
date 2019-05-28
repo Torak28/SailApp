@@ -11,6 +11,7 @@ var VueScrollTo = require('vue-scrollto');
 Vue.use(BootstrapVue);
 Vue.use(VueScrollTo);
 
+
 Vue.config.productionTip = false;
 
 export const eventBus = new Vue();
@@ -23,6 +24,10 @@ Vue.use(VueGoogleMaps, {
     libraries: "places"
   }
 });
+
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+Vue.use(VueAxios, axios);
 
 new Vue({
   router,

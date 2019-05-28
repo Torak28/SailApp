@@ -49,7 +49,7 @@
         }"
         />
       </gmap-map>
-      <GmapAutocomplete class="AutoBlockOff" :placeholder="form.place" @place_changed="setPlace" />
+      <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
       <b-container v-for="gear in form.gears" :key="gear.id">
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
         <b-form-input  v-if="form.type == 'Owner'" class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import apiKey from '../json/secret.json';
 export default {
   name: "OwnerPanel",
   props: ['user'],
@@ -170,6 +171,14 @@ export default {
       // TODO: zmienić
       //console.log("User " + JSON.stringify(this.form) + " changed");
     }
+  },
+  mounted () {
+    console.log(apiKey.API_KEY);
+    this.axios
+      .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.form.lattitude + "," + this.form.longtitude + "&key=" + apiKey.API_KEY)
+      .then((response) => {
+        this.place = response.data.results[0].address_components[3].long_name
+      })
   }
 };
 </script>
