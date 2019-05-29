@@ -28,3 +28,18 @@ def get_water_centres_by_owner_id(owner_id, session=None):
         formatted_centre = get_water_centre_by_id(centre.id)
         list_of_centres.append(formatted_centre)
     return list_of_centres
+
+
+@connection_to_db
+def get_all_water_centres(session=None):
+    centres = session.query(WaterCentre).all()
+    list_of_formatted_centres = []
+    for centre in centres:
+        formatted_centre = dict()
+        formatted_centre['centre_id'] = centre.id
+        formatted_centre['latitude'] = centre.latitude
+        formatted_centre['longitude'] = centre.longitude
+        formatted_centre['centre_name'] = centre.name
+        formatted_centre['phone_number'] = centre.contact_number
+        list_of_formatted_centres.append(formatted_centre)
+    return list_of_formatted_centres

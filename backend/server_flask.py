@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_file
 from flask_restplus import Api, Resource, reqparse, fields
 from backend.login_register_delete import *
 from database.prepare_db import prepare_db
@@ -540,6 +540,44 @@ class AddPicture(Resource):
             pictures.add_picture_to_centre(kwargs['centre_id'], filepath)
             return {'msg': 'Picture was saved and added.'}, 201
         return {'msg': 'Permission denied. You are not the owner.'}, 403
+
+
+@ns_user.route('/getCentres')
+class GetCentres(Resource):
+    resource_fields = api.model('editRent', {
+        'centre_id': fields.String,
+        'latitude': fields.String,
+        'longitude': fields.String,
+        'centre_name': fields.String,
+        'phone_number': fields.String})
+
+    @jwt_required
+    @api.response(200, 'List of centres returned successfully.', [resource_fields])
+    def get(self):
+        water_centres = wc.get_all_water_centres()
+        return jsonify(water_centres)
+
+
+@ns_user.route('/getPicturesIdsOfCentre/<int:centre_id>')
+class GetPicturesIdsOfCentre(Resource):
+    resource_fields = api.model('getPicturesIdsOfCentre', {
+        'picture_id': fields.String
+    })
+
+    @jwt_required
+    @api.response(200, 'List of pictures IDs returned successfully.', [resource_fields])
+    def get(self, centre_id):
+        list_of_ids = pictures.get_pictures_ids_of_centre(centre_id)
+        return jsonify(list_of_ids)
+
+
+@ns_user.route('/getPicture/<int:picture_id>')
+class GetPicture(Resource):
+    @jwt_required
+    @api.response(200, 'Picture returned successfully.')
+    def get(self, picture_id):
+        picture_filepath = pictures.get_picture(picture_id)
+        return send_file(picture_filepath, mimetype='image/gif')
 
 
 if __name__ == '__main__':
