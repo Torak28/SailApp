@@ -202,8 +202,6 @@ export default {
           })
     },
     'parentCompanyForm.gears': function(newV){
-      console.log('xd' + JSON.stringify(newV));
-      console.log('--------');
       let tmp = [];
       for (let i = 0; i < newV.length; i++) {
         tmp.push(Object.values(newV[i])[1]);

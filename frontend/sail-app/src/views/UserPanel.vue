@@ -121,8 +121,8 @@ export default {
       });
       this.companyForms.push({
         name: 'XKajak',
-        latitude: '51.1043057',
-        longtitude: '17.0472932',
+        latitude: '50.3483816',
+        longtitude: '18.915717599999994',
         phone: '666 777 888',
         photo: 'https://picsum.photos/450/300/?image=10',
         gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}]
