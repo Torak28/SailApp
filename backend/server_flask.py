@@ -346,14 +346,24 @@ class RentGear(Resource):
     @api.doc(body=resource_fields)
     @jwt_required
     @api.response(200, 'Rent was successful.')
+    @api.response(409, 'Rent was unsuccessful. Rent for this amount of '
+                       'gear is not possible for given timeframe.')
     @api.response(403, 'User does not have the proper rights.')
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
         if not user.is_user_the_owner(user_id):
-            rental.create_rental(user_id, kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
-                                 kwargs['rent_start'], kwargs['rent_end'])
-            return {'msg': 'Rent was successful.'}, 200
+            total_qty = gear.get_total_quantity(kwargs['centre_id'], kwargs['gear_id'])
+
+            if rental.check_if_rent_is_possible(kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
+                                             kwargs['rent_start'], kwargs['rent_end'], total_qty):
+
+                rental.create_rental(user_id, kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
+                                     kwargs['rent_start'], kwargs['rent_end'])
+                return {'msg': 'Rent was successful.'}, 200
+            else:
+                return {'msg': 'Rent was unsuccessful. Rent for this amount of '
+                               'gear is not possible for given timeframe.'}, 409
         return {'msg': 'Permission denied. You are not the user.'}, 403
 
 

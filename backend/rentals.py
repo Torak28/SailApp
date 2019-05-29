@@ -2,6 +2,7 @@ from database.create_objects_of_classes import create_rental as create_rent
 from database.create_objects_of_classes import add_object_to_database
 from database.database_classes import connection_to_db, GearRental, User, WaterCentre, Gear
 import datetime
+from datetimerange import DateTimeRange
 from pprint import pprint
 
 
@@ -73,3 +74,27 @@ def get_rentals_for_centre_owner(centre_id, session=None):
 @connection_to_db
 def get_centre_id(rental_id, session=None):
     return session.query(GearRental).filter_by(id=rental_id).first().centre_id
+
+
+@connection_to_db
+def check_if_rent_is_possible(centre_id, gear_id, rent_amount, rent_start, rent_end, max_rent, session=None):
+    rent_start = datetime.datetime.strptime(rent_start, '%Y-%m-%dT%H:%M:%S.%fZ')
+    rent_end = datetime.datetime.strptime(rent_end, '%Y-%m-%dT%H:%M:%S.%fZ')
+    all_rents = session.query(GearRental).filter_by(centre_id=centre_id, gear_id=gear_id).filter(
+        GearRental.rent_end > rent_start,
+        GearRental.rent_start < rent_end).all()
+    iter_start = rent_start
+    while iter_start <= rent_end:
+        total_number_of_rented_gear = 0
+        iter_start_with_delta = iter_start + datetime.timedelta(minutes=15)
+        timerange = DateTimeRange(iter_start, iter_start_with_delta)
+        for rent in all_rents:
+            rent_time_range = DateTimeRange(rent.rent_start, rent.rent_end)
+            if timerange.intersection(rent_time_range):
+                total_number_of_rented_gear += rent.rent_amount
+        if total_number_of_rented_gear + rent_amount > max_rent:
+            return False
+        iter_start = iter_start_with_delta
+    return True
+
+

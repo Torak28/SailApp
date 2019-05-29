@@ -9,3 +9,4 @@ sqlalchemy-utils == 0.33.11
 psycopg2==2.8.2
 gunicorn
 werkzeug
+datetimerange==0.6.1

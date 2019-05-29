@@ -66,3 +66,8 @@ def get_rented_gear_by_user(user_id, session=None):
 def get_rented_gear_by_centre(centre_id, session=None):  # TODO
     session.query(GearRental, WaterCentre, Gear).filter(WaterCentre.id == centre_id,
                                                         Gear.id == GearRental.gear_id).all()
+
+
+@connection_to_db
+def get_total_quantity(centre_id, gear_id, session=None):
+    return session.query(Gear).filter_by(id=gear_id, centre_id=centre_id).first().total_quantity
