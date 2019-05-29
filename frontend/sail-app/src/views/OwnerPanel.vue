@@ -20,6 +20,8 @@
                     <br>
                     <font-awesome-icon icon="map-marker-alt" /> {{place}}
                     <br>
+                    <font-awesome-icon icon="road" /> {{dist}} km
+                    <br>
                     <br>
                     Gear:
                     <ul>
@@ -141,6 +143,9 @@ export default {
       center: { lat: 52.237049, lng: 21.017532 },
       zoom: 6,
       gearTypes: '',
+      currentLat: null,
+      currentLng: null,
+      dist: null,
       breachAlert: null
     }
   },
@@ -191,6 +196,19 @@ export default {
       this.form.lattitude = tmp.geometry.location.lat();
       this.form.longtitude = tmp.geometry.location.lng();
       this.place = tmp.address_components[1].long_name;
+      var R = 6371e3; // metres
+      var φ1 = Number(this.form.lattitude) * Math.PI / 180;
+      var φ2 = this.currentLat * Math.PI / 180;
+      var Δφ = (this.currentLat-Number(this.form.lattitude)) * Math.PI / 180;
+      var Δλ = (this.currentLng-Number(this.form.longtitude)) * Math.PI / 180;
+
+      var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+      var d = R * c;
+      this.dist = Math.floor(d/1000);
     },
     Change(){
       // TODO: zmienić
@@ -212,6 +230,29 @@ export default {
       this.form.lattitude = '51.1078852';
       this.form.longtitude = '17.03853760000004';
       this.form.gears = [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}];
+
+      if (navigator.geolocation) {
+        var obj = this;
+        navigator.geolocation.getCurrentPosition(function(position) {
+          obj.currentLat = position.coords.latitude;
+          obj.currentLng = position.coords.longitude;
+          var R = 6371e3; // metres
+          var φ1 = Number(obj.form.lattitude) * Math.PI / 180;
+          var φ2 = obj.currentLat * Math.PI / 180;
+          var Δφ = (obj.currentLat-Number(obj.form.lattitude)) * Math.PI / 180;
+          var Δλ = (obj.currentLng-Number(obj.form.longtitude)) * Math.PI / 180;
+
+          var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+          var d = R * c;
+          obj.dist = Math.floor(d/1000);
+        });
+      } else {
+        //console.log('No geolocation error');
+      }
 
       let tmp = [];
       for (let i = 0; i < this.form.gears.length; i++) {
