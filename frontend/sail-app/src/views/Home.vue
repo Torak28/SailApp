@@ -34,8 +34,8 @@ export default {
       mockAccount1: {
         login: "asd",
         password: "asd",
-        //role: 'User'
-        role: 'Owner'
+        role: 'User'
+        //role: 'Owner'
       }
     }
   }

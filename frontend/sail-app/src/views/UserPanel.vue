@@ -6,6 +6,7 @@
         <b-tab title="Rent" active>
           <br>
           <h1 class='title'>Rent page</h1>
+          
         </b-tab>
         <b-tab title="User Panel">
           <br>
