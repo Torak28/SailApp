@@ -1,6 +1,7 @@
 <template>
   <div id='CompanyCard'>
-    <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal=companyForm.name>
+    <!--b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal=companyForm.name-->
+    <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name @click="emitModal()" ref="card">
       <b-card-text>
         <font-awesome-icon icon="phone" /> {{companyForm.phone}}
         <br>
@@ -17,7 +18,7 @@
         </ul>
       </b-card-text>
     </b-card>
-    <b-modal :id=companyForm.name title='Rent Form' @ok="handleOk">
+    <b-modal :id=this.companyForm.name title='Rent Form' @ok="handleOk">
       <br>
       <h2>{{companyForm.name}}</h2>
       <br>
@@ -129,6 +130,10 @@ export default {
       this.rentForm.user_id = this.companyForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
       this.rentForm.gear_centre_id = this.companyForm.name;
+      console.log(JSON.stringify(this.rentForm));
+    },
+    emitModal(){
+      this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');
     }
   },
   created () {

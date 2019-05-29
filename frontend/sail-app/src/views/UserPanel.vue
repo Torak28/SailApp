@@ -79,8 +79,16 @@ export default {
         password: '',
         checkPassword: ''
       },
+      rentForm: {
+        rent_start: '',
+        rent_end: '',
+        rent_amount: 1,
+        is_returned: null,
+        user_id: '',
+        gear_id: '',
+        gear_centre_id: ''
+      },
       companyForms: [],
-      distances: [],
       changeName: true,
       changeSurname: true,
       changeTel: true,
