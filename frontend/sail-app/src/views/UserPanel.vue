@@ -17,7 +17,7 @@
           </h4>
           <br>
           <div v-for="(companyForm, index) in companyForms" :key="index">
-            <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm @SendRentFormParent="FillRentForm" />
+            <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm :parentRent=rent @SendRentFormParent="FillRentForm" />
             <br>
           </div>
         </b-tab>

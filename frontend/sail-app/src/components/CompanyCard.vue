@@ -19,6 +19,7 @@
       </b-card-text>
     </b-card>
     <b-modal :id=this.companyForm.name title='Rent Form' @ok="handleOk">
+      <b-alert :show=parentRent variant="danger">You already Rented Something. You can't rent anymore.</b-alert>
       <br>
       <h2>{{companyForm.name}}</h2>
       <br>
@@ -33,17 +34,17 @@
       <br>
       <br>
       Date:
-      <b-form-input class="block" type="date" :min="minDate" v-model="modalDate" />
+      <b-form-input :readonly=parentRent class="block" type="date" :min="minDate" v-model="modalDate" />
       Start Time:
-      <b-form-input class="block" type="time" step='1800' v-model="modalStartTime" />
+      <b-form-input :readonly=parentRent class="block" type="time" step='1800' v-model="modalStartTime" />
       End Time:
-      <b-form-input class="block" type="time" step='1800' :min="modalStartTime" v-model="modalEndTime" />
-      <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
+      <b-form-input :readonly=parentRent class="block" type="time" step='1800' :min="modalStartTime" v-model="modalEndTime" />
+      <b-dropdown split variant="primary" :readonly=parentRent split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
         <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
       </b-dropdown>
       <br>
       Amount:
-      <b-form-input class="block" type="number" :min="min" :max="max" v-model="amount" />
+      <b-form-input :readonly=parentRent class="block" type="number" :min="min" :max="max" v-model="amount" />
 
       <template slot="modal-footer" slot-scope="{ ok, cancel }">
       <b-button size="sm" variant="success" @click="ok()">
@@ -65,7 +66,8 @@ export default {
   name: "CompanyCard",
   props: {
     parentUserForm: Object,
-    parentCompanyForm: Object
+    parentCompanyForm: Object,
+    parentRent: Boolean
   },
   data() {
     return {
@@ -123,7 +125,6 @@ export default {
       this.max = tmpV.gearAmount;
     },
     handleOk(){
-      console.log(JSON.stringify(this.rentForm));
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
       this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
       this.rentForm.is_returned = false;
@@ -132,11 +133,9 @@ export default {
       this.rentForm.gear_id = this.dropdownTextGear;
       this.rentForm.gear_centre_id = this.companyForm.name;
 
-      //Sprawdz form
-      //przekaz dane dalej
-      console.log(JSON.stringify(this.rentForm));
-      console.log('---');
-      this.sendRentForm(event);
+      if(!this.parentRent){
+        this.sendRentForm(event);
+      }
 
       this.dropdownTextGear = "Choose Gear to Rent";
       this.rentForm.rent_start = '';
