@@ -60,6 +60,7 @@
                 <br>
                 Type of Gear: <b>{{rentForm.gear_id}}</b>
               </b-card-text>
+              <b-button variant="primary">Return</b-button>
             </b-card>
           </b-container>
           <b-container v-if="rent == false">
@@ -166,8 +167,6 @@ export default {
       this.companyForms.sort((a, b) => (a.dist < b.dist) ? 1 : -1);
     },
     FillRentForm (value) {
-      console.log(JSON.stringify(value));
-      console.log(value.rent_start);
       this.rentForm.rent_start = value.rent_start;
       this.rentForm.rent_end = value.rent_end;
       this.rentForm.rent_amount = value.rent_amount;

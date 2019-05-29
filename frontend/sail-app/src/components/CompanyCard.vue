@@ -20,6 +20,7 @@
     </b-card>
     <b-modal :id=this.companyForm.name title='Rent Form' @ok="handleOk">
       <b-alert :show=parentRent variant="danger">You already Rented Something. You can't rent anymore.</b-alert>
+      <b-alert :show=badContent variant="danger">Fill in all fields</b-alert>
       <br>
       <h2>{{companyForm.name}}</h2>
       <br>
@@ -109,7 +110,8 @@ export default {
       amount: 1,
       max: 2,
       min: 1,
-      minDate: null
+      minDate: null,
+      badContent: false
     }
   },
   methods: {
@@ -131,10 +133,15 @@ export default {
       this.rentForm.rent_amount = this.amount;
       this.rentForm.user_id = this.userForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.companyForm.name;
+      this.rentForm.gear_centre_id = this.companyForm.nam;
 
-      if(!this.parentRent){
-        this.sendRentForm(event);
+      if(this.modalDate == '' || this.modalStartTime == ''  || this.modalEndTime == '' || this.rentForm.gear_id == 'Choose Gear to Rent'){
+        this.badContent = true;
+      }else{
+        this.badContent = false;
+        if(!this.parentRent){
+          this.sendRentForm(event);
+        }
       }
 
       this.dropdownTextGear = "Choose Gear to Rent";
