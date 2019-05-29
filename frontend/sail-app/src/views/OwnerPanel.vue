@@ -8,7 +8,8 @@
       <b-row>
         <b-col>
           <!--TODO make this component-->
-          <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal.modal-1>
+          <CompanyCard :parentUserForm.sync=userForm :parentCompanyForm.sync=companyForm :parentGearTypes.sync=gearTypes />
+          <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal.modal-2>
             <b-card-text>
               <font-awesome-icon icon="phone" /> {{companyForm.phone}}
               <br>
@@ -25,7 +26,7 @@
               </ul>
             </b-card-text>
           </b-card>
-          <b-modal id="modal-1" title='Rent Form' @ok="handleOk">
+          <b-modal id="modal-2" title='Rent Form' @ok="handleOk">
             <br>
             <h2>{{companyForm.name}}</h2>
             <br>
@@ -72,7 +73,7 @@
         <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
         <gmap-marker
           :position="{
-            lat: Number(this.companyForm.lattitude),
+            lat: Number(this.companyForm.latitude),
             lng: Number(this.companyForm.longtitude),
           }"
           />
@@ -126,7 +127,7 @@
 
 <script>
 import apiKey from '../json/secret.json';
-import CompanyCard from '@/components/CompanyCard.json';
+import CompanyCard from '@/components/CompanyCard.vue';
 
 export default {
   name: "OwnerPanel",
@@ -151,7 +152,7 @@ export default {
         longtitude: '',
         phone: '',
         photo: '',
-        geras: ''
+        gears: ''
       },
       rentForm: {
         rent_start: '',
@@ -236,9 +237,9 @@ export default {
       this.companyForm.longtitude = tmp.geometry.location.lng();
       this.place = tmp.address_components[1].long_name;
       var R = 6371e3; // metres
-      var φ1 = Number(this.companyForm.lattitude) * Math.PI / 180;
+      var φ1 = Number(this.companyForm.latitude) * Math.PI / 180;
       var φ2 = this.currentLat * Math.PI / 180;
-      var Δφ = (this.currentLat-Number(this.companyForm.lattitude)) * Math.PI / 180;
+      var Δφ = (this.currentLat-Number(this.companyForm.latitude)) * Math.PI / 180;
       var Δλ = (this.currentLng-Number(this.companyForm.longtitude)) * Math.PI / 180;
 
       var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
@@ -277,7 +278,7 @@ export default {
       this.companyForm.name = 'KajaX';
       this.companyForm.phone = '123 123 123';
       this.companyForm.photo = 'https://picsum.photos/450/300/?image=20';
-      this.companyForm.lattitude = '51.1078852';
+      this.companyForm.latitude = '51.1078852';
       this.companyForm.longtitude = '17.03853760000004';
       this.companyForm.gears = [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}];
 
@@ -287,9 +288,9 @@ export default {
           obj.currentLat = position.coords.latitude;
           obj.currentLng = position.coords.longitude;
           var R = 6371e3; // metres
-          var φ1 = Number(obj.companyForm.lattitude) * Math.PI / 180;
+          var φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
           var φ2 = obj.currentLat * Math.PI / 180;
-          var Δφ = (obj.currentLat-Number(obj.companyForm.lattitude)) * Math.PI / 180;
+          var Δφ = (obj.currentLat-Number(obj.companyForm.latitude)) * Math.PI / 180;
           var Δλ = (obj.currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
 
           var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
@@ -313,7 +314,7 @@ export default {
       this.counter = this.companyForm.gears.length;
 
       this.axios
-        .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.lattitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
+        .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
         .then(
           (response) => {
             this.place = response.data.results[0].address_components[3].long_name;

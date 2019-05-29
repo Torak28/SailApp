@@ -1,5 +1,5 @@
 <template>
-  <b-container id='CompanyCard'>
+  <div id='CompanyCard'>
     <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal.modal-1>
       <b-card-text>
         <font-awesome-icon icon="phone" /> {{companyForm.phone}}
@@ -41,12 +41,19 @@
         <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
       </b-dropdown>
     </b-modal>
-  </b-container>
+  </div>
 </template>
 
 <script>
+import apiKey from '../json/secret.json';
+
 export default {
   name: "CompanyCard",
+  props: {
+    parentUserForm: Object,
+    parentCompanyForm: Object,
+    parentGearTypes: Array
+  },
   data() {
     return {
       userForm: {
@@ -73,14 +80,17 @@ export default {
         longtitude: '',
         phone: '',
         photo: '',
-        geras: ''
+        gears: ''
       },
       place: null,
       dist: null,
       dropdownTextGear: "Choose Gear to Rent",
       modalDate: '',
       modalStartTime: '',
-      modalEndTime: ''
+      modalEndTime: '',
+      gearTypes: '',
+      currentLat: null,
+      currentLng: null
     }
   },
   methods: {
@@ -91,31 +101,66 @@ export default {
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
       this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
       this.rentForm.is_returned = false;
-      this.rentForm.user_id = this.userForm.name;
+      this.rentForm.user_id = this.companyForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
       this.rentForm.gear_centre_id = this.companyForm.companyName;
     }
   },
   created () {
-    this.userForm.role = '';
-    this.userForm.name = '';
-    this.userForm.surname = '';
-    this.userForm.phone = '';
-    this.userForm.email = '';
-    this.userForm.password = '';
-    this.userForm.checkPassword = '';
-    this.companyFrom.name = '';
-    this.companyFrom.latitude = '';
-    this.companyFrom.longtitude = '';
-    this.companyFrom.phone = '';
-    this.companyFrom.photo = '';
-    this.companyFrom.geras = '';
-    this.place = null;
-    this.dist = null;
+    this.userForm.role = this.parentUserForm.type;
+    this.userForm.name = this.parentUserForm.name;
+    this.userForm.surname = this.parentUserForm.surname;
+    this.userForm.phone = this.parentUserForm.phone;
+    this.userForm.email = this.parentUserForm.email;
+    this.userForm.password = this.parentUserForm.password;
+    this.userForm.checkPassword = this.parentUserForm.checkPassword;
+    this.companyForm.name = this.parentCompanyForm.name;
+    this.companyForm.latitude = this.parentCompanyForm.latitude;
+    this.companyForm.longtitude = this.parentCompanyForm.longtitude;
+    this.companyForm.phone = this.parentCompanyForm.phone;
+    this.companyForm.photo = this.parentCompanyForm.photo;
+    this.companyForm.gears = this.parentCompanyForm.gears;
     this.dropdownTextGear = "Choose Gear to Rent";
     this.modalDate = '';
     this.modalStartTime = '';
     this.modalEndTime = '';
+    this.gearTypes = this.parentGearTypes;
+    this.axios
+      .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
+      .then(
+        (response) => {
+          this.place = response.data.results[0].address_components[3].long_name;
+        },
+        (error) => { 
+          console.log(error) 
+        })
+    if (navigator.geolocation) {
+      var obj = this;
+      navigator.geolocation.getCurrentPosition(function(position) {
+        obj.currentLat = position.coords.latitude;
+        obj.currentLng = position.coords.longitude;
+        var R = 6371e3; // metres
+        var φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
+        var φ2 = obj.currentLat * Math.PI / 180;
+        var Δφ = (obj.currentLat-Number(obj.companyForm.latitude)) * Math.PI / 180;
+        var Δλ = (obj.currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
+
+        var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        
+        var d = R * c;
+        obj.dist = Math.floor(d/1000);
+      });
+    } else {
+      //console.log('No geolocation error');
+    }
+  },
+  watch: {
+    parentCompanyForm: function(newVal, oldVal){
+      console.log('Prop changed: ', newVal, ' | was: ', oldVal);
+    }
   }
 };
 </script>
