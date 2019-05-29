@@ -60,7 +60,7 @@
                 <br>
                 Type of Gear: <b>{{rentForm.gear_id}}</b>
               </b-card-text>
-              <b-button variant="primary">Return</b-button>
+              <b-button variant="primary" v-on:click="Return()">Return</b-button>
             </b-card>
           </b-container>
           <b-container v-if="rent == false">
@@ -175,6 +175,16 @@ export default {
       this.rentForm.gear_id = value.gear_id;
       this.rentForm.gear_centre_id = value.gear_centre_id;
       this.rent = true;
+    },
+    Return(){
+      this.rentForm.rent_start = '';
+      this.rentForm.rent_end = '';
+      this.rentForm.rent_amount = '';
+      this.rentForm.is_returned = '';
+      this.rentForm.user_id = '';
+      this.rentForm.gear_id = '';
+      this.rentForm.gear_centre_id = '';
+      this.rent = false;
     },
     Change(){
       // TODO: zmienić

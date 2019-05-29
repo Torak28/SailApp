@@ -40,7 +40,7 @@
       <b-form-input :readonly=parentRent class="block" type="time" step='1800' v-model="modalStartTime" />
       End Time:
       <b-form-input :readonly=parentRent class="block" type="time" step='1800' :min="modalStartTime" v-model="modalEndTime" />
-      <b-dropdown split variant="primary" :readonly=parentRent split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
+      <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
         <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
       </b-dropdown>
       <br>
@@ -133,7 +133,7 @@ export default {
       this.rentForm.rent_amount = this.amount;
       this.rentForm.user_id = this.userForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.companyForm.nam;
+      this.rentForm.gear_centre_id = this.companyForm.name;
 
       if(this.modalDate == '' || this.modalStartTime == ''  || this.modalEndTime == '' || this.rentForm.gear_id == 'Choose Gear to Rent'){
         this.badContent = true;
@@ -141,32 +141,33 @@ export default {
         this.badContent = false;
         if(!this.parentRent){
           this.sendRentForm(event);
+          this.modalDate = '';
+          this.modalStartTime = '';
+          this.modalEndTime = '';
+          this.dropdownTextGear = "Choose Gear to Rent";
+          this.rentForm.rent_start = '';
+          this.rentForm.rent_end = '';
+          this.rentForm.is_returned ='' 
+          this.rentForm.rent_amount = '';
+          this.rentForm.user_id = '';
+          this.rentForm.gear_id = '';
+          this.rentForm.gear_centre_id = '';
         }
       }
-
-      this.dropdownTextGear = "Choose Gear to Rent";
-      this.rentForm.rent_start = '';
-      this.rentForm.rent_end = '';
-      this.rentForm.is_returned ='' 
-      this.rentForm.rent_amount = '';
-      this.rentForm.user_id = '';
-      this.rentForm.gear_id = '';
-      this.rentForm.gear_centre_id = '';
     },
     sendRentForm(){
-      console.log('poszlo');
       this.$emit('SendRentFormParent', this.rentForm);
     },
     emitModal(){
       this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');
-      this.dropdownTextGear = "Choose Gear to Rent";
+      /*this.dropdownTextGear = "Choose Gear to Rent";
       this.rentForm.rent_start = '';
       this.rentForm.rent_end = '';
       this.rentForm.is_returned ='' 
       this.rentForm.rent_amount = '';
       this.rentForm.user_id = '';
       this.rentForm.gear_id = '';
-      this.rentForm.gear_centre_id = '';
+      this.rentForm.gear_centre_id = '';*/
     }
   },
   created () {
