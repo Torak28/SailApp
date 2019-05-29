@@ -8,9 +8,10 @@
       <b-row>
         <b-col>
           <!--TODO make this component-->
-          <b-card :img-src=form.photoFile  img-alt="Card image" img-height='350px' img-width='50%' img-left :title=form.companyName v-b-modal.modal-1>
+          <b-card :img-src=form.photoFile  img-alt="Card image" img-width='50%' img-left :title=form.companyName v-b-modal.modal-1>
             <b-card-text>
               <font-awesome-icon icon="phone" /> {{form.companyTel}}
+              <br>
               <br>
               <font-awesome-icon icon="map-marker-alt" /> {{place}}
               <br>
@@ -25,22 +26,28 @@
               </ul>
             </b-card-text>
           </b-card>
-          <b-modal id="modal-1" :title=form.companyName @ok="handleOk">
+          <b-modal id="modal-1" title='Rent Form' @ok="handleOk">
             <br>
-            <h2>Rent Form</h2>
+            <h2>{{form.companyName}}</h2>
+            <br>
+            <b-img :src=form.photoFile alt="Responsive image"></b-img>
+            <br>
+            <br>
+            <font-awesome-icon icon="phone" /> {{form.companyTel}}
+            <br>
+            <font-awesome-icon icon="map-marker-alt" /> {{place}}
+            <br>
+            <font-awesome-icon icon="road" /> {{dist}} km
+            <br>
             <br>
             Date:
-            <b-form-input class="block" type="date" placeholder="Date" />
-            Time:
-            <b-form-input class="block" type="time" placeholder="Time" />
+            <b-form-input class="block" type="date" placeholder="Date" v-model="modalDate" />
+            Start Time:
+            <b-form-input class="block" type="time" placeholder="Time" v-model="modalStartTime" />
+            End Time:
+            <b-form-input class="block" type="time" placeholder="Time" v-model="modalEndTime" />
             <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
               <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
-            </b-dropdown>
-            <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextTime class="m-md-2">
-              <b-dropdown-item v-on:click="chooseTime(1)"> 30 minutes </b-dropdown-item>
-              <b-dropdown-item v-on:click="chooseTime(2)"> 60 minutes </b-dropdown-item>
-              <b-dropdown-item v-on:click="chooseTime(3)"> 90 minutes </b-dropdown-item>
-              <b-dropdown-item v-on:click="chooseTime(4)"> 120 minutes </b-dropdown-item>
             </b-dropdown>
           </b-modal>
           
@@ -144,13 +151,16 @@ export default {
         rent_start: '',
         rent_end: '',
         rent_amount: 1,
-        is_returned: false,
+        is_returned: null,
         user_id: '',
         gear_id: '',
         gear_centre_id: ''
       },
       dropdownTextGear: "Choose Gear to Rent",
       dropdownTextTime: "How Long",
+      modalDate: '',
+      modalStartTime: '',
+      modalEndTime: '',
       howManyNow: 0,
       counter: 0,
       changeName: true,
@@ -248,7 +258,12 @@ export default {
       }
     },
     handleOk(){
-      console.log('ok');
+      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
+      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
+      this.rentForm.is_returned = false;
+      this.rentForm.user_id = this.form.name;
+      this.rentForm.gear_id = this.dropdownTextGear;
+      this.rentForm.gear_centre_id = this.form.companyName;
     },
     Change(){
       // TODO: zmienić
