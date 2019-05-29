@@ -43,9 +43,9 @@
             Date:
             <b-form-input class="block" type="date" placeholder="Date" v-model="modalDate" />
             Start Time:
-            <b-form-input class="block" type="time" placeholder="Time" v-model="modalStartTime" />
+            <b-form-input class="block" type="time" step='1800' v-model="modalStartTime" />
             End Time:
-            <b-form-input class="block" type="time" placeholder="Time" v-model="modalEndTime" />
+            <b-form-input class="block" type="time" step='1800' :min="modalStartTime" v-model="modalEndTime" />
             <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
               <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
             </b-dropdown>
