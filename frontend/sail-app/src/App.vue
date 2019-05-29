@@ -15,9 +15,9 @@
       </b-row>
     </b-container>
     <footer>
-      <cookie-law :buttonText="cookiebuttonText" theme="royal">
+      <cookie-law theme="royal">
         <div slot="message">
-          {{cookieText}} <b-link href="https://ezelechowska-psycholog.pl/PolitykaPrywatnosci.pdf">Polityki Prywatności</b-link>!
+          {{cookieText}} <b-link href='https://ezelechowska-psycholog.pl/PolitykaPrywatnosci.pdf'>terms and use policy</b-link>!
         </div>
       </cookie-law>
     </footer>
@@ -35,8 +35,7 @@ export default {
   },
   data() {
     return {
-      cookiebuttonText: "Zgadzam się!",
-      cookieText: "Ta strona korzysta z ciasteczek aby świadczyć usługi na najwyższym poziomie. Dalsze korzystanie ze strony oznacza, że zgadzasz się na ich użycie, po więcej informacji zapraszam do zapozaniania się z treścią",
+      cookieText: "This website uses cookies to ensure you get the best experience on our website,",
     }
   }
 }
