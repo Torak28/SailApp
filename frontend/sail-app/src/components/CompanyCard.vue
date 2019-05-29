@@ -113,14 +113,17 @@ export default {
   methods: {
     chooseGear(index){
       this.dropdownTextGear = this.gearTypes[index];
-      let tmp = null;
+      let tmpV = null;
       for (let i = 0; i < this.companyForm.gears.length; i++) {
         if(this.companyForm.gears[i].gearType == this.dropdownTextGear){
-          tmp = this.companyForm.gears[i];
+          tmpV = this.companyForm.gears[i];
           break;
         }
       }
-      this.max = tmp.gearAmount;
+      console.log(JSON.stringify(tmpV));
+      this.max = tmpV.gearAmount;
+      console.log(this.max);
+      console.log('---');
     },
     handleOk(){
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
@@ -134,6 +137,14 @@ export default {
     },
     emitModal(){
       this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');
+      this.dropdownTextGear = "Choose Gear to Rent";
+      this.rentForm.rent_start = '';
+      this.rentForm.rent_end = '';
+      this.rentForm.is_returned ='' 
+      this.rentForm.rent_amount = '';
+      this.rentForm.user_id = '';
+      this.rentForm.gear_id = '';
+      this.rentForm.gear_centre_id = '';
     }
   },
   created () {
@@ -239,6 +250,7 @@ export default {
         tmp.push(Object.values(newV[i])[1]);
       }
       this.gearTypes = tmp;
+      this.companyForm.gears = newV;
     },
     deep: true,
   }
