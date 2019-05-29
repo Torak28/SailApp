@@ -15,12 +15,12 @@
           <br>
           <b-row>
             <b-col sm="9">
-              <b-form-input :readonly='changeName' class="block" type="text" v-model='form.name' placeholder="First Name" />
-              <b-form-input :readonly='changeSurname' class="block" type="text" v-model='form.surname' placeholder="Second Name" />
-              <b-form-input :readonly='changeTel' class="block" type="tel" v-model='form.phone' placeholder="Phone number" />
-              <b-form-input :readonly='changeEmail' class="block" type="email" v-model='form.email' placeholder="Email" />
-              <b-form-input :readonly='changePassword' class="block" type="password" v-model='form.password' placeholder="Password" />
-              <b-form-input :readonly='changePassword' class="block" type="password" v-model='form.checkPassword' placeholder="Repeat Password" />
+              <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
+              <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
+              <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
+              <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
+              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
+              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
             </b-col>
             <b-col sm="3">
               <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
@@ -47,25 +47,24 @@
 </template>
 
 <script>
+import CompanyCard from '@/components/CompanyCard.vue';
+
 export default {
   name: "UserPanel",
   props: ['user'],
+  components: {
+    CompanyCard
+  },
   data() {
     return {
-      form: {
-        type: '',
+      userForm: {
+        role: '',
         name: '',
         surname: '',
         phone: '',
         email: '',
         password: '',
-        checkPassword: '',
-        companyName: '',
-        companyTel: '',
-        photoFile: '',
-        lattitude: '',
-        longtitude: '',
-        gears: []
+        checkPassword: ''
       },
       changeName: true,
       changeSurname: true,
@@ -100,13 +99,13 @@ export default {
   },
   created () {
     if(this.user.role == 'User'){
-      this.form.type = 'Owner';
-      this.form.name = 'Jarosław';
-      this.form.surname = 'Ciołek-Żelechowski';
-      this.form.phone = '666 615 315';
-      this.form.email = 'zelechowski28@gmail.com';
-      this.form.password = 'dupa123';
-      this.form.checkPassword = 'dupa123';
+      this.userForm.role = 'User';
+      this.userForm.name = 'Jarosław';
+      this.userForm.surname = 'Ciołek-Żelechowski';
+      this.userForm.phone = '666 615 315';
+      this.userForm.email = 'zelechowski28@gmail.com';
+      this.userForm.password = 'dupa123';
+      this.userForm.checkPassword = 'dupa123';
       this.breachAlert = false;
     }else{
       this.breachAlert = true;

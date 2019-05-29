@@ -51,8 +51,7 @@ export default {
   name: "CompanyCard",
   props: {
     parentUserForm: Object,
-    parentCompanyForm: Object,
-    parentGearTypes: Array
+    parentCompanyForm: Object
   },
   data() {
     return {
@@ -124,7 +123,11 @@ export default {
     this.modalDate = '';
     this.modalStartTime = '';
     this.modalEndTime = '';
-    this.gearTypes = this.parentGearTypes;
+    let tmp = [];
+    for (let i = 0; i < this.companyForm.gears.length; i++) {
+      tmp.push(Object.values(this.companyForm.gears[i])[1]);
+    }
+    this.gearTypes = tmp;
     this.axios
       .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
       .then(
@@ -198,8 +201,14 @@ export default {
             this.place = response.data.results[0].address_components[3].long_name;
           })
     },
-    'parentGearTypes': function(newV){
-      this.gearTypes = newV;
+    'parentCompanyForm.gears': function(newV){
+      console.log('xd' + JSON.stringify(newV));
+      console.log('--------');
+      let tmp = [];
+      for (let i = 0; i < newV.length; i++) {
+        tmp.push(Object.values(newV[i])[1]);
+      }
+      this.gearTypes = tmp;
     },
     deep: true,
   }

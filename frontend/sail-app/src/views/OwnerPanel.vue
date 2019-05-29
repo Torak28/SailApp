@@ -7,7 +7,7 @@
       <br>
       <b-row>
         <b-col>
-          <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm :parentGearTypes=gearTypes />
+          <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
           <br>
           <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
         </b-col>
@@ -94,7 +94,7 @@ export default {
   data() {
     return {
       userForm: {
-        type: '',
+        role: '',
         name: '',
         surname: '',
         phone: '',
@@ -160,6 +160,8 @@ export default {
       }
     },
     saveGear(){
+      let newValue = this.companyForm.gears.pop();
+      this.companyForm.gears.push(newValue);
       let tmp = [];
       for (let i = 0; i < this.companyForm.gears.length; i++) {
         tmp.push(Object.values(this.companyForm.gears[i])[1]);
@@ -224,7 +226,7 @@ export default {
   },
   created () {
     if(this.user.role == 'Owner'){
-      this.userForm.type = 'Owner';
+      this.userForm.role = 'Owner';
       this.userForm.name = 'Jarosław';
       this.userForm.surname = 'Ciołek-Żelechowski';
       this.userForm.phone = '666 615 315';
