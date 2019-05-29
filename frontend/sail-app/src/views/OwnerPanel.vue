@@ -8,32 +8,27 @@
       <b-row>
         <b-col>
           <!--TODO-->
-          <b-card no-body class="overflow-hidden">
-            <b-row no-gutters>
-              <b-col md="6">
-                <b-card-img :src=form.photoFile class="rounded-0" style='max-height: 250px;'></b-card-img>
-              </b-col>
-              <b-col md="6">
-                <b-card-body :title="form.companyName">
-                  <b-card-text>
-                    <font-awesome-icon icon="phone" /> {{form.companyTel}}
-                    <br>
-                    <font-awesome-icon icon="map-marker-alt" /> {{place}}
-                    <br>
-                    <font-awesome-icon icon="road" /> {{dist}} km
-                    <br>
-                    <br>
-                    Gear:
-                    <ul>
-                      <li v-for="(gear, index) in this.gearTypes" :key="index">
-                        {{ gear }}
-                      </li>
-                    </ul>
-                  </b-card-text>
-                </b-card-body>
-              </b-col>
-            </b-row>
+          <b-card :img-src=form.photoFile  img-alt="Card image" img-height='350px' img-width='50%' img-left :title=form.companyName v-b-modal.modal-1>
+            <b-card-text>
+              <font-awesome-icon icon="phone" /> {{form.companyTel}}
+              <br>
+              <font-awesome-icon icon="map-marker-alt" /> {{place}}
+              <br>
+              <font-awesome-icon icon="road" /> {{dist}} km
+              <br>
+              <br>
+              Gear:
+              <ul>
+                <li v-for="(gear, index) in this.gearTypes" :key="index">
+                  {{ gear }}
+                </li>
+              </ul>
+            </b-card-text>
           </b-card>
+          <b-modal id="modal-1" :title=form.companyName>
+            <p class="my-4">Hello from modal!</p>
+          </b-modal>
+          
           <!--TODO-->
           <br>
           <b-form-file class="block" v-model="form.photoFile" placeholder="Company photo" drop-placeholder="Drop file here..." />
@@ -226,7 +221,7 @@ export default {
       this.form.checkPassword = 'dupa123';
       this.form.companyName = 'KajaX';
       this.form.companyTel = '123 123 123';
-      this.form.photoFile = 'https://picsum.photos/400/400/?image=20';
+      this.form.photoFile = 'https://picsum.photos/450/300/?image=20';
       this.form.lattitude = '51.1078852';
       this.form.longtitude = '17.03853760000004';
       this.form.gears = [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}];
@@ -337,5 +332,8 @@ export default {
     /*transition-property: border-color, box-shadow, box-shadow;*/
     transition-timing-function: ease-in-out, ease-in-out, ease-in-out;
     width: 100%;
+  }
+  .card:hover{
+    cursor: pointer;
   }
 </style>
