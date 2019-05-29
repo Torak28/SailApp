@@ -120,20 +120,36 @@ export default {
           break;
         }
       }
-      console.log(JSON.stringify(tmpV));
       this.max = tmpV.gearAmount;
-      console.log(this.max);
-      console.log('---');
     },
     handleOk(){
+      console.log(JSON.stringify(this.rentForm));
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
       this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
       this.rentForm.is_returned = false;
       this.rentForm.rent_amount = this.amount;
-      this.rentForm.user_id = this.companyForm.name;
+      this.rentForm.user_id = this.userForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
       this.rentForm.gear_centre_id = this.companyForm.name;
+
+      //Sprawdz form
+      //przekaz dane dalej
       console.log(JSON.stringify(this.rentForm));
+      console.log('---');
+      this.sendRentForm(event);
+
+      this.dropdownTextGear = "Choose Gear to Rent";
+      this.rentForm.rent_start = '';
+      this.rentForm.rent_end = '';
+      this.rentForm.is_returned ='' 
+      this.rentForm.rent_amount = '';
+      this.rentForm.user_id = '';
+      this.rentForm.gear_id = '';
+      this.rentForm.gear_centre_id = '';
+    },
+    sendRentForm(){
+      console.log('poszlo');
+      this.$emit('SendRentFormParent', this.rentForm);
     },
     emitModal(){
       this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');

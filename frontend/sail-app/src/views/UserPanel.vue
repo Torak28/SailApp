@@ -2,7 +2,7 @@
   <b-container class="UserPanel">
     <b-container v-if="breachAlert == false">
       <br>
-      <b-tabs content-class="mt-3">
+      <b-tabs content-class="mt-3" align="center">
         <b-tab title="Rent" active>
           <br>
           <h1 class='title'>Rent page</h1>
@@ -17,7 +17,7 @@
           </h4>
           <br>
           <div v-for="(companyForm, index) in companyForms" :key="index">
-            <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
+            <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm @SendRentFormParent="FillRentForm" />
             <br>
           </div>
         </b-tab>
@@ -50,6 +50,23 @@
         <b-tab title="Upcoming events">
           <br>
           <h1 class='title'>Upcoming events</h1>
+          <br>
+          <b-container v-if="rent == true">
+            <b-card title="Rent">
+              <b-card-text>
+                Your Water Cenre: <b>{{rentForm.gear_centre_id}}</b>
+                <br>
+                Rent Start: <b>{{rentForm.rent_start.toISOString().substring(0, 10)}}</b>
+                <br>
+                Type of Gear: <b>{{rentForm.gear_id}}</b>
+              </b-card-text>
+            </b-card>
+          </b-container>
+          <b-container v-if="rent == false">
+            <br>
+            <br>
+            <h2 align="center">Rent something!</h2>
+          </b-container>
         </b-tab>
       </b-tabs>
     </b-container>
@@ -96,7 +113,8 @@ export default {
       changePassword: true,
       changeCompanyName: true,
       changeCompanyTel: true,
-      breachAlert: null
+      breachAlert: null,
+      rent: false
     }
   },
   methods: {
@@ -146,6 +164,18 @@ export default {
     },
     sortFurth(){
       this.companyForms.sort((a, b) => (a.dist < b.dist) ? 1 : -1);
+    },
+    FillRentForm (value) {
+      console.log(JSON.stringify(value));
+      console.log(value.rent_start);
+      this.rentForm.rent_start = value.rent_start;
+      this.rentForm.rent_end = value.rent_end;
+      this.rentForm.rent_amount = value.rent_amount;
+      this.rentForm.is_returned = value.is_returned;
+      this.rentForm.user_id = value.user_id;
+      this.rentForm.gear_id = value.gear_id;
+      this.rentForm.gear_centre_id = value.gear_centre_id;
+      this.rent = true;
     },
     Change(){
       // TODO: zmienić
