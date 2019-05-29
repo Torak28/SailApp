@@ -8,10 +8,9 @@
       <b-row>
         <b-col>
           <!--TODO make this component-->
-          <b-card :img-src=form.photoFile  img-alt="Card image" img-width='50%' img-left :title=form.companyName v-b-modal.modal-1>
+          <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal.modal-1>
             <b-card-text>
-              <font-awesome-icon icon="phone" /> {{form.companyTel}}
-              <br>
+              <font-awesome-icon icon="phone" /> {{companyForm.phone}}
               <br>
               <font-awesome-icon icon="map-marker-alt" /> {{place}}
               <br>
@@ -28,12 +27,12 @@
           </b-card>
           <b-modal id="modal-1" title='Rent Form' @ok="handleOk">
             <br>
-            <h2>{{form.companyName}}</h2>
+            <h2>{{companyForm.name}}</h2>
             <br>
-            <b-img :src=form.photoFile alt="Responsive image"></b-img>
+            <b-img :src=companyForm.photo alt="Responsive image"></b-img>
             <br>
             <br>
-            <font-awesome-icon icon="phone" /> {{form.companyTel}}
+            <font-awesome-icon icon="phone" /> {{companyForm.phone}}
             <br>
             <font-awesome-icon icon="map-marker-alt" /> {{place}}
             <br>
@@ -53,7 +52,7 @@
           
           <!--TODO-->
           <br>
-          <b-form-file class="block" v-model="form.photoFile" placeholder="Company photo" drop-placeholder="Drop file here..." />
+          <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
         </b-col>
       </b-row>
       <br>
@@ -62,8 +61,8 @@
       <br>
       <b-row>
         <b-col sm="9">
-          <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='form.companyName' placeholder="Company Name" />
-          <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='form.companyTel' placeholder="Company Phone Number" />
+          <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='companyForm.name' placeholder="Company Name" />
+          <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='companyForm.phone' placeholder="Company Phone Number" />
         </b-col>
         <b-col sm="3">
           <b-button block class="block" variant="info" v-on:click="changeCompanyNameProp()">Change</b-button>
@@ -73,13 +72,13 @@
         <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
         <gmap-marker
           :position="{
-            lat: Number(this.form.lattitude),
-            lng: Number(this.form.longtitude),
+            lat: Number(this.companyForm.lattitude),
+            lng: Number(this.companyForm.longtitude),
           }"
           />
         </gmap-map>
         <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
-        <b-container v-for="gear in form.gears" :key="gear.id">
+        <b-container v-for="gear in companyForm.gears" :key="gear.id">
           <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
           <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
           <b-form-input class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
@@ -96,12 +95,12 @@
       <br>
       <b-row>
         <b-col sm="9">
-          <b-form-input :readonly='changeName' class="block" type="text" v-model='form.name' placeholder="First Name" />
-          <b-form-input :readonly='changeSurname' class="block" type="text" v-model='form.surname' placeholder="Second Name" />
-          <b-form-input :readonly='changeTel' class="block" type="tel" v-model='form.phone' placeholder="Phone number" />
-          <b-form-input :readonly='changeEmail' class="block" type="email" v-model='form.email' placeholder="Email" />
-          <b-form-input :readonly='changePassword' class="block" type="password" v-model='form.password' placeholder="Password" />
-          <b-form-input :readonly='changePassword' class="block" type="password" v-model='form.checkPassword' placeholder="Repeat Password" />
+          <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
+          <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
+          <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
+          <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
+          <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
+          <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
         </b-col>
         <b-col sm="3">
           <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
@@ -127,25 +126,32 @@
 
 <script>
 import apiKey from '../json/secret.json';
+import CompanyCard from '@/components/CompanyCard.json';
+
 export default {
   name: "OwnerPanel",
   props: ['user'],
+  components: {
+    CompanyCard
+  },
   data() {
     return {
-      form: {
+      userForm: {
         type: '',
         name: '',
         surname: '',
         phone: '',
         email: '',
         password: '',
-        checkPassword: '',
-        companyName: '',
-        companyTel: '',
-        photoFile: '',
-        lattitude: '',
+        checkPassword: ''
+      },
+      companyForm: {
+        name: '',
+        latitude: '',
         longtitude: '',
-        gears: []
+        phone: '',
+        photo: '',
+        geras: ''
       },
       rentForm: {
         rent_start: '',
@@ -184,13 +190,13 @@ export default {
   },
   methods: {
     addGear(){
-      this.form.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
+      this.companyForm.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
       this.howManyNow++;
       this.counter++;
     },
     deleteGear(elemId){
-      const index = this.form.gears.map(e => e.id).indexOf(elemId);
-      this.form.gears.splice(index, 1);
+      const index = this.companyForm.gears.map(e => e.id).indexOf(elemId);
+      this.companyForm.gears.splice(index, 1);
       this.howManyNow--;
       if(this.howManyNow < 0){
         this.howManyNow = 0;  
@@ -198,8 +204,8 @@ export default {
     },
     saveGear(){
       let tmp = [];
-      for (let i = 0; i < this.form.gears.length; i++) {
-        tmp.push(Object.values(this.form.gears[i])[1]);
+      for (let i = 0; i < this.companyForm.gears.length; i++) {
+        tmp.push(Object.values(this.companyForm.gears[i])[1]);
       }
       this.gearTypes = tmp;
     },
@@ -226,14 +232,14 @@ export default {
     },
     setPlace(place) {
       let tmp = place;
-      this.form.lattitude = tmp.geometry.location.lat();
-      this.form.longtitude = tmp.geometry.location.lng();
+      this.companyForm.latitude = tmp.geometry.location.lat();
+      this.companyForm.longtitude = tmp.geometry.location.lng();
       this.place = tmp.address_components[1].long_name;
       var R = 6371e3; // metres
-      var φ1 = Number(this.form.lattitude) * Math.PI / 180;
+      var φ1 = Number(this.companyForm.lattitude) * Math.PI / 180;
       var φ2 = this.currentLat * Math.PI / 180;
-      var Δφ = (this.currentLat-Number(this.form.lattitude)) * Math.PI / 180;
-      var Δλ = (this.currentLng-Number(this.form.longtitude)) * Math.PI / 180;
+      var Δφ = (this.currentLat-Number(this.companyForm.lattitude)) * Math.PI / 180;
+      var Δλ = (this.currentLng-Number(this.companyForm.longtitude)) * Math.PI / 180;
 
       var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
               Math.cos(φ1) * Math.cos(φ2) *
@@ -246,45 +252,34 @@ export default {
     chooseGear(index){
       this.dropdownTextGear = this.gearTypes[index];
     },
-    chooseTime(id){
-      if(id == 1){
-        this.dropdownTextTime = '30 minutes';
-      }else if(id == 2){
-        this.dropdownTextTime = '60 minutes';
-      }else if(id == 3){
-        this.dropdownTextTime = '90 minutes';
-      }else if(id == 4){
-        this.dropdownTextTime = '120 minutes';
-      }
-    },
     handleOk(){
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
       this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
       this.rentForm.is_returned = false;
-      this.rentForm.user_id = this.form.name;
+      this.rentForm.user_id = this.userForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.form.companyName;
+      this.rentForm.gear_centre_id = this.companyForm.name;
     },
     Change(){
       // TODO: zmienić
-      //console.log("User " + JSON.stringify(this.form) + " changed");
+      //console.log("User " + JSON.stringify(this.userForm) + " changed");
     }
   },
   created () {
     if(this.user.role == 'Owner'){
-      this.form.type = 'Owner';
-      this.form.name = 'Jarosław';
-      this.form.surname = 'Ciołek-Żelechowski';
-      this.form.phone = '666 615 315';
-      this.form.email = 'zelechowski28@gmail.com';
-      this.form.password = 'dupa123';
-      this.form.checkPassword = 'dupa123';
-      this.form.companyName = 'KajaX';
-      this.form.companyTel = '123 123 123';
-      this.form.photoFile = 'https://picsum.photos/450/300/?image=20';
-      this.form.lattitude = '51.1078852';
-      this.form.longtitude = '17.03853760000004';
-      this.form.gears = [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}];
+      this.userForm.type = 'Owner';
+      this.userForm.name = 'Jarosław';
+      this.userForm.surname = 'Ciołek-Żelechowski';
+      this.userForm.phone = '666 615 315';
+      this.userForm.email = 'zelechowski28@gmail.com';
+      this.userForm.password = 'dupa123';
+      this.userForm.checkPassword = 'dupa123';
+      this.companyForm.name = 'KajaX';
+      this.companyForm.phone = '123 123 123';
+      this.companyForm.photo = 'https://picsum.photos/450/300/?image=20';
+      this.companyForm.lattitude = '51.1078852';
+      this.companyForm.longtitude = '17.03853760000004';
+      this.companyForm.gears = [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}];
 
       if (navigator.geolocation) {
         var obj = this;
@@ -292,10 +287,10 @@ export default {
           obj.currentLat = position.coords.latitude;
           obj.currentLng = position.coords.longitude;
           var R = 6371e3; // metres
-          var φ1 = Number(obj.form.lattitude) * Math.PI / 180;
+          var φ1 = Number(obj.companyForm.lattitude) * Math.PI / 180;
           var φ2 = obj.currentLat * Math.PI / 180;
-          var Δφ = (obj.currentLat-Number(obj.form.lattitude)) * Math.PI / 180;
-          var Δλ = (obj.currentLng-Number(obj.form.longtitude)) * Math.PI / 180;
+          var Δφ = (obj.currentLat-Number(obj.companyForm.lattitude)) * Math.PI / 180;
+          var Δλ = (obj.currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
 
           var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
                   Math.cos(φ1) * Math.cos(φ2) *
@@ -310,15 +305,15 @@ export default {
       }
 
       let tmp = [];
-      for (let i = 0; i < this.form.gears.length; i++) {
-        tmp.push(Object.values(this.form.gears[i])[1]);
+      for (let i = 0; i < this.companyForm.gears.length; i++) {
+        tmp.push(Object.values(this.companyForm.gears[i])[1]);
       }
       this.gearTypes = tmp;
-      this.howManyNow = this.form.gears.length;
-      this.counter = this.form.gears.length;
+      this.howManyNow = this.companyForm.gears.length;
+      this.counter = this.companyForm.gears.length;
 
       this.axios
-        .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.form.lattitude + "," + this.form.longtitude + "&key=" + apiKey.API_KEY2)
+        .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.lattitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
         .then(
           (response) => {
             this.place = response.data.results[0].address_components[3].long_name;
