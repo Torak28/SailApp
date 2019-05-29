@@ -1,6 +1,6 @@
 <template>
   <div id='CompanyCard'>
-    <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal.modal-1>
+    <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal=companyForm.name>
       <b-card-text>
         <font-awesome-icon icon="phone" /> {{companyForm.phone}}
         <br>
@@ -17,7 +17,7 @@
         </ul>
       </b-card-text>
     </b-card>
-    <b-modal id="modal-1" title='Rent Form' @ok="handleOk">
+    <b-modal :id=companyForm.name title='Rent Form' @ok="handleOk">
       <br>
       <h2>{{companyForm.name}}</h2>
       <br>

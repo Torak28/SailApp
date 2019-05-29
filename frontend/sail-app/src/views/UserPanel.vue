@@ -6,7 +6,10 @@
         <b-tab title="Rent" active>
           <br>
           <h1 class='title'>Rent page</h1>
-          
+          <div v-for="(companyForm, index) in companyForms" :key="index">
+            <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
+            <br>
+          </div>
         </b-tab>
         <b-tab title="User Panel">
           <br>
@@ -66,6 +69,7 @@ export default {
         password: '',
         checkPassword: ''
       },
+      companyForms: [],
       changeName: true,
       changeSurname: true,
       changeTel: true,
@@ -107,6 +111,24 @@ export default {
       this.userForm.password = 'dupa123';
       this.userForm.checkPassword = 'dupa123';
       this.breachAlert = false;
+      this.companyForms.push({
+        name: 'KajaX',
+        latitude: '51.1078852',
+        longtitude: '17.03853760000004',
+        phone: '123 123 123',
+        photo: 'https://picsum.photos/450/300/?image=20',
+        gears: [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
+      });
+      this.companyForms.push({
+        name: 'XKajak',
+        latitude: '51.1043057',
+        longtitude: '17.0472932',
+        phone: '666 777 888',
+        photo: 'https://picsum.photos/450/300/?image=10',
+        gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}]
+      });
+      
+      
     }else{
       this.breachAlert = true;
     }
