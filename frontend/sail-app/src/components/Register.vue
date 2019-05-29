@@ -133,7 +133,6 @@ export default {
           }
         }
       }else{
-        console.log('xd');
         this.$parent.cookieData = true;
         this.$parent.wrongPass = false;
         this.$parent.noGear = false;
