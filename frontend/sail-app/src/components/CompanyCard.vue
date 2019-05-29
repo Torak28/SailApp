@@ -130,9 +130,6 @@ export default {
       .then(
         (response) => {
           this.place = response.data.results[0].address_components[3].long_name;
-        },
-        (error) => { 
-          console.log(error) 
         })
     if (navigator.geolocation) {
       var obj = this;
@@ -158,19 +155,19 @@ export default {
     }
   },
    watch: {
-    'parentCompanyForm.name': function(newV, oldV){
+    'parentCompanyForm.name': function(newV){
       this.companyForm.name = newV;
     },
-    'parentCompanyForm.phone': function(newV, oldV){
+    'parentCompanyForm.phone': function(newV){
       this.companyForm.phone = newV;
     },
-    'parentCompanyForm.photo': function(newV, oldV){
+    'parentCompanyForm.photo': function(newV){
       this.companyForm.photo = newV;
     },
-    'parentCompanyForm.latitude': function(newV, oldV){
+    'parentCompanyForm.latitude': function(newV){
       this.companyForm.latitude = newV;
     },
-    'parentCompanyForm.longtitude': function(newV, oldV){
+    'parentCompanyForm.longtitude': function(newV){
       this.companyForm.longtitude = newV;
       if (navigator.geolocation) {
         var obj = this;
@@ -199,12 +196,9 @@ export default {
         .then(
           (response) => {
             this.place = response.data.results[0].address_components[3].long_name;
-          },
-          (error) => { 
-            console.log(error) 
           })
     },
-    'parentGearTypes': function(newV, oldV){
+    'parentGearTypes': function(newV){
       this.gearTypes = newV;
     },
     deep: true,
