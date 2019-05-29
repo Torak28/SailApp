@@ -274,9 +274,6 @@ export default {
         .then(
           (response) => {
             this.place = response.data.results[0].address_components[3].long_name;
-          },
-          (error) => { 
-            console.log(error) 
           })
       this.breachAlert = false;
     }else{
