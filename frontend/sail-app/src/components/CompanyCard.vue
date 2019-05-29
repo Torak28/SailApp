@@ -103,7 +103,7 @@ export default {
       this.rentForm.is_returned = false;
       this.rentForm.user_id = this.companyForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.companyForm.companyName;
+      this.rentForm.gear_centre_id = this.companyForm.name;
     }
   },
   created () {
@@ -157,10 +157,57 @@ export default {
       //console.log('No geolocation error');
     }
   },
-  watch: {
-    parentCompanyForm: function(newVal, oldVal){
-      console.log('Prop changed: ', newVal, ' | was: ', oldVal);
-    }
+   watch: {
+    'parentCompanyForm.name': function(newV, oldV){
+      this.companyForm.name = newV;
+    },
+    'parentCompanyForm.phone': function(newV, oldV){
+      this.companyForm.phone = newV;
+    },
+    'parentCompanyForm.photo': function(newV, oldV){
+      this.companyForm.photo = newV;
+    },
+    'parentCompanyForm.latitude': function(newV, oldV){
+      this.companyForm.latitude = newV;
+    },
+    'parentCompanyForm.longtitude': function(newV, oldV){
+      this.companyForm.longtitude = newV;
+      if (navigator.geolocation) {
+        var obj = this;
+        navigator.geolocation.getCurrentPosition(function(position) {
+          obj.currentLat = position.coords.latitude;
+          obj.currentLng = position.coords.longitude;
+          var R = 6371e3; // metres
+          var φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
+          var φ2 = obj.currentLat * Math.PI / 180;
+          var Δφ = (obj.currentLat-Number(obj.companyForm.latitude)) * Math.PI / 180;
+          var Δλ = (obj.currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
+
+          var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+          
+          var d = R * c;
+          obj.dist = Math.floor(d/1000);
+        });
+      } else {
+        //console.log('No geolocation error');
+      }
+      this.axios
+        .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
+        .then(
+          (response) => {
+            this.place = response.data.results[0].address_components[3].long_name;
+          },
+          (error) => { 
+            console.log(error) 
+          })
+    },
+    'parentGearTypes': function(newV, oldV){
+      this.gearTypes = newV;
+    },
+    deep: true,
   }
 };
 </script>

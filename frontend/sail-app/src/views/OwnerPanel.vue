@@ -7,51 +7,7 @@
       <br>
       <b-row>
         <b-col>
-          <!--TODO make this component-->
-          <CompanyCard :parentUserForm.sync=userForm :parentCompanyForm.sync=companyForm :parentGearTypes.sync=gearTypes />
-          <b-card :img-src=companyForm.photo  img-alt="Card image" img-width='50%' img-left :title=companyForm.name v-b-modal.modal-2>
-            <b-card-text>
-              <font-awesome-icon icon="phone" /> {{companyForm.phone}}
-              <br>
-              <font-awesome-icon icon="map-marker-alt" /> {{place}}
-              <br>
-              <font-awesome-icon icon="road" /> {{dist}} km
-              <br>
-              <br>
-              Gear:
-              <ul>
-                <li v-for="(gear, index) in this.gearTypes" :key="index">
-                  {{ gear }}
-                </li>
-              </ul>
-            </b-card-text>
-          </b-card>
-          <b-modal id="modal-2" title='Rent Form' @ok="handleOk">
-            <br>
-            <h2>{{companyForm.name}}</h2>
-            <br>
-            <b-img :src=companyForm.photo alt="Responsive image"></b-img>
-            <br>
-            <br>
-            <font-awesome-icon icon="phone" /> {{companyForm.phone}}
-            <br>
-            <font-awesome-icon icon="map-marker-alt" /> {{place}}
-            <br>
-            <font-awesome-icon icon="road" /> {{dist}} km
-            <br>
-            <br>
-            Date:
-            <b-form-input class="block" type="date" placeholder="Date" v-model="modalDate" />
-            Start Time:
-            <b-form-input class="block" type="time" step='1800' v-model="modalStartTime" />
-            End Time:
-            <b-form-input class="block" type="time" step='1800' :min="modalStartTime" v-model="modalEndTime" />
-            <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
-              <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
-            </b-dropdown>
-          </b-modal>
-          
-          <!--TODO-->
+          <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm :parentGearTypes=gearTypes />
           <br>
           <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
         </b-col>
