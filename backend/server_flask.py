@@ -337,9 +337,9 @@ class RentGear(Resource):
                         help='ID of the gear you wish to rent.')
     parser.add_argument('rent_amount', type=int, required=True, location='form',
                         help='Amount of gear you want to rent.')
-    parser.add_argument('rent_start', type=datetime, required=True, location='form',
+    parser.add_argument('rent_start', type=str, required=True, location='form',
                         help='Start of the rent datetime.')
-    parser.add_argument('rent_end', type=datetime, required=True, location='form',
+    parser.add_argument('rent_end', type=str, required=True, location='form',
                         help='End of the rent datetime.')
 
     @api.expect(parser)
