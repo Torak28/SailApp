@@ -7,7 +7,7 @@
       <br>
       <b-row>
         <b-col>
-          <!--TODO-->
+          <!--TODO make this component-->
           <b-card :img-src=form.photoFile  img-alt="Card image" img-height='350px' img-width='50%' img-left :title=form.companyName v-b-modal.modal-1>
             <b-card-text>
               <font-awesome-icon icon="phone" /> {{form.companyTel}}
@@ -25,8 +25,23 @@
               </ul>
             </b-card-text>
           </b-card>
-          <b-modal id="modal-1" :title=form.companyName>
-            <p class="my-4">Hello from modal!</p>
+          <b-modal id="modal-1" :title=form.companyName @ok="handleOk">
+            <br>
+            <h2>Rent Form</h2>
+            <br>
+            Date:
+            <b-form-input class="block" type="date" placeholder="Date" />
+            Time:
+            <b-form-input class="block" type="time" placeholder="Time" />
+            <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
+              <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
+            </b-dropdown>
+            <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextTime class="m-md-2">
+              <b-dropdown-item v-on:click="chooseTime(1)"> 30 minutes </b-dropdown-item>
+              <b-dropdown-item v-on:click="chooseTime(2)"> 60 minutes </b-dropdown-item>
+              <b-dropdown-item v-on:click="chooseTime(3)"> 90 minutes </b-dropdown-item>
+              <b-dropdown-item v-on:click="chooseTime(4)"> 120 minutes </b-dropdown-item>
+            </b-dropdown>
           </b-modal>
           
           <!--TODO-->
@@ -125,6 +140,17 @@ export default {
         longtitude: '',
         gears: []
       },
+      rentForm: {
+        rent_start: '',
+        rent_end: '',
+        rent_amount: 1,
+        is_returned: false,
+        user_id: '',
+        gear_id: '',
+        gear_centre_id: ''
+      },
+      dropdownTextGear: "Choose Gear to Rent",
+      dropdownTextTime: "How Long",
       howManyNow: 0,
       counter: 0,
       changeName: true,
@@ -141,7 +167,9 @@ export default {
       currentLat: null,
       currentLng: null,
       dist: null,
-      breachAlert: null
+      breachAlert: null,
+      date: null,
+      time: null
     }
   },
   methods: {
@@ -204,6 +232,23 @@ export default {
 
       var d = R * c;
       this.dist = Math.floor(d/1000);
+    },
+    chooseGear(index){
+      this.dropdownTextGear = this.gearTypes[index];
+    },
+    chooseTime(id){
+      if(id == 1){
+        this.dropdownTextTime = '30 minutes';
+      }else if(id == 2){
+        this.dropdownTextTime = '60 minutes';
+      }else if(id == 3){
+        this.dropdownTextTime = '90 minutes';
+      }else if(id == 4){
+        this.dropdownTextTime = '120 minutes';
+      }
+    },
+    handleOk(){
+      console.log('ok');
     },
     Change(){
       // TODO: zmienić
@@ -278,9 +323,6 @@ export default {
   .title {
     background: linear-gradient(180deg, rgba(255,255,255,0) 65%, #FFD0AE 65%);
     display: inline;
-  }
-  .img-card{
-    width: 150px;
   }
   .AutoBlockOff{
     background-clip: padding-box;
