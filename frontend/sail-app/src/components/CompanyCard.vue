@@ -32,7 +32,7 @@
       <br>
       <br>
       Date:
-      <b-form-input class="block" type="date" placeholder="Date" v-model="modalDate" />
+      <b-form-input class="block" type="date" :min="minDate" v-model="modalDate" />
       Start Time:
       <b-form-input class="block" type="time" step='1800' v-model="modalStartTime" />
       End Time:
@@ -40,6 +40,19 @@
       <b-dropdown split variant="primary" split-variant="outline-primary" id="dropdown-1" :text=dropdownTextGear class="m-md-2">
         <b-dropdown-item v-for="(gear, index) in this.gearTypes" :key="index" v-on:click="chooseGear(index)">{{ gear }}</b-dropdown-item>
       </b-dropdown>
+      <br>
+      Amount:
+      <b-form-input class="block" type="number" :min="min" :max="max" v-model="amount" />
+
+      <template slot="modal-footer" slot-scope="{ ok, cancel }">
+      <b-button size="sm" variant="success" @click="ok()">
+        Rent
+      </b-button>
+      <b-button size="sm" variant="danger" @click="cancel()">
+        Cancel
+      </b-button>
+    </template>
+
     </b-modal>
   </div>
 </template>
@@ -67,7 +80,7 @@ export default {
       rentForm: {
         rent_start: '',
         rent_end: '',
-        rent_amount: 1,
+        rent_amount: '',
         is_returned: null,
         user_id: '',
         gear_id: '',
@@ -89,17 +102,30 @@ export default {
       modalEndTime: '',
       gearTypes: '',
       currentLat: null,
-      currentLng: null
+      currentLng: null,
+      amount: 1,
+      max: 2,
+      min: 1,
+      minDate: null
     }
   },
   methods: {
     chooseGear(index){
       this.dropdownTextGear = this.gearTypes[index];
+      let tmp = null;
+      for (let i = 0; i < this.companyForm.gears.length; i++) {
+        if(this.companyForm.gears[i].gearType == this.dropdownTextGear){
+          tmp = this.companyForm.gears[i];
+          break;
+        }
+      }
+      this.max = tmp.gearAmount;
     },
     handleOk(){
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
       this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
       this.rentForm.is_returned = false;
+      this.rentForm.rent_amount = this.amount;
       this.rentForm.user_id = this.companyForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
       this.rentForm.gear_centre_id = this.companyForm.name;
@@ -119,6 +145,7 @@ export default {
     this.companyForm.phone = this.parentCompanyForm.phone;
     this.companyForm.photo = this.parentCompanyForm.photo;
     this.companyForm.gears = this.parentCompanyForm.gears;
+    this.minDate = new Date().toISOString().split("T")[0];
     this.dropdownTextGear = "Choose Gear to Rent";
     this.modalDate = '';
     this.modalStartTime = '';

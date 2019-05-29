@@ -6,6 +6,16 @@
         <b-tab title="Rent" active>
           <br>
           <h1 class='title'>Rent page</h1>
+          <br>
+          <br>
+          <h4>
+            Sort by Distance:
+            <b-button-group>
+              <b-button variant="primary" v-on:click="sortNear()"> Nearest </b-button>
+              <b-button variant="primary" v-on:click="sortFurth()"> Furthest </b-button>
+            </b-button-group>
+          </h4>
+          <br>
           <div v-for="(companyForm, index) in companyForms" :key="index">
             <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
             <br>
@@ -70,6 +80,7 @@ export default {
         checkPassword: ''
       },
       companyForms: [],
+      distances: [],
       changeName: true,
       changeSurname: true,
       changeTel: true,
@@ -96,6 +107,38 @@ export default {
     changePasswordProp(){
       this.changePassword = !this.changePassword;
     },
+    calcDistAll(all){
+      for (let i = 0; i < all.length; i++) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            let currentLat = position.coords.latitude;
+            let currentLng = position.coords.longitude;
+            let R = 6371e3; // metres
+            let φ1 = Number(all[i].latitude) * Math.PI / 180;
+            let φ2 = currentLat * Math.PI / 180;
+            let Δφ = (currentLat-Number(all[i].latitude)) * Math.PI / 180;
+            let Δλ = (currentLng-Number(all[i].longtitude)) * Math.PI / 180;
+
+            let a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            
+            let d = R * c;
+            let result = Math.floor(d/1000);
+            all[i].dist = result;
+          });
+        } else {
+          //console.log('No geolocation error');
+        }
+      }
+    },
+    sortNear(){
+      this.companyForms.sort((a, b) => (a.dist > b.dist) ? 1 : -1);
+    },
+    sortFurth(){
+      this.companyForms.sort((a, b) => (a.dist < b.dist) ? 1 : -1);
+    },
     Change(){
       // TODO: zmienić
       //console.log("User " + JSON.stringify(this.form) + " changed");
@@ -112,6 +155,14 @@ export default {
       this.userForm.checkPassword = 'dupa123';
       this.breachAlert = false;
       this.companyForms.push({
+        name: 'XKajak',
+        latitude: '50.3483816',
+        longtitude: '18.915717599999994',
+        phone: '666 777 888',
+        photo: 'https://picsum.photos/450/300/?image=10',
+        gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}]
+      });
+      this.companyForms.push({
         name: 'KajaX',
         latitude: '51.1078852',
         longtitude: '17.03853760000004',
@@ -120,15 +171,14 @@ export default {
         gears: [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
       });
       this.companyForms.push({
-        name: 'XKajak',
-        latitude: '50.3483816',
-        longtitude: '18.915717599999994',
-        phone: '666 777 888',
-        photo: 'https://picsum.photos/450/300/?image=10',
-        gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}]
+        name: 'Opole',
+        latitude: '50.671062',
+        longtitude: '17.926126',
+        phone: '123 123 123',
+        photo: 'https://picsum.photos/450/300/?image=30',
+        gears: [{"id":"0","gearType":"Boats","gearAmount":"20","gearCost":"250"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
       });
-      
-      
+      this.calcDistAll(this.companyForms);
     }else{
       this.breachAlert = true;
     }
