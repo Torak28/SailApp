@@ -105,11 +105,12 @@ class UserLogin(Resource):
     @api.response(401, 'Login not successful.')
     def post(self):
         args = self.parser.parse_args(strict=True)
-        access_token, refresh_token = login_user(args['email'], args['password'])
+        access_token, refresh_token, role_name = login_user(args['email'], args['password'])
         if access_token:
             return {
                        'access_token': access_token,
-                       'refresh_token': refresh_token
+                       'refresh_token': refresh_token,
+                       'role': role_name.lower()
                    }, 200
         else:
             return {'msg': 'Login not successful.'}, 401
