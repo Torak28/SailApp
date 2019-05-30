@@ -612,7 +612,7 @@ class EditCentre(Resource):
     @jwt_required
     @api.response(200, 'Water centre edited successfully.')
     @api.response(403, 'User does not have the proper rights.')
-    def post(self):
+    def put(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
