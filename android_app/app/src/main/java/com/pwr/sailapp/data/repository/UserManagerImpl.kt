@@ -51,6 +51,7 @@ class UserManagerImpl(
                     password = password
                 ).await()
 
+
                 if(fetchedLoginResponse.access_token != null && fetchedLoginResponse.refresh_token != null){
                     _authStatus.postValue(AuthenticationState.AUTHENTICATED)
                     _accessToken.postValue(fetchedLoginResponse.access_token)
@@ -70,7 +71,6 @@ class UserManagerImpl(
             catch (e: NoConnectivityException) {
                 Log.e("Connectivity", "No internet connection")
             }
-
         }
     }
 

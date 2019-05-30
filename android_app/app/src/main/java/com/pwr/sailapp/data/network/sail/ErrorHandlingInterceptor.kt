@@ -1,4 +1,4 @@
-package com.pwr.sailapp.data.network.sail.response
+package com.pwr.sailapp.data.network.sail
 
 import com.pwr.sailapp.internal.ErrorCodeException
 import okhttp3.Interceptor

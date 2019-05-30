@@ -4,4 +4,4 @@ import java.io.IOException
 
 class NoConnectivityException : IOException()
 
-class ErrorCodeException : Exception()
+class ErrorCodeException : IOException()

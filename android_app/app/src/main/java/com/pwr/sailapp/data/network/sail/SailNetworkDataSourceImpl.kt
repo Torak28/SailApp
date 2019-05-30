@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.pwr.sailapp.data.network.sail.response.AllCentreGearResponse
 import com.pwr.sailapp.data.network.sail.response.AllUserRentalsResponse
 import com.pwr.sailapp.data.network.sail.response.CentresResponse
+import com.pwr.sailapp.internal.ErrorCodeException
 import com.pwr.sailapp.internal.NoConnectivityException
 
 class SailNetworkDataSourceImpl(

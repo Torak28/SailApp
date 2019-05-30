@@ -1,11 +1,8 @@
 package com.pwr.sailapp.data.network.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.pwr.sailapp.data.sail.User
-import com.pwr.sailapp.data.sail.UserCredentials
 import com.pwr.sailapp.data.network.sail.response.*
 import kotlinx.coroutines.Deferred
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -85,7 +82,7 @@ interface SailAppApiService {
             }
 
             val okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
+                //.addInterceptor(loggingInterceptor)
                 .addInterceptor(ErrorHandlingInterceptor())
                 .addInterceptor(connectivityInterceptor)
                 .build()
