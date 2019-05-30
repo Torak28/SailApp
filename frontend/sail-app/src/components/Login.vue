@@ -24,22 +24,34 @@ export default {
   },
   methods: {
     loginToAccount() {
-      let databaseLogin = this.$parent.mockAccount1.login;
-      let databasePass = this.$parent.mockAccount1.password;
-      let databaseRole = this.$parent.mockAccount1.role;
-      this.form.role = databaseRole;
+      this.form.role = 'User';
       if(this.form.login != "" && this.form.password != "") {
-        if(this.form.login == databaseLogin && this.form.password == databasePass) {
-          this.$parent.authenticated = true;
-          if(this.form.role == 'User'){
-            this.$router.push({ name: "UserPanel", params: {user: this.form} });
-          }else{
-            this.$router.push({ name: "OwnerPanel", params: {user: this.form} });
-          }
-        } else {
-          this.$parent.wrongData = true;
-          this.$parent.noData = false;
-        }
+        //Tutaj lecimy z koksem
+        var obj = this;
+        this.axios
+        .post("https://projekt-gospodarka-backend.herokuapp.com/accounts/login", {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+            'Access-Control-Allow-Headers': 'X-Requested-With,content-type',
+            'Access-Control-Allow-Credentials': true
+	        },
+          email: obj.form.login,
+          password: obj.form.password
+        })
+        .then(
+          (response) => {
+            obj.$parent.authenticated = true;
+            if(obj.form.role == 'User'){
+              obj.$router.push({ name: "UserPanel", params: {user: obj.form} });
+            }else{
+              obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });
+            }
+          })
+        .catch(function (error){
+          obj.$parent.wrongData = true;
+          obj.$parent.noData = false;
+        });
       } else {
         this.$parent.noData = true;
         this.$parent.wrongData = false;
