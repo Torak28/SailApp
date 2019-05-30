@@ -239,7 +239,22 @@ export default {
               centre_id: response.data[i].centre_id,
               gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}]
             });
-            
+            let url = 'http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/' + response.data[i].centre_id;
+            this.axios
+              .get(url, {
+                headers: {
+                  'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+                  'accept': 'application/json',
+                  'Authorization': "Bearer " + this.user.token
+                }
+              })
+              .then(
+                (response) => {
+                  console.log(response);
+                })
+              .catch(function (error){
+                console.log(error);
+              });
           }
         })
       .catch(function (error){
