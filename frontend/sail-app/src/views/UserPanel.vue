@@ -193,13 +193,29 @@ export default {
   },
   created () {
     if(this.user.role == 'User'){
-      this.userForm.role = 'User';
-      this.userForm.name = 'Jarosław';
-      this.userForm.surname = 'Ciołek-Żelechowski';
-      this.userForm.phone = '666 615 315';
-      this.userForm.email = 'zelechowski28@gmail.com';
-      this.userForm.password = 'dupa123';
-      this.userForm.checkPassword = 'dupa123';
+      this.userForm.role = this.user.role;
+      this.userForm.email = this.user.login;
+      this.userForm.password = this.user.password;
+      this.userForm.checkPassword = this.user.password;
+
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          this.userForm.name = response.data.first_name;
+          this.userForm.surname = response.data.last_name;
+          this.userForm.phone = response.data.phone_number;
+        })
+      .catch(function (error){
+        console.log(error);
+      });
       this.breachAlert = false;
       this.companyForms.push({
         name: 'XKajak',

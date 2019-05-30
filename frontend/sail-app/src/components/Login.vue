@@ -18,7 +18,8 @@ export default {
       form: {
         login: '',
         password: '',
-        role: ''
+        role: '',
+        token: ''
       }
     }
   },
@@ -28,10 +29,6 @@ export default {
       if(this.form.login != "" && this.form.password != "") {
         //Tutaj lecimy z koksem
         var obj = this;
-        /*let data = JSON.stringify({
-          email: this.form.login,
-          password: this.form.password
-        });*/
         let data = new FormData();
         data.append("email", this.form.login);
         data.append("password", this.form.password);
@@ -45,6 +42,7 @@ export default {
         })
         .then(
           (response) => {
+            obj.form.token = response.data.access_token;
             obj.$parent.authenticated = true;
             if(obj.form.role == 'User'){
               obj.$router.push({ name: "UserPanel", params: {user: obj.form} });
