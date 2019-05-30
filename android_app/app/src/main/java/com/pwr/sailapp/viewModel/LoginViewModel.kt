@@ -3,16 +3,20 @@ package com.pwr.sailapp.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.repository.UserManagerImpl
 import com.pwr.sailapp.data.sail.RegistrationState
 import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.utils.CredentialsUtil
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
  */
+
+
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext = application.applicationContext
@@ -27,6 +31,14 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun authenticate(email: String, password:String){
         userManagerImp.loginUser(email, password)
         authenticationState = userManagerImp.authStatus
+  /*      val authToken = userManagerImp.authToken.value!!
+        val refreshToken = userManagerImp.refreshToken.value!!
+        CredentialsUtil.saveTokensAndState(
+            context = appContext,
+            authToken = authToken,
+            refreshToken = refreshToken,
+            authenticationState = AuthenticationState.AUTHENTICATED
+        ) */
     }
 
     suspend fun registerUser(user: User){

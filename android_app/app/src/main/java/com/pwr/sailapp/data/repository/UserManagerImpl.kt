@@ -20,16 +20,16 @@ class UserManagerImpl(
     private val sailAppApiService: SailAppApiService
 ) : UserManager {
 
-    override val authStatus: LiveData<AuthenticationState>
+    override val authStatus: MutableLiveData<AuthenticationState>
         get() = _authStatus
 
     override val registerStatus: LiveData<RegistrationState>
         get() = _registerStatus
 
-    override val authToken: LiveData<String>
+    override val authToken: MutableLiveData<String>
         get() = _accessToken
 
-    override val refreshToken: LiveData<String>
+    override val refreshToken: MutableLiveData<String>
         get() = _refreshToken
 
     override val currentUser: LiveData<User>

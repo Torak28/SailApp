@@ -21,6 +21,7 @@ import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.utils.CredentialsUtil
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
@@ -45,7 +46,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
     private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
 
+    // Authentication
+    val authenticationState = userManagerImp.authStatus
+    private val authToken = userManagerImp.authToken
+    private val refreshToken = userManagerImp.refreshToken
+
     init {
+        if(refreshToken.value == null) {
+            Log.e("fetchRentals()", "refreshToken.value = null")
+            refreshToken.value = CredentialsUtil.getRefreshToken(appContext)
+        }
+
+        if(authToken.value == null) {
+            Log.e("fetchRentals()", "authToken.value = null")
+            authToken.value = CredentialsUtil.getAuthToken(appContext)
+        }
+
         Transformations.map(mainRepositoryImpl.responseStatus){
             when(it){
                 is Error -> {
@@ -69,10 +85,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val INITIAL_MAX_DISTANCE = 1000000.00
     }
 
-    // Authentication
-    val authenticationState = userManagerImp.authStatus
-    private val authToken = userManagerImp.authToken
-    private val refreshToken = userManagerImp.refreshToken
+
 
     var currentUser: User
     lateinit var currentRental: Rental
@@ -140,7 +153,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     suspend fun fetchRentals() {
-        if(authToken.value == null) {Log.e("fetchRentals()", "authToken.value = null"); return}
         val fetchedRentals = mainRepositoryImpl.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
         if (rentals.value == null) {
