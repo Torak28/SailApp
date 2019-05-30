@@ -7,7 +7,6 @@ object MockUsers {
     init {
         usersList.add(
             User(
-                1,
                 "Jan",
                 "Kowalski",
                 "jan@gmail.com",
@@ -17,7 +16,6 @@ object MockUsers {
         )
         usersList.add(
             User(
-                2,
                 "Krzysztof",
                 "Nowak",
                 "chris@gmail.com",

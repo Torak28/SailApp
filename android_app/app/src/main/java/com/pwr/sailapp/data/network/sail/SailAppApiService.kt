@@ -7,6 +7,7 @@ import com.pwr.sailapp.data.network.sail.response.*
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
@@ -16,9 +17,39 @@ getCentres: https://0e4682b3-c081-4689-b8c5-51f3f0a7ae09.mock.pstmn.io/getCentre
 getAllCentreGear: https://0e4682b3-c081-4689-b8c5-51f3f0a7ae09.mock.pstmn.io/getAllCentreGear?centre_id=1
  */
 
-const val SERVER_URL = "https://0e4682b3-c081-4689-b8c5-51f3f0a7ae09.mock.pstmn.io"
+const val SERVER_URL = "https://projekt-gospodarka-backend.herokuapp.com/"
 
 interface SailAppApiService {
+
+    @FormUrlEncoded
+    @POST("accounts/login")
+    fun loginUserAsync(
+        @Field("email") email: String,
+        @Field("password") password: String
+    ):Deferred<LoginUserResponse>
+
+
+    @GET("default/refreshToken")
+    fun refreshTokenAsync(
+        @Body refresh_token: String
+    ):Deferred<LoginUserResponse>
+
+
+    @FormUrlEncoded
+    @POST("accounts/register")
+    fun registerUserAsync(
+        @Field("first_name") firstName : String,
+        @Field("last_name") lastName : String,
+        @Field("email") email: String,
+        @Field("password") password: String,
+        @Field("phone_number") phoneNumber : String,
+        @Field("role") role : String
+    ):Deferred<RegisterUserResponse>
+
+    @GET("/gear/getMyRentedGear")
+    fun getAllUserRentals(
+        @Header("Authorization") authToken: String
+    ):Deferred<AllUserRentalsResponse>
 
     @GET("getCentres")
     fun getCentres(): Deferred<CentresResponse> // defer - odraczać
@@ -28,23 +59,7 @@ interface SailAppApiService {
         @Query("centre_id") centreID: Int
     ): Deferred<AllCentreGearResponse>
 
-    @GET("getAllUserRentals")
-    fun getAllUserRentals(
-        @Query("user_id") userID: Int
-    ):Deferred<AllUserRentalsResponse>
 
-    @POST("registerUser")
-    fun registerUserAsync(
-        @Body user: User
-    ):Deferred<RegisterUserResponse>
-
-    @POST("loginUser")
-    fun loginUserAsync(
-        @Body userCredentials: UserCredentials
-    ):Deferred<LoginUserResponse>
-
-    @POST("logoutUser")
-    fun logoutUserAsync():Deferred<LogoutUserResponse>
 
     companion object{
         // syntax: SailAppApiService()
@@ -55,7 +70,7 @@ interface SailAppApiService {
             Interceptors are a powerful mechanism that can monitor, rewrite, and retry calls
             Typically interceptors add, remove, or transform headers on the request or response.
              */
-            val requestInterceptor = Interceptor{
+    /*        val requestInterceptor = Interceptor{
                 val request = it.request()
                     .newBuilder()
                     .build()
@@ -63,10 +78,15 @@ interface SailAppApiService {
                 val response = it.proceed(request)
                 // TODO check response code val responseCode = response.code()
                 return@Interceptor response
+            } */
+
+            val loggingInterceptor = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BASIC
             }
 
             val okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(requestInterceptor)
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(ErrorHandlingInterceptor())
                 .addInterceptor(connectivityInterceptor)
                 .build()
 

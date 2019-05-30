@@ -13,5 +13,5 @@ interface SailNetworkDataSource{
     // updated downloadedCentres
     suspend fun fetchCentres()
     suspend fun fetchAllCentreGear(centreID: Int)
-    suspend fun fetchAllUserRentals(userID: Int)
+    suspend fun fetchAllUserRentals(authToken: String)
 }

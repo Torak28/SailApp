@@ -8,17 +8,43 @@ import java.util.*
 
 // TODO add number of hours
 data class Rental (
-    @SerializedName("rental_id")
+    @SerializedName("rent_id")
     val id: Int,
-    // @Embedded(prefix = "centre_")
-    val centre: Centre,
+
+    val centre: Centre = Centre(20,
+        "Default centre",
+        3.0,
+        "Default location",
+        54.692867,
+        18.691693,
+        "https://imageog.flaticon.com/icons/png/512/36/36601.png?size=1200x630f&pad=10,10,10,10&ext=png&bg=FFFFFFFF",
+        123456789
+        ),
+
     @SerializedName("rent_start")
-    val rentStartDateStr: String = "12-02-2020T13:15:00",
+    val rentStartDateStr: String = "Thu, 30 May 2019 08:35:31 GMT",
+
     @SerializedName("rent_end")
-    val rentEndDateStr: String = "12-02-2020T13:16:00",
+    val rentEndDateStr: String = "Thu, 30 May 2019 08:25:31 GMT",
+
     val equipmentOptionID: Int = 0,
+
     @SerializedName("gear_name")
-    val equipmentName: String
+    val equipmentName: String,
+
+    @SerializedName("centre_id")
+    val centreID : Int? = null,
+
+    @SerializedName("centre_name")
+    val centreName : String? = null,
+
+    @SerializedName("rent_quantity")
+    val rentQuantity : Int? = null,
+
+    @SerializedName("gear_name")
+    val gearName: String? = null
+
+
 ){
 
     override fun toString() = "$id, ${centre.name} , $rentStartDateStr, $rentEndDateStr, $equipmentName"

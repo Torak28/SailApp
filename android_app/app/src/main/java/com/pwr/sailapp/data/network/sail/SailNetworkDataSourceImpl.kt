@@ -29,9 +29,10 @@ class SailNetworkDataSourceImpl(
         get() = _downloadedAllUserRentals
 
 
-    override suspend fun fetchAllUserRentals(userID: Int) {
+    override suspend fun fetchAllUserRentals(authToken : String) {
         try{
-            val fetchedAllUserRentals = sailAppApiService.getAllUserRentals(userID)
+            val bearerToken = "Bearer $authToken"
+            val fetchedAllUserRentals = sailAppApiService.getAllUserRentals(bearerToken)
                 .await()
             _downloadedAllUserRentals.postValue(fetchedAllUserRentals)
         }

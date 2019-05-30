@@ -9,8 +9,11 @@ interface UserManager {
     val authStatus : LiveData<AuthenticationState>
     val registerStatus : LiveData<RegistrationState>
     val currentUser: LiveData<User>
+    val authToken: LiveData<String>
+    val refreshToken: LiveData<String>
 
     suspend fun loginUser(email: String, password: String)//:LiveData<User> // return: user with auth token field but without password
+    suspend fun refreshToken(refreshToken: String)
     suspend fun registerUser(user: User)//:LiveData<RegistrationState> // return: message if user is correctly registered
-    suspend fun logoutUser()//:LiveData<AuthenticationState>  // return: message if user is correctly logged out
+    fun logoutUser()//:LiveData<AuthenticationState>  // return: message if user is correctly logged out
 }

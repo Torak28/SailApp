@@ -8,13 +8,12 @@ import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.data.sail.RegistrationState
 import com.pwr.sailapp.data.sail.UserCredentials
 import com.pwr.sailapp.data.network.sail.SailAppApiService
+import com.pwr.sailapp.data.network.sail.response.REGISTER_OK_MESSAGE
+import com.pwr.sailapp.internal.ErrorCodeException
 import com.pwr.sailapp.internal.NoConnectivityException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-const val REGISTER_OK_MESSAGE = "ok"
-const val LOGIN_OK_MESSAGE = "ok"
-const val LOGOUT_OK_MESSAGE = "ok"
 const val NO_TOKEN = ""
 
 class UserManagerImpl(
@@ -27,13 +26,20 @@ class UserManagerImpl(
     override val registerStatus: LiveData<RegistrationState>
         get() = _registerStatus
 
+    override val authToken: LiveData<String>
+        get() = _accessToken
+
+    override val refreshToken: LiveData<String>
+        get() = _refreshToken
+
     override val currentUser: LiveData<User>
         get() = _currentUser
 
     private val _authStatus = MutableLiveData<AuthenticationState>()
     private val _registerStatus = MutableLiveData<RegistrationState>()
     private val _currentUser = MutableLiveData<User>()
-    private val _token = MutableLiveData<String>()
+    private val _accessToken = MutableLiveData<String>()
+    private val _refreshToken = MutableLiveData<String>()
 
 
     override suspend fun loginUser(email: String, password: String) {
@@ -41,20 +47,44 @@ class UserManagerImpl(
         withContext(Dispatchers.IO) {
             try {
                 val fetchedLoginResponse = sailAppApiService.loginUserAsync(
-                    UserCredentials(
-                        email,
-                        password
-                    )
+                    email = email,
+                    password = password
                 ).await()
-                when (fetchedLoginResponse.message) {
-                    LOGIN_OK_MESSAGE -> {
-                        _authStatus.postValue(AuthenticationState.AUTHENTICATED)
-                        _token.postValue(fetchedLoginResponse.token)
-                    }
-                    else -> {
-                        _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
-                        _token.postValue(NO_TOKEN)
-                    }
+
+                if(fetchedLoginResponse.access_token != null && fetchedLoginResponse.refresh_token != null){
+                    _authStatus.postValue(AuthenticationState.AUTHENTICATED)
+                    _accessToken.postValue(fetchedLoginResponse.access_token)
+                    _refreshToken.postValue(fetchedLoginResponse.refresh_token)
+                }
+                else{
+                    _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
+                    _accessToken.postValue(NO_TOKEN)
+                    _refreshToken.postValue(NO_TOKEN)
+                }
+
+            }
+            catch (e: ErrorCodeException){
+                Log.e("Response ", "Returned error code")
+            }
+
+            catch (e: NoConnectivityException) {
+                Log.e("Connectivity", "No internet connection")
+            }
+
+        }
+    }
+
+    override suspend fun refreshToken(refreshToken: String) {
+        withContext(Dispatchers.IO){
+            try {
+                val fetchedRefreshTokenResponse = sailAppApiService.refreshTokenAsync(refreshToken).await()
+                if(fetchedRefreshTokenResponse.access_token != null){
+                    _authStatus.postValue(AuthenticationState.AUTHENTICATED)
+                    _accessToken.postValue(fetchedRefreshTokenResponse.access_token)
+                }
+                else{
+                    _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
+                    _accessToken.postValue(fetchedRefreshTokenResponse.access_token)
                 }
             } catch (e: NoConnectivityException) {
                 Log.e("Connectivity", "No internet connection")
@@ -62,11 +92,25 @@ class UserManagerImpl(
         }
     }
 
+    override fun logoutUser() {
+        _authStatus.value = AuthenticationState.UNAUTHENTICATED
+        _accessToken.value = NO_TOKEN
+        _refreshToken.value = NO_TOKEN
+    }
+
     override suspend fun registerUser(user: User) {
         withContext(Dispatchers.IO) {
             try {
-                val fetchedRegistrationResponse = sailAppApiService.registerUserAsync(user).await()
-                when (fetchedRegistrationResponse.message) {
+                val fetchedRegistrationResponse = sailAppApiService.registerUserAsync(
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    email = user.email,
+                    phoneNumber = user.phoneNumber,
+                    password = user.password,
+                    role = "user"
+                ).await()
+
+                when (fetchedRegistrationResponse.msg) {
                     REGISTER_OK_MESSAGE -> _registerStatus.postValue(RegistrationState.OK)
                     else -> _registerStatus.postValue(RegistrationState.FAILED)
                 }
@@ -76,21 +120,6 @@ class UserManagerImpl(
         }
     }
 
-    override suspend fun logoutUser() {
-        withContext(Dispatchers.IO){
-            try {
-                val fetchedLogoutUserResponse = sailAppApiService.logoutUserAsync().await()
-                when (fetchedLogoutUserResponse.message) {
-                    LOGOUT_OK_MESSAGE -> {
-                        _authStatus.postValue(AuthenticationState.UNAUTHENTICATED)
-                        _token.postValue(NO_TOKEN)
-                    }
-                    else -> _authStatus.postValue(AuthenticationState.AUTHENTICATED)
-                }
-            } catch (e: NoConnectivityException) {
-                Log.e("Connectivity", "No internet connection")
-            }
-        }
-    }
+
 
 }

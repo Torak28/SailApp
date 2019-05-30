@@ -21,6 +21,8 @@ import kotlinx.coroutines.launch
 
 // https://developer.android.com/guide/navigation/navigation-conditional
 
+const val INVALID_CREDENTIALS = "Invalid email or credentials"
+
 class LoginFragment : ScopedFragment() {
 
     private lateinit var loginViewModel: LoginViewModel
@@ -76,7 +78,7 @@ class LoginFragment : ScopedFragment() {
                     when(authenticationState){
                         AuthenticationState.AUTHENTICATED -> navController.navigate(R.id.destination_main)
                         else -> Snackbar.make(view,
-                            "Invalid credentials",
+                            INVALID_CREDENTIALS,
                             Snackbar.LENGTH_SHORT).show()
                     }
                 })

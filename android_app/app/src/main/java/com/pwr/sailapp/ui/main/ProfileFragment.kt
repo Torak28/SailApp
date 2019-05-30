@@ -3,6 +3,7 @@ package com.pwr.sailapp.ui.main
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,12 +66,13 @@ class ProfileFragment : ScopedFragment() {
         - dateDiff < 1 day -> fetch forecast and show current weather
         - 1 day <= dateDiff <= 10 days -> fetch forecast and show weather for nth day
         5. Wait for
-         */
+
+
 
         launch {
             // show loading bar
             linearLayout_rentals_loading.visibility = View.VISIBLE
-            withContext(Dispatchers.Default) { mainViewModel.fetchRentals(userID = 1) }
+            withContext(Dispatchers.Default) { mainViewModel.fetchRentals() }
 
             // hide loading bar ?
             mainViewModel.rentalSummaries.observe(viewLifecycleOwner, Observer {
@@ -87,6 +89,7 @@ class ProfileFragment : ScopedFragment() {
                 }
             })
         }
+        */
     }
 
     private fun showWelcomeMessage() =
@@ -107,7 +110,7 @@ class ProfileFragment : ScopedFragment() {
     }
 
     private fun onRentalMap() = { rental: Rental ->
-        val coordinateXFormatted = formatCoordinate(rental.centre.coordinateX, 4)
+        val coordinateXFormatted = formatCoordinate(rental.centre.coordinateX, 4) // TODO !!.
         val coordinateYFormatted = formatCoordinate(rental.centre.coordinateY, 4)
         val label = rental.centre.name
         val uri = Uri.parse("geo:0,0?q=$coordinateXFormatted,$coordinateYFormatted($label)")

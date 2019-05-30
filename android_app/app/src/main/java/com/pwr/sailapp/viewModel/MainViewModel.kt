@@ -6,11 +6,16 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.pwr.sailapp.data.RentalSummary
 import com.pwr.sailapp.data.mocks.MockUsers
+import com.pwr.sailapp.data.network.Error
+import com.pwr.sailapp.data.network.ResponseStatus
+import com.pwr.sailapp.data.network.Success
+import com.pwr.sailapp.data.network.TOKEN_EXPIRED
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.MainRepositoryImpl
+import com.pwr.sailapp.data.repository.NO_TOKEN
 import com.pwr.sailapp.data.repository.UserManagerImpl
 import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
@@ -33,13 +38,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext = application.applicationContext
 
-    // TODO move repo to constructor, use dependency injection
     private val mainRepositoryImpl =
         MainRepositoryImpl(
             SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
             , DarkSkyApiService(ConnectivityInterceptorImpl(appContext))
         )
     private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
+
+    init {
+        Transformations.map(mainRepositoryImpl.responseStatus){
+            when(it){
+                is Error -> {
+                    if(it.msg != null && it.msg == TOKEN_EXPIRED){
+                        viewModelScope.launch {
+                            if(refreshToken.value == null || refreshToken.value == NO_TOKEN){
+                                Log.e("mainViewModel", "refreshToken.value = null || NO_TOKEN")
+                                // authenticationState.postValue(UNAUTHENTICATED) - can't do it since it's not mutable
+                            }
+                            userManagerImp.refreshToken(refreshToken.value!!)
+                        }
+                    }
+                }
+                is Success -> {}
+            }
+        }
+    }
 
     companion object {
         const val INITIAL_MIN_RATING = 0.0
@@ -48,6 +71,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Authentication
     val authenticationState = userManagerImp.authStatus
+    private val authToken = userManagerImp.authToken
+    private val refreshToken = userManagerImp.refreshToken
 
     var currentUser: User
     lateinit var currentRental: Rental
@@ -87,7 +112,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         currentUser = fetchUserData()
     }
 
-    suspend fun logOut() {
+    fun logOut() {
         userManagerImp.logoutUser()
     }
 
@@ -114,8 +139,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    suspend fun fetchRentals(userID: Int) {
-        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(userID)
+    suspend fun fetchRentals() {
+        if(authToken.value == null) {Log.e("fetchRentals()", "authToken.value = null"); return}
+        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
         if (rentals.value == null) {
             Log.e("MainViewModel", "fetchRentals: rentals.value = null)")
@@ -139,8 +165,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun summariseRental(rental: Rental): RentalSummary = mainRepositoryImpl.getRentalSummary(rental)
 
-    suspend fun fetchStats(userID: Int) {
-        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(userID)
+    suspend fun fetchStats() {
+        if(authToken.value == null) {Log.e("fetchStats()", "authToken.value = null"); return}
+        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
         if (rentals.value == null) { Log.e("MainViewModel", "fetchStats: rentals.value = null") }
         rentalHistory = MediatorLiveData()
@@ -152,7 +179,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             rentalHistory.value = ArrayList(previousRentals)
         }
-
     }
 
     fun prepareGraphData():Boolean{

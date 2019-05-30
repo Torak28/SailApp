@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.pwr.sailapp.data.RentalSummary
+import com.pwr.sailapp.data.network.Resource
+import com.pwr.sailapp.data.network.ResponseStatus
+import com.pwr.sailapp.data.network.Success
 import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
@@ -16,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Error
 
 // https://developer.android.com/jetpack/docs/guide
 // https://medium.com/androiddevelopers/coroutines-on-android-part-i-getting-the-background-3e0e54d20bb
@@ -31,6 +35,8 @@ class MainRepositoryImpl(
     private val allUserRentals = MutableLiveData<ArrayList<Rental>>()
     private val rentalSummaries = MutableLiveData<ArrayList<RentalSummary>>()
 
+    val responseStatus = MutableLiveData<ResponseStatus>()
+
     init {
         // observe forever (repos don't have lifecycle) changes in live data (responses)
         sailNetworkDataSource.apply {
@@ -41,16 +47,22 @@ class MainRepositoryImpl(
                 allCentreGear.postValue(it.gear)
             }
             downloadedAllUserRentals.observeForever {
-                allUserRentals.postValue(it.rentals)
+                if(it.rentals == null){
+                    Log.e("allUserRentals", "it.rentals = null")
+                    responseStatus.postValue(com.pwr.sailapp.data.network.Error(it.msg))
+                }
+                else{
+                    allUserRentals.postValue(it.rentals)
+                    responseStatus.postValue(Success())
+                }
             }
         }
-
     }
 
-    override suspend fun getAllUserRentals(userID: Int): LiveData<ArrayList<Rental>> {
+    override suspend fun getAllUserRentals(authToken: String): LiveData<ArrayList<Rental>> {
         // create a block that will run on the IO dispatcher
         return withContext(Dispatchers.IO) {
-            fetchAllUserRentals(userID)
+            fetchAllUserRentals(authToken)
             allUserRentals
         }
     }
@@ -88,7 +100,6 @@ class MainRepositoryImpl(
                 RentalSummary(rental, forecast.currently)
             }
         } else RentalSummary(rental, null)
-
     }
 
     private suspend fun fetchCentres() {
@@ -99,7 +110,7 @@ class MainRepositoryImpl(
         sailNetworkDataSource.fetchAllCentreGear(centreID)
     }
 
-    private suspend fun fetchAllUserRentals(rentalID: Int) {
-        sailNetworkDataSource.fetchAllUserRentals(rentalID)
+    private suspend fun fetchAllUserRentals(authToken: String) {
+        sailNetworkDataSource.fetchAllUserRentals(authToken)
     }
 }

@@ -60,7 +60,7 @@ class StatsFragment : ScopedFragment() {
 
         launch {
 
-            withContext(Dispatchers.Default) { mainViewModel.fetchStats(userID = 1) }
+            withContext(Dispatchers.Default) { mainViewModel.fetchStats() }
             mainViewModel.rentalHistory.observe(viewLifecycleOwner, Observer {
            //     textView_stats_fragment.text = it.toString()
                 val isDataPrepared = mainViewModel.prepareGraphData()
