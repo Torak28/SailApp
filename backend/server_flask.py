@@ -25,6 +25,7 @@ ns_user = api.namespace('user', description='Endpoints involving user.')
 ns_owner = api.namespace('owner', description='Endpoints involving owner.')
 ns_admin = api.namespace('admin', description='Endpoints involving admin.')
 ns_rental = api.namespace('rental', description='Endpoints involving renting.')
+ns_centre = api.namespace('centre', description='Endpoints involving centres.')
 ns_test = api.namespace('POPULATING_DB', description='Endpoints to populate DB. TEST PURPOSES ONLY.')
 
 
@@ -181,6 +182,7 @@ class GetUserData(Resource):
         'last_name': fields.String,
         'email': fields.String,
         'phone_number': fields.String,
+        'role': fields.String
     })
 
     @jwt_required
@@ -188,10 +190,13 @@ class GetUserData(Resource):
     def get(self):
         user_id = get_jwt_identity()
         user_obj = user.get_user_by_id(user_id)
+        role = roles.get_role_name_by_id(user_obj.role_id)
         user_data = {'first_name': user_obj.first_name,
                      'last_name': user_obj.last_name,
                      'email': user_obj.email,
-                     'phone_number': user_obj.phone_number}
+                     'phone_number': user_obj.phone_number,
+                     'role': role.lower()
+                     }
         return jsonify(user_data)
 
 
@@ -357,7 +362,7 @@ class RentGear(Resource):
             total_qty = gear.get_total_quantity(kwargs['centre_id'], kwargs['gear_id'])
 
             if rental.check_if_rent_is_possible(kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
-                                             kwargs['rent_start'], kwargs['rent_end'], total_qty):
+                                                kwargs['rent_start'], kwargs['rent_end'], total_qty):
 
                 rental.create_rental(user_id, kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
                                      kwargs['rent_start'], kwargs['rent_end'])
@@ -408,7 +413,7 @@ class GetRentedGear(Resource):
         return jsonify(current_gear)
 
 
-@ns_owner.route('/getCentres')
+@ns_owner.route('/getMyCentres')
 class GetMyCentres(Resource):
     resource_fields = api.model('getOwnerCentres', {
         "centre_id": fields.Integer,
@@ -445,7 +450,7 @@ class GetRentedGearByCentre(Resource):
         return jsonify(current_rentals)
 
 
-@ns_owner.route('/getRentalsForCentre/<int:centre_id>')
+@ns_owner.route('/getRentalsForMyCentre/<int:centre_id>')
 class GetRentalsForCentre(Resource):
     resource_fields = api.model('RentalsByCentreId', {
         'rent_id': fields.Integer,
@@ -553,7 +558,7 @@ class AddPicture(Resource):
         return {'msg': 'Permission denied. You are not the owner.'}, 403
 
 
-@ns_user.route('/getCentres')
+@ns_centre.route('/getCentres')
 class GetCentres(Resource):
     resource_fields = api.model('editRent', {
         'centre_id': fields.String,
@@ -622,6 +627,8 @@ class EditCentre(Resource):
 
             return {'msg': 'Water centre edited successfully.'}, 200
         return {'msg': 'User does not have the proper rights.'}, 403
+
+
 
 
 if __name__ == '__main__':
