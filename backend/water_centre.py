@@ -43,3 +43,14 @@ def get_all_water_centres(session=None):
         formatted_centre['phone_number'] = centre.contact_number
         list_of_formatted_centres.append(formatted_centre)
     return list_of_formatted_centres
+
+
+@connection_to_db
+def edit_water_centre(owner_id, centre_id, centre_name, latitude, longitude, phone_number, session=None):
+    update_dict = {'id': centre_id,
+                   'name': centre_name,
+                   'owner_id': owner_id,
+                   'latitude': latitude,
+                   'longitude': longitude,
+                   'contact_number': phone_number}
+    session.query(WaterCentre).filter_by(id=centre_id).update(update_dict)

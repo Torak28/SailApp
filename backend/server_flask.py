@@ -590,5 +590,38 @@ class GetPicture(Resource):
         return send_file(picture_filepath, mimetype='image/gif')
 
 
+@ns_owner.route('/editCentre')
+class EditCentre(Resource):
+    resource_fields = api.model('editCentre', {
+        'centre_id': fields.Integer,
+        'centre_name': fields.String,
+        'latitude': fields.String,
+        'longitude': fields.String,
+        'phone_number': fields.String,
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('centre_id', type=int, required=True, location='form', help='ID for edited water centre.')
+    parser.add_argument('centre_name', type=str, required=True, location='form', help='New name for the water centre.')
+    parser.add_argument('latitude', type=str, required=True, location='form', help='Latitude in DDD.dddd format.')
+    parser.add_argument('longitude', type=str, required=True, location='form', help='Longitude in DDD.dddd format.')
+    parser.add_argument('phone_number', type=str, required=True, location='form',
+                        help='Contact number for the Water Centre.')
+
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @jwt_required
+    @api.response(200, 'Water centre edited successfully.')
+    @api.response(403, 'User does not have the proper rights.')
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
+            wc.edit_water_centre(user_id, kwargs['centre_id'], kwargs['centre_name'], kwargs['latitude'],
+                                 kwargs['longitude'], kwargs['phone_number'])
+
+            return {'msg': 'Water centre edited successfully.'}, 200
+        return {'msg': 'User does not have the proper rights.'}, 403
+
+
 if __name__ == '__main__':
     app.run(debug=True)
