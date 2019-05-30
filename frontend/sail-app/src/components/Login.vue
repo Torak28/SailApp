@@ -28,16 +28,20 @@ export default {
       if(this.form.login != "" && this.form.password != "") {
         //Tutaj lecimy z koksem
         var obj = this;
+        /*let data = JSON.stringify({
+          email: this.form.login,
+          password: this.form.password
+        });*/
+        let data = new FormData();
+        data.append("email", this.form.login);
+        data.append("password", this.form.password);
         this.axios
-        .post("https://projekt-gospodarka-backend.herokuapp.com/accounts/login", {
+        .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/login", data, {
           headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-            'Access-Control-Allow-Headers': 'X-Requested-With,content-type',
-            'Access-Control-Allow-Credentials': true
-	        },
-          email: obj.form.login,
-          password: obj.form.password
+            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+            'Content-Type': 'multipart/form-data',
+            'accept': 'application/json'
+          }
         })
         .then(
           (response) => {
