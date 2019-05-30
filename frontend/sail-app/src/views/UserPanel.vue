@@ -199,6 +199,7 @@ export default {
       this.userForm.checkPassword = this.user.password;
 
       var obj = this;
+      //Dane uzytkownika
       this.axios
       .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
         headers: {
@@ -217,7 +218,59 @@ export default {
         console.log(error);
       });
       this.breachAlert = false;
-      this.companyForms.push({
+
+      //Dane wypozyczalni
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getCentres", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            obj.companyForms.push({
+              name: response.data[i].centre_name,
+              latitude: response.data[i].latitude,
+              longtitude: response.data[i].longitude,
+              phone: response.data[i].phone_number,
+              centre_id: response.data[i].centre_id,
+              gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}]
+            });
+            
+          }
+        })
+      .catch(function (error){
+        console.log(error);
+      });
+
+      console.log('pomiedzy');
+
+      //Zdjecie wypozyczalni
+      /*for (let i = 0; i < this.companyForms.length; i++) {
+        let url = 'https://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/' + this.companyForms[i].centre_id
+        console.log('inside');
+        console.log(url);
+        this.axios
+        .get(url, {
+          headers: {
+            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+            'accept': 'application/json',
+            'Authorization': "Bearer " + this.user.token
+          }
+        })
+        .then(
+          (response) => {
+            console.log(response);
+          })
+        .catch(function (error){
+          console.log(error);
+        });
+      }*/
+
+      /*this.companyForms.push({
         name: 'XKajak',
         latitude: '50.3483816',
         longtitude: '18.915717599999994',
@@ -240,7 +293,7 @@ export default {
         phone: '123 123 123',
         photo: 'https://picsum.photos/450/300/?image=30',
         gears: [{"id":"0","gearType":"Boats","gearAmount":"20","gearCost":"250"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
-      });
+      });*/
       this.calcDistAll(this.companyForms);
     }else{
       this.breachAlert = true;
