@@ -81,7 +81,31 @@ export default {
               this.$scrollTo('#alert', 200, {offset: -500});
             }else{
               //console.log("User " + JSON.stringify(this.form) + " registred");
-              this.$router.replace({ name: "home" });
+              var obj = this;
+              let data = new FormData();
+              data.append("first_name", this.form.name);
+              data.append("last_name", this.form.surname);
+              data.append("email", this.form.email);
+              data.append("password", this.form.password);
+              data.append("phone_number", this.form.phone);
+              data.append("role", this.form.type);
+              console.log(data);
+              this.axios
+              .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/register", data, {
+                headers: {
+                  'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/register',
+                  'Content-Type': 'multipart/form-data',
+                  'accept': 'application/json'
+                }
+              })
+              .then(
+                (response) => {
+                  this.$router.replace({ name: "home" });
+                })
+              .catch(function (error){
+                obj.$parent.wrongData = true;
+                obj.$parent.noData = false;
+              });
             }
           }else{
             this.$parent.wrongPass = false;
