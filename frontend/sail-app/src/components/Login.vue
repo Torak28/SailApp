@@ -43,8 +43,9 @@ export default {
         .then(
           (response) => {
             obj.form.token = response.data.access_token;
+            obj.form.role = response.data.role;
             obj.$parent.authenticated = true;
-            if(obj.form.role == 'User'){
+            if(obj.form.role == 'user'){
               obj.$router.push({ name: "UserPanel", params: {user: obj.form} });
             }else{
               obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });

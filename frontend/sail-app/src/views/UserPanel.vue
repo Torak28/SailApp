@@ -187,12 +187,39 @@ export default {
       this.rent = false;
     },
     Change(){
-      // TODO: zmienić
       //console.log("User " + JSON.stringify(this.form) + " changed");
+      var obj = this;
+      //User Data
+      let dataU = new FormData();
+      dataU.append("first_name", this.userForm.name);
+      dataU.append("last_name", this.userForm.surname);
+      dataU.append("email", this.userForm.email);
+      dataU.append("phone_number", this.userForm.phone);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/changeData", dataU, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/changeData',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      });
+      //Password
+      let dataP = new FormData();
+      dataP.append("password", this.userForm.password);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/changePassword", dataP, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/changePassword',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      });
     }
   },
   created () {
-    if(this.user.role == 'User'){
+    if(this.user.role == 'user'){
       this.userForm.role = this.user.role;
       this.userForm.email = this.user.login;
       this.userForm.password = this.user.password;
