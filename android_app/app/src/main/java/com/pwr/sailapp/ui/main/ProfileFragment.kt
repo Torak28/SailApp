@@ -68,12 +68,12 @@ class ProfileFragment : MainScopedFragment() {
             // show loading bar
             linearLayout_rentals_loading.visibility = View.VISIBLE
             withContext(Dispatchers.Default) { mainViewModel.fetchRentals() }
+            linearLayout_rentals_loading.visibility = View.GONE
+            mainViewModel.test++
 
-
-            // hide loading bar ?
             mainViewModel.rentalSummaries.observe(viewLifecycleOwner, Observer {
                 adapter.setRentals(it)
-                linearLayout_rentals_loading.visibility = View.GONE
+                // linearLayout_rentals_loading.visibility = View.GONE
                 if (it.size > 0) {
                     imageView_no_rentals.visibility = View.GONE
                     textView_no_rentals.visibility = View.GONE

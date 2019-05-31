@@ -15,10 +15,7 @@ import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.*
-import com.pwr.sailapp.data.sail.Centre
-import com.pwr.sailapp.data.sail.Equipment
-import com.pwr.sailapp.data.sail.Rental
-import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.data.sail.*
 import com.pwr.sailapp.utils.CredentialsUtil
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
@@ -39,42 +36,35 @@ class MainViewModel(
     private val userManager: UserManager
 ) : AndroidViewModel(application) {
 
+    companion object {
+        const val INITIAL_MIN_RATING = 0.0
+        const val INITIAL_MAX_DISTANCE = 1000000.00
+    }
+
+    var test = 1
+
     private val appContext = application.applicationContext
 
     // Authentication
-    val authenticationState = userManager.authStatus
     private val authToken = userManager.authToken
+
     private val refreshToken = MediatorLiveData<String>().apply {
-        addSource(userManager.refreshToken){
+        addSource(userManager.refreshToken) {
             this.value = it
             CredentialsUtil.saveRefreshToken(appContext, it)
         }
     }
 
-    init {
-
-        Transformations.map(mainRepository.responseStatus){
-            when(it){
-                is Error -> {
-                    if(it.msg != null && it.msg == TOKEN_EXPIRED){
-                        viewModelScope.launch {
-                            if(refreshToken.value == null || refreshToken.value == NO_TOKEN){
-                                Log.e("mainViewModel", "refreshToken.value = null || NO_TOKEN")
-                                // authenticationState.postValue(UNAUTHENTICATED) - can't do it since it's not mutable
-                            }
-                            userManager.refreshToken(refreshToken.value!!)
-                        }
-                    }
-                }
-                is Success -> {}
-            }
+    val authenticationState = MediatorLiveData<AuthenticationState>().apply {
+        addSource(userManager.authStatus) {
+            this.value = it
+        }
+        addSource(refreshToken) {
+            if(it == null) this.value = AuthenticationState.UNAUTHENTICATED
         }
     }
 
-    companion object {
-        const val INITIAL_MIN_RATING = 0.0
-        const val INITIAL_MAX_DISTANCE = 1000000.00
-    }
+
 
     var currentUser: User
     lateinit var currentRental: Rental
@@ -146,26 +136,27 @@ class MainViewModel(
     suspend fun fetchRentals() {
         if (authToken.value == null) {
             Log.e("fetchRentals", "authToken.value = null")
-            if(refreshToken.value == null){
+            if (refreshToken.value == null) {
                 Log.e("fetchRentals", "refreshToken.value = null")
                 refreshToken.postValue(CredentialsUtil.loadRefreshToken(appContext))
             }
-            if(refreshToken.value != null && refreshToken.value != NO_TOKEN){
-                withContext(Dispatchers.IO){
+            if (refreshToken.value != null && refreshToken.value != NO_TOKEN) {
+                withContext(Dispatchers.IO) {
                     userManager.refreshToken(refreshToken = refreshToken.value!!)
                 }
-            }
-            else{
+            } else {
                 Log.e("fetchRentals", "refreshToken.value = null || NO_TOKEN")
+                authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
                 return
             }
         }
-
         val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
-        if (rentals.value == null) { Log.e("MainViewModel", "fetchRentals: rentals.value = null)") }
+        if (rentals.value == null) {
+            Log.e("MainViewModel", "fetchRentals: rentals.value = null)")
+        }
 
-    //    rentalSummaries = MediatorLiveData()
+        //    rentalSummaries = MediatorLiveData()
         val today = Calendar.getInstance().time
         rentalSummaries.addSource(rentals) {
             viewModelScope.launch {
@@ -185,20 +176,22 @@ class MainViewModel(
     private suspend fun summariseRental(rental: Rental): RentalSummary = mainRepository.getRentalSummary(rental)
 
     suspend fun fetchStats() {
-        if(authToken.value == null) {
+        if (authToken.value == null) {
             Log.e("fetchStats()", "authToken.value = null")
-            if (refreshToken.value == null){
+            if (refreshToken.value == null) {
 
             }
-            if (refreshToken.value != null){
-                withContext(Dispatchers.IO){
+            if (refreshToken.value != null) {
+                withContext(Dispatchers.IO) {
                     userManager.refreshToken(refreshToken = refreshToken.value!!)
                 }
             }
         }
         val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
-        if (rentals.value == null) { Log.e("MainViewModel", "fetchStats: rentals.value = null") }
+        if (rentals.value == null) {
+            Log.e("MainViewModel", "fetchStats: rentals.value = null")
+        }
         rentalHistory = MediatorLiveData()
         val today = Calendar.getInstance().time
 
@@ -210,22 +203,27 @@ class MainViewModel(
         }
     }
 
-    fun prepareGraphData():Boolean{
-        if(rentalHistory.value ==  null){ Log.e("isGraphAvailable", "rentalHistory.value = null"); return false}
-        if(rentalHistory.value!!.size == 0) return false
-        else{
+    fun prepareGraphData(): Boolean {
+        if (rentalHistory.value == null) {
+            Log.e("isGraphAvailable", "rentalHistory.value = null"); return false
+        }
+        if (rentalHistory.value!!.size == 0) return false
+        else {
             val calendar = Calendar.getInstance()
             val today = calendar.time
             val currentMonth = calendar.get(Calendar.MONTH)
 
-            val occurrences = Array(currentMonth+1){0}
-            for(rental in rentalHistory.value!!){
-                if(rental.rentStartDate == null) Log.e("fetchStats", "rental.rentStartDate = null")
-                else if(DateUtil.isTheSameYear(rental.rentStartDate!!, today)){
-                    if (DateUtil.getMonth(rental.rentStartDate!!) > occurrences.size) Log.e("fetchStats", "rental.rentStartDate!!.year >= occurrences.size")
-                    else{
+            val occurrences = Array(currentMonth + 1) { 0 }
+            for (rental in rentalHistory.value!!) {
+                if (rental.rentStartDate == null) Log.e("fetchStats", "rental.rentStartDate = null")
+                else if (DateUtil.isTheSameYear(rental.rentStartDate!!, today)) {
+                    if (DateUtil.getMonth(rental.rentStartDate!!) > occurrences.size) Log.e(
+                        "fetchStats",
+                        "rental.rentStartDate!!.year >= occurrences.size"
+                    )
+                    else {
                         val rentalMonth = DateUtil.getMonth(rental.rentStartDate!!)
-                        occurrences[rentalMonth-1]++
+                        occurrences[rentalMonth - 1]++
                     }
                 }
             }
@@ -292,5 +290,5 @@ class MainViewModel(
 
 
     private fun fetchUserData(): User = MockUsers.usersList[0]
-
 }
+

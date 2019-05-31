@@ -7,12 +7,12 @@ import com.pwr.sailapp.viewModel.MainViewModel
 import com.pwr.sailapp.viewModel.getViewModel
 
 abstract class LoginScopedFragment : ScopedFragment() {
-    protected val dataProvider by lazy {
+    private val dataProvider by lazy {
         DataProvider.getInstance(requireActivity().applicationContext)
     }
 
     protected val loginViewModel by lazy{
-        getViewModel {
+        requireActivity().getViewModel {
             LoginViewModel(
                 requireActivity().application,
                 dataProvider.userManager
