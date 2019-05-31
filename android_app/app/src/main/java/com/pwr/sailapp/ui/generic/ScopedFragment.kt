@@ -1,4 +1,4 @@
-package com.pwr.sailapp.ui.main
+package com.pwr.sailapp.ui.generic
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

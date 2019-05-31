@@ -14,9 +14,7 @@ import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
-import com.pwr.sailapp.data.repository.MainRepositoryImpl
-import com.pwr.sailapp.data.repository.NO_TOKEN
-import com.pwr.sailapp.data.repository.UserManagerImpl
+import com.pwr.sailapp.data.repository.*
 import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
@@ -35,34 +33,29 @@ import kotlin.collections.ArrayList
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
 https://developer.android.com/reference/android/arch/lifecycle/AndroidViewModel - AndroidViewModel provides application (and its context!)
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(
+    application: Application,
+    private val mainRepository: MainRepository,
+    private val userManager: UserManager
+) : AndroidViewModel(application) {
 
-    private val appContext = application.applicationContext
-
+    /*
     private val mainRepositoryImpl =
         MainRepositoryImpl(
             SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
             , DarkSkyApiService(ConnectivityInterceptorImpl(appContext))
         )
     private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
+    */
 
     // Authentication
-    val authenticationState = userManagerImp.authStatus
-    private val authToken = userManagerImp.authToken
-    private val refreshToken = userManagerImp.refreshToken
+    val authenticationState = userManager.authStatus
+    private val authToken = userManager.authToken
+    private val refreshToken = userManager.refreshToken
 
     init {
-        if(refreshToken.value == null) {
-            Log.e("fetchRentals()", "refreshToken.value = null")
-            refreshToken.value = CredentialsUtil.getRefreshToken(appContext)
-        }
 
-        if(authToken.value == null) {
-            Log.e("fetchRentals()", "authToken.value = null")
-            authToken.value = CredentialsUtil.getAuthToken(appContext)
-        }
-
-        Transformations.map(mainRepositoryImpl.responseStatus){
+        Transformations.map(mainRepository.responseStatus){
             when(it){
                 is Error -> {
                     if(it.msg != null && it.msg == TOKEN_EXPIRED){
@@ -71,7 +64,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                                 Log.e("mainViewModel", "refreshToken.value = null || NO_TOKEN")
                                 // authenticationState.postValue(UNAUTHENTICATED) - can't do it since it's not mutable
                             }
-                            userManagerImp.refreshToken(refreshToken.value!!)
+                            userManager.refreshToken(refreshToken.value!!)
                         }
                     }
                 }
@@ -126,11 +119,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logOut() {
-        userManagerImp.logoutUser()
+        userManager.logoutUser()
     }
 
     suspend fun fetchCentres() {
-        val fetchedCentres = mainRepositoryImpl.getCentres()
+        val fetchedCentres = mainRepository.getCentres()
         allCentres = fetchedCentres
         if (allCentres.value == null) {
             Log.e("MainViewModel", "fetchCentres: allCentres.value = null")
@@ -145,7 +138,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     suspend fun fetchEquipment(centreID: Int) {
-        val fetchedEquipment = mainRepositoryImpl.getAllCentreGear(centreID)
+        val fetchedEquipment = mainRepository.getAllCentreGear(centreID)
         centreEquipment = fetchedEquipment
         if (centreEquipment.value == null) {
             Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")
@@ -153,7 +146,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     suspend fun fetchRentals() {
-        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(authToken = authToken.value!!)
+        val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
         if (rentals.value == null) {
             Log.e("MainViewModel", "fetchRentals: rentals.value = null)")
@@ -175,11 +168,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private suspend fun summariseRental(rental: Rental): RentalSummary = mainRepositoryImpl.getRentalSummary(rental)
+    private suspend fun summariseRental(rental: Rental): RentalSummary = mainRepository.getRentalSummary(rental)
 
     suspend fun fetchStats() {
         if(authToken.value == null) {Log.e("fetchStats()", "authToken.value = null"); return}
-        val fetchedRentals = mainRepositoryImpl.getAllUserRentals(authToken = authToken.value!!)
+        val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
         if (rentals.value == null) { Log.e("MainViewModel", "fetchStats: rentals.value = null") }
         rentalHistory = MediatorLiveData()

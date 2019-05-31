@@ -1,9 +1,6 @@
 package com.pwr.sailapp.ui.main
 
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,26 +8,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.anychart.AnyChart
 import com.anychart.chart.common.dataentry.DataEntry
-import com.jjoe64.graphview.DefaultLabelFormatter
-import com.jjoe64.graphview.GridLabelRenderer
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
-import com.jjoe64.graphview.series.BarGraphSeries
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
 
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
-import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_stats.*
 import kotlinx.coroutines.*
-import java.text.NumberFormat
-import kotlin.coroutines.CoroutineContext
 import com.anychart.chart.common.dataentry.ValueDataEntry
-import org.joda.time.Months
+import com.pwr.sailapp.ui.generic.MainScopedFragment
 
 
-class StatsFragment : ScopedFragment() {
+class StatsFragment : MainScopedFragment() {
 
     val MONTHS: Array<String> = arrayOf("January",
             "February",

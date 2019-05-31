@@ -13,7 +13,8 @@ import com.google.android.material.snackbar.Snackbar
 
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.AuthenticationState
-import com.pwr.sailapp.ui.main.ScopedFragment
+import com.pwr.sailapp.ui.generic.LoginScopedFragment
+import com.pwr.sailapp.ui.generic.ScopedFragment
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.coroutines.async
@@ -23,10 +24,7 @@ import kotlinx.coroutines.launch
 
 const val INVALID_CREDENTIALS = "Invalid email or credentials"
 
-class LoginFragment : ScopedFragment() {
-
-    private lateinit var loginViewModel: LoginViewModel
-    private var isReadyToObserve = false
+class LoginFragment : LoginScopedFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +36,7 @@ class LoginFragment : ScopedFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel::class.java)
+
         val navController = findNavController()
 
         button_register.setOnClickListener { navController.navigate(R.id.destination_register) }

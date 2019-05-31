@@ -5,40 +5,32 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Centre
+import com.pwr.sailapp.ui.generic.MainScopedFragment
 import com.pwr.sailapp.ui.main.adapters.CentreAdapter
 import com.pwr.sailapp.ui.main.dialogs.FilterDialogFragment
 import com.pwr.sailapp.ui.main.dialogs.SortDialogFragment
-import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_rent_master.*
 import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
 
 
-class RentMasterFragment : Fragment(), CoroutineScope{
-
-    private var job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
+class RentMasterFragment : MainScopedFragment(){
 
     companion object {
         const val MY_PERMISSIONS_ACCESS_COARSE_LOCATION = 1
     }
 
-    private lateinit var mainViewModel: MainViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreateView(
@@ -66,7 +58,6 @@ class RentMasterFragment : Fragment(), CoroutineScope{
         6. Set all listeners
          */
 
-        mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
         launch {
             linearLayout_loading.visibility = View.VISIBLE
             linearLayout_centres.visibility = View.GONE
@@ -133,11 +124,6 @@ class RentMasterFragment : Fragment(), CoroutineScope{
             }
             // ... other permission codes if necessary
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
     }
 
     private fun centreItemClicked(centre: Centre){

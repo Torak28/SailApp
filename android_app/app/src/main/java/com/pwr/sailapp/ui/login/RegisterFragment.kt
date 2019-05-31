@@ -14,7 +14,8 @@ import androidx.navigation.fragment.findNavController
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.RegistrationState
 import com.pwr.sailapp.data.sail.User
-import com.pwr.sailapp.ui.main.ScopedFragment
+import com.pwr.sailapp.ui.generic.LoginScopedFragment
+import com.pwr.sailapp.ui.generic.ScopedFragment
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.coroutines.async
@@ -24,10 +25,9 @@ const val INCORRECT_DATA = "Incorrect data"
 const val CORRECT_REGISTRATION = "Registered successfully"
 const val INCORRECT_REGISTRATION = "User already exists"
 
-class RegisterFragment : ScopedFragment() {
+class RegisterFragment : LoginScopedFragment() {
 
     private lateinit var navController: NavController
-    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +39,7 @@ class RegisterFragment : ScopedFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel::class.java)
+
         navController = findNavController()
 
         /*

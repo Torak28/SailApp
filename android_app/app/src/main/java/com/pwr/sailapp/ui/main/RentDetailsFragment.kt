@@ -13,13 +13,12 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Equipment
+import com.pwr.sailapp.ui.generic.MainScopedFragment
 import com.pwr.sailapp.utils.formatCoordinate
-import com.pwr.sailapp.viewModel.MainViewModel
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListener
 import kotlinx.android.synthetic.main.fragment_rent_details.*
 import kotlinx.coroutines.Dispatchers
@@ -34,9 +33,8 @@ import kotlin.collections.ArrayList
 const val ON_SUCCESS_TOAST = "Confirmed"
 const val ON_FAILURE_TOAST = "Error"
 
-class RentDetailsFragment : ScopedFragment() {
+class RentDetailsFragment : MainScopedFragment() {
 
-    private lateinit var mainViewModel: MainViewModel
     private val calendar = Calendar.getInstance()
 
     override fun onCreateView(
@@ -49,7 +47,7 @@ class RentDetailsFragment : ScopedFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
+
         val equipmentArrayAdapter =
             ArrayAdapter<Equipment>(requireContext(), android.R.layout.simple_spinner_item, ArrayList<Equipment>())
         equipmentArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

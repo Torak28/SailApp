@@ -7,6 +7,7 @@ import androidx.lifecycle.Transformations
 import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
+import com.pwr.sailapp.data.repository.UserManager
 import com.pwr.sailapp.data.repository.UserManagerImpl
 import com.pwr.sailapp.data.sail.RegistrationState
 import com.pwr.sailapp.data.sail.User
@@ -17,33 +18,25 @@ https://developer.android.com/guide/navigation/navigation-conditional#kotlin
  */
 
 
-class LoginViewModel(application: Application) : AndroidViewModel(application) {
+class LoginViewModel(
+    application: Application,
+    private val userManager: UserManager
+) : AndroidViewModel(application) {
 
     private val appContext = application.applicationContext
-
-    // TODO use dependency injection
-    private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
 
     lateinit var authenticationState : LiveData<AuthenticationState>
     lateinit var registrationState: LiveData<RegistrationState>
 
     // Authentication
     suspend fun authenticate(email: String, password:String){
-        userManagerImp.loginUser(email, password)
-        authenticationState = userManagerImp.authStatus
-  /*      val authToken = userManagerImp.authToken.value!!
-        val refreshToken = userManagerImp.refreshToken.value!!
-        CredentialsUtil.saveTokensAndState(
-            context = appContext,
-            authToken = authToken,
-            refreshToken = refreshToken,
-            authenticationState = AuthenticationState.AUTHENTICATED
-        ) */
+        userManager.loginUser(email, password)
+        authenticationState = userManager.authStatus
     }
 
     suspend fun registerUser(user: User){
-        userManagerImp.registerUser(user)
-        registrationState = userManagerImp.registerStatus
+        userManager.registerUser(user)
+        registrationState = userManager.registerStatus
     }
 
     fun validateRegistrationData(firstName:String,

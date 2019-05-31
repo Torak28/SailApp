@@ -35,7 +35,7 @@ class MainRepositoryImpl(
     private val allUserRentals = MutableLiveData<ArrayList<Rental>>()
     private val rentalSummaries = MutableLiveData<ArrayList<RentalSummary>>()
 
-    val responseStatus = MutableLiveData<ResponseStatus>()
+    override val responseStatus = MutableLiveData<ResponseStatus>()
 
     init {
         // observe forever (repos don't have lifecycle) changes in live data (responses)
@@ -81,7 +81,7 @@ class MainRepositoryImpl(
         }
     }
 
-    suspend fun getRentalSummary(rental: Rental) : RentalSummary{
+    override suspend fun getRentalSummary(rental: Rental) : RentalSummary{
         if(darkSkyApiService == null){
             Log.e("getRentalSummary", "darkSkyApiService = null")
             return RentalSummary(rental, null)

@@ -13,8 +13,10 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.pwr.sailapp.R
+import com.pwr.sailapp.data.DataProvider
 import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.viewModel.MainViewModel
+import com.pwr.sailapp.viewModel.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigationview_header.view.*
 import kotlinx.coroutines.*
@@ -26,7 +28,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     // an object that manages app navigation within a NavHost.
     // Each NavHost has its own corresponding NavController
     private lateinit var navController: NavController
-    private lateinit var mainViewModel: MainViewModel
+
+    private val dataProvider by lazy {
+        DataProvider.getInstance(applicationContext)
+    }
+
+    private val mainViewModel by lazy{
+        getViewModel {
+            MainViewModel(
+                application,
+                dataProvider.repository,
+                dataProvider.userManager
+            )
+        }
+    }
 
     private lateinit var job: Job
     override val coroutineContext: CoroutineContext
@@ -48,9 +63,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         navController = Navigation.findNavController(this, R.id.my_nav_host_fragment)
         // Add nav controller to drawer's toolbar
         navigationView.setupWithNavController(navController)
-
-        // Use ViewModelProvider to get the same instance of viewModel - not to instantiate new viewModel each  time
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
         mainViewModel.authenticationState.observe(this, Observer {
             when(it){

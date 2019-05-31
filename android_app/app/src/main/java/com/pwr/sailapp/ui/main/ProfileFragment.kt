@@ -3,30 +3,22 @@ package com.pwr.sailapp.ui.main
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Rental
+import com.pwr.sailapp.ui.generic.MainScopedFragment
 import com.pwr.sailapp.ui.main.adapters.RentalSummaryAdapter
 import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
 import com.pwr.sailapp.utils.formatCoordinate
-import com.pwr.sailapp.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 // TODO consider using generic adapter for view model
 
-class ProfileFragment : ScopedFragment() {
-
-    private lateinit var mainViewModel: MainViewModel
+class ProfileFragment : MainScopedFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +45,6 @@ class ProfileFragment : ScopedFragment() {
          Use ViewModelProviders to get the same instance and of(activity) to get context of activity - not a single fragment
          of(//activity) means: viewModel is scoped to activity lifecycle. When activity gets destroyed - viewModel too
         */
-        mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
 
         /*
         1. Check Internet connection
