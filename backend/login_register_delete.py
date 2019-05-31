@@ -5,6 +5,7 @@ from database.create_objects_of_classes import create_user, add_object_to_databa
 from database.database_classes import connection_to_db, Role, User, Gear, GearRental, WaterCentre
 from datetime import datetime                  # do overlap ten i nast import
 from collections import namedtuple
+import backend.roles as roles
 from flask_jwt_extended import create_access_token, create_refresh_token
 Range = namedtuple('Range', ['start', 'end'])
 
@@ -125,9 +126,10 @@ def login_user(email, password, session=None):
     if user_object:
         access_token = create_access_token(identity=user_object.id, fresh=True)
         refresh_token = create_refresh_token(user_object.id)
-        return access_token, refresh_token
+        role_name = roles.get_role_name_by_id(user_object.role_id)
+        return access_token, refresh_token, role_name
     else:
-        return None, None
+        return None, None, None
 
 
 @connection_to_db
