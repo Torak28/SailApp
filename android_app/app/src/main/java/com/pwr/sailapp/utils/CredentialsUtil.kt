@@ -23,25 +23,19 @@ object CredentialsUtil {
         return context.getSharedPreferences(SHARED_PREF_FILE_NAME,Context.MODE_PRIVATE)
     }
 
-    fun saveTokensAndState(context: Context,
-                            authToken: String,
-                            refreshToken:String,
-                            authenticationState: AuthenticationState){
+    fun saveRefreshToken(context: Context,
+                            refreshToken:String
+    ) {
         val preferences = getSharedPreferences(context)
         val editor = preferences?.edit()
-        when(authenticationState){
-            AuthenticationState.AUTHENTICATED -> {
-                editor?.putString(ACCESS_TOKEN_KEY, authToken)
-                editor?.putString(REFRESH_TOKEN_KEY, refreshToken)
-                editor?.putBoolean(AUTH_STATE, true)
-            }
-            else -> {
-                editor?.clear()
-                editor?.apply()
-                editor?.putBoolean(AUTH_STATE, false)
-            }
-        }
+        editor?.putString(REFRESH_TOKEN_KEY, refreshToken)
         editor?.apply()
+    }
+
+    fun loadRefreshToken(context: Context):String{
+        val token = context.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE).getString(REFRESH_TOKEN_KEY, NO_TOKEN)
+        return if(token == null) { Log.e("getAuthToken", "token = null"); NO_TOKEN
+        } else token
     }
 
     fun getAuthToken(context: Context):String{
@@ -50,11 +44,6 @@ object CredentialsUtil {
         } else token
     }
 
-    fun getRefreshToken(context: Context):String{
-        val token = context.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE).getString(REFRESH_TOKEN_KEY, NO_TOKEN)
-        return if(token == null) { Log.e("getAuthToken", "token = null"); NO_TOKEN
-        } else token
-    }
 
     fun saveUserCredentials(context: Context,
                  email: String,

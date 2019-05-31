@@ -13,6 +13,7 @@ import com.pwr.sailapp.internal.ErrorCodeException
 import com.pwr.sailapp.internal.NoConnectivityException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.UnknownHostException
 
 const val NO_TOKEN = ""
 
@@ -71,6 +72,9 @@ class UserManagerImpl(
             catch (e: NoConnectivityException) {
                 Log.e("Connectivity", "No internet connection")
             }
+            catch (e: UnknownHostException){
+                Log.e("Response", "UnknownHostException - no address associated with hostname")
+            }
         }
     }
 
@@ -114,7 +118,11 @@ class UserManagerImpl(
                     REGISTER_OK_MESSAGE -> _registerStatus.postValue(RegistrationState.OK)
                     else -> _registerStatus.postValue(RegistrationState.FAILED)
                 }
-            } catch (e: NoConnectivityException) {
+            }
+            catch (e: ErrorCodeException){
+                Log.e("Response ", "Returned error code")
+            }
+            catch (e: NoConnectivityException) {
                 Log.e("Connectivity", "No internet connection")
             }
         }

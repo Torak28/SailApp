@@ -2,6 +2,7 @@ package com.pwr.sailapp.data.network.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.pwr.sailapp.data.network.sail.response.*
+import com.pwr.sailapp.data.sail.Rental
 import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -46,7 +47,7 @@ interface SailAppApiService {
     @GET("/gear/getMyRentedGear")
     fun getAllUserRentals(
         @Header("Authorization") authToken: String
-    ):Deferred<AllUserRentalsResponse>
+    ):Deferred<List<Rental>>
 
     @GET("getCentres")
     fun getCentres(): Deferred<CentresResponse> // defer - odraczać
@@ -75,12 +76,12 @@ interface SailAppApiService {
                 val response = it.proceed(request)
                 // TODO check response code val responseCode = response.code()
                 return@Interceptor response
-            } */
+            }
 
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BASIC
             }
-
+*/
             val okHttpClient = OkHttpClient.Builder()
                 //.addInterceptor(loggingInterceptor)
                 .addInterceptor(ErrorHandlingInterceptor())

@@ -28,6 +28,14 @@ class LoginViewModel(
     lateinit var authenticationState : LiveData<AuthenticationState>
     lateinit var registrationState: LiveData<RegistrationState>
 
+    init {
+        Transformations.map(userManager.refreshToken){
+            // save token
+
+        }
+    }
+
+
     // Authentication
     suspend fun authenticate(email: String, password:String){
         userManager.loginUser(email, password)

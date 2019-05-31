@@ -47,12 +47,12 @@ class MainRepositoryImpl(
                 allCentreGear.postValue(it.gear)
             }
             downloadedAllUserRentals.observeForever {
-                if(it.rentals == null){
+                if(it == null){
                     Log.e("allUserRentals", "it.rentals = null")
-                    responseStatus.postValue(com.pwr.sailapp.data.network.Error(it.msg))
+                    // responseStatus.postValue(com.pwr.sailapp.data.network.Error(it.msg))
                 }
                 else{
-                    allUserRentals.postValue(it.rentals)
+                    allUserRentals.postValue(ArrayList(it))
                     responseStatus.postValue(Success())
                 }
             }

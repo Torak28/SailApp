@@ -39,19 +39,17 @@ class MainViewModel(
     private val userManager: UserManager
 ) : AndroidViewModel(application) {
 
-    /*
-    private val mainRepositoryImpl =
-        MainRepositoryImpl(
-            SailNetworkDataSourceImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
-            , DarkSkyApiService(ConnectivityInterceptorImpl(appContext))
-        )
-    private val userManagerImp = UserManagerImpl(SailAppApiService(ConnectivityInterceptorImpl(appContext)))
-    */
+    private val appContext = application.applicationContext
 
     // Authentication
     val authenticationState = userManager.authStatus
     private val authToken = userManager.authToken
-    private val refreshToken = userManager.refreshToken
+    private val refreshToken = MediatorLiveData<String>().apply {
+        addSource(userManager.refreshToken){
+            this.value = it
+            CredentialsUtil.saveRefreshToken(appContext, it)
+        }
+    }
 
     init {
 
@@ -77,8 +75,6 @@ class MainViewModel(
         const val INITIAL_MIN_RATING = 0.0
         const val INITIAL_MAX_DISTANCE = 1000000.00
     }
-
-
 
     var currentUser: User
     lateinit var currentRental: Rental
@@ -110,7 +106,9 @@ class MainViewModel(
     // Profile fragment
     // val rentals = MutableLiveData<ArrayList<Rental>>()
     lateinit var rentals: LiveData<ArrayList<Rental>>
-    lateinit var rentalSummaries: MediatorLiveData<ArrayList<RentalSummary>>
+    val rentalSummaries by lazy {
+        MediatorLiveData<ArrayList<RentalSummary>>()
+    }
     lateinit var rentalHistory: MediatorLiveData<ArrayList<Rental>>
     var rentalNumbers = ArrayList<Int>()
 
@@ -146,12 +144,28 @@ class MainViewModel(
     }
 
     suspend fun fetchRentals() {
+        if (authToken.value == null) {
+            Log.e("fetchRentals", "authToken.value = null")
+            if(refreshToken.value == null){
+                Log.e("fetchRentals", "refreshToken.value = null")
+                refreshToken.postValue(CredentialsUtil.loadRefreshToken(appContext))
+            }
+            if(refreshToken.value != null && refreshToken.value != NO_TOKEN){
+                withContext(Dispatchers.IO){
+                    userManager.refreshToken(refreshToken = refreshToken.value!!)
+                }
+            }
+            else{
+                Log.e("fetchRentals", "refreshToken.value = null || NO_TOKEN")
+                return
+            }
+        }
+
         val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
-        if (rentals.value == null) {
-            Log.e("MainViewModel", "fetchRentals: rentals.value = null)")
-        }
-        rentalSummaries = MediatorLiveData()
+        if (rentals.value == null) { Log.e("MainViewModel", "fetchRentals: rentals.value = null)") }
+
+    //    rentalSummaries = MediatorLiveData()
         val today = Calendar.getInstance().time
         rentalSummaries.addSource(rentals) {
             viewModelScope.launch {
@@ -171,7 +185,17 @@ class MainViewModel(
     private suspend fun summariseRental(rental: Rental): RentalSummary = mainRepository.getRentalSummary(rental)
 
     suspend fun fetchStats() {
-        if(authToken.value == null) {Log.e("fetchStats()", "authToken.value = null"); return}
+        if(authToken.value == null) {
+            Log.e("fetchStats()", "authToken.value = null")
+            if (refreshToken.value == null){
+
+            }
+            if (refreshToken.value != null){
+                withContext(Dispatchers.IO){
+                    userManager.refreshToken(refreshToken = refreshToken.value!!)
+                }
+            }
+        }
         val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
         rentals = fetchedRentals
         if (rentals.value == null) { Log.e("MainViewModel", "fetchStats: rentals.value = null") }

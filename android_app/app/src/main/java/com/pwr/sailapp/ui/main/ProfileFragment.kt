@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Rental
@@ -15,6 +16,9 @@ import com.pwr.sailapp.ui.main.adapters.RentalSummaryAdapter
 import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
 import com.pwr.sailapp.utils.formatCoordinate
 import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // TODO consider using generic adapter for view model
 
@@ -58,12 +62,13 @@ class ProfileFragment : MainScopedFragment() {
         - 1 day <= dateDiff <= 10 days -> fetch forecast and show weather for nth day
         5. Wait for
 
-
+        */
 
         launch {
             // show loading bar
             linearLayout_rentals_loading.visibility = View.VISIBLE
             withContext(Dispatchers.Default) { mainViewModel.fetchRentals() }
+
 
             // hide loading bar ?
             mainViewModel.rentalSummaries.observe(viewLifecycleOwner, Observer {
@@ -79,8 +84,9 @@ class ProfileFragment : MainScopedFragment() {
                     recyclerView_rentals.visibility = View.GONE
                 }
             })
+
         }
-        */
+
     }
 
     private fun showWelcomeMessage() =

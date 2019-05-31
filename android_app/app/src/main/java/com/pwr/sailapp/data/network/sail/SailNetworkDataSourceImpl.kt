@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.pwr.sailapp.data.network.sail.response.AllCentreGearResponse
 import com.pwr.sailapp.data.network.sail.response.AllUserRentalsResponse
 import com.pwr.sailapp.data.network.sail.response.CentresResponse
+import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.internal.ErrorCodeException
 import com.pwr.sailapp.internal.NoConnectivityException
 
@@ -16,7 +17,7 @@ class SailNetworkDataSourceImpl(
 
     private val _downloadedCentres = MutableLiveData<CentresResponse>()
     private val _downloadedAllCentreGear = MutableLiveData<AllCentreGearResponse>()
-    private val _downloadedAllUserRentals = MutableLiveData<AllUserRentalsResponse>()
+    private val _downloadedAllUserRentals = MutableLiveData<List<Rental>>()
     /*
     Client cannot change mutable live data since they receive not mutable live data
      */
@@ -26,7 +27,7 @@ class SailNetworkDataSourceImpl(
     override val downloadedAllCentreGear: LiveData<AllCentreGearResponse>
         get() = _downloadedAllCentreGear
 
-    override val downloadedAllUserRentals: LiveData<AllUserRentalsResponse>
+    override val downloadedAllUserRentals: LiveData<List<Rental>>
         get() = _downloadedAllUserRentals
 
 

@@ -39,12 +39,7 @@ data class Rental (
     val centreName : String? = null,
 
     @SerializedName("rent_quantity")
-    val rentQuantity : Int? = null,
-
-    @SerializedName("gear_name")
-    val gearName: String? = null
-
-
+    val rentQuantity : Int? = null
 ){
 
     override fun toString() = "$id, ${centre.name} , $rentStartDateStr, $rentEndDateStr, $equipmentName"
