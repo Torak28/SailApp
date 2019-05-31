@@ -216,21 +216,13 @@ export default {
           'Authorization': "Bearer " + this.user.token
         }
       });
-    }
-  },
-  created () {
-    if(this.user.role == 'user'){
-      this.userForm.role = this.user.role;
-      this.userForm.email = this.user.login;
-      this.userForm.password = this.user.password;
-      this.userForm.checkPassword = this.user.password;
-
+    },
+    getUserData(){
       var obj = this;
-      //Dane uzytkownika
       this.axios
       .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
         headers: {
-          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/getUserData',
           'accept': 'application/json',
           'Authorization': "Bearer " + this.user.token
         }
@@ -244,13 +236,13 @@ export default {
       .catch(function (error){
         console.log(error);
       });
-      this.breachAlert = false;
-
-      //Dane wypozyczalni
+    },
+    getCentreData(){
+      var obj = this;
       this.axios
-      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getCentres", {
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/centre/getCentres", {
         headers: {
-          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/centre/getCentres',
           'accept': 'application/json',
           'Authorization': "Bearer " + this.user.token
         }
@@ -258,6 +250,7 @@ export default {
       .then(
         (response) => {
           for (let i = 0; i < response.data.length; i++) {
+            console.log('poczatek pierwszego Centrum --- z getCentreData');
             obj.companyForms.push({
               name: response.data[i].centre_name,
               latitude: response.data[i].latitude,
@@ -265,14 +258,57 @@ export default {
               phone: response.data[i].phone_number,
               centre_id: response.data[i].centre_id,
               gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
-              photo: 'https://picsum.photos/450/300/?image=' + response.data[i].centre_id
+              photo: obj.getCentrePic(response.data[i].centre_id)
             });
+            console.log('koniec pierwszego Centrum --- z getCentreData');
           }
         })
       .catch(function (error){
         console.log(error);
       });
+    },
+    getCentrePic(id){
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/" + id.toString(), {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          console.log('zdjecie pierwszego Centrum --- z getCentrePic');
+          console.log(response.data[0].picture_id);
+          return response.data[0].picture_id;
+        })
+      .catch(function (error){
+        console.log(error);
+      });
+    }
+  },
+  created () {
+    if(this.user.role == 'user'){
+      this.userForm.role = this.user.role;
+      this.userForm.email = this.user.login;
+      this.userForm.password = this.user.password;
+      this.userForm.checkPassword = this.user.password;
 
+      //Dane uzytkownika
+      this.getUserData();
+      this.getCentreData();
+      this.breachAlert = false;
+
+      //Dane wypozyczalni
+      function xd(){
+        console.log('func');
+      }
+
+      
+
+
+      xd();
       console.log('pomiedzy');
 
       //Zdjecie wypozyczalni
