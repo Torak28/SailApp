@@ -88,10 +88,10 @@ class MainViewModel(
 
     var rentID = -1
 
-    var resMsg = "Nothing"
-
     val authenticationState = MutableLiveData<AuthenticationState>()
     val rentalState = MutableLiveData<RentalState>()
+
+    var isCancellationAllowed : Boolean = false
 
     // Dialogs
     var minRating = INITIAL_MIN_RATING
@@ -104,6 +104,7 @@ class MainViewModel(
             authenticationState.value = AuthenticationState.UNAUTHENTICATED
         }
     }
+
 
     private suspend fun doNetworkOperation(
         logic: suspend () -> Unit
@@ -181,13 +182,16 @@ class MainViewModel(
         }
     }
 
-    suspend fun cancelRental() = doNetworkOperation {
-        val cancelDeferred =
-            sailAppApiService.cancelRentAsync(
-                "Bearer ${TokenHandler.accessToken}",
-                rentID = rentID
-            )
-        val cancelRes = cancelDeferred.await()
+    suspend fun cancelRental(rentID: Int) = doNetworkOperation {
+        if (isCancellationAllowed){
+            val cancelDeferred =
+                sailAppApiService.cancelRentAsync(
+                    "Bearer ${TokenHandler.accessToken}",
+                    rentID = rentID
+                )
+            val cancelRes = cancelDeferred.await()
+            isCancellationAllowed = false
+        }
     }
 
     fun logOut() {
@@ -195,7 +199,6 @@ class MainViewModel(
         TokenHandler.refreshToken = NO_TOKEN // TODO erase token from shared preferences
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
-
 
     // Search (filter) centres by name
     fun search(query: String?) {
@@ -235,7 +238,5 @@ class MainViewModel(
         }
         centres.value = calculateDistances(centres.value, location)
     }
-
-    fun cancelRental(rental: Rental) {}
 }
 

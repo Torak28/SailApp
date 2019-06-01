@@ -98,16 +98,11 @@ interface SailAppApiService {
     ): Deferred<RentResponse>
 
     @FormUrlEncoded
-    @DELETE("rental/cancelRent")
+    @HTTP(method = "DELETE", path = "rental/cancelRent", hasBody = true)
     fun cancelRentAsync(
         @Header("Authorization") authToken: String,
         @Field("rent_id") rentID: Int
     ): Deferred<CancelResponse>
-
-
-
-
-
 
     @GET("getCentres")
     fun getCentres(): Deferred<CentresResponse> // defer - odraczać

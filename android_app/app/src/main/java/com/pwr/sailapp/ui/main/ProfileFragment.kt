@@ -49,22 +49,30 @@ class ProfileFragment : MainScopedFragment() {
         recyclerView_rentals.layoutManager = LinearLayoutManager(context!!)
         recyclerView_rentals.adapter = adapter
 
-        changeLoadingBarVisibility(isVisible = true)
+        launch {
+            changeLoadingBarVisibility(isVisible = true)
 
-        runBlocking {
-            mainViewModel.fetchRentals()
+            withContext(Dispatchers.IO) {
+                mainViewModel.fetchRentals()
+            }
+
+            changeLoadingBarVisibility(isVisible = false)
+
+            mainViewModel.rentals.observe(viewLifecycleOwner, rentalsObserver)
         }
-
-        changeLoadingBarVisibility(isVisible = false)
-
-        mainViewModel.rentals.observe(viewLifecycleOwner, rentalsObserver)
     }
 
 
     private fun onRentalCancel() = { rental: Rental ->
-        mainViewModel.rentID = rental.ID
-        val cancelRentalDialog = CancelRentalDialog()
-        fragmentManager.let { cancelRentalDialog.show(it!!, "Sort dialog") }
+    //    val cancelRentalDialog = CancelRentalDialog()
+    //    fragmentManager.let { cancelRentalDialog.show(it!!, "Cancel dialog") }
+        mainViewModel.isCancellationAllowed = true
+        runBlocking {
+            changeLoadingBarVisibility(true)
+            withContext(Dispatchers.IO) { mainViewModel.cancelRental(rental.ID) }
+            withContext(Dispatchers.IO) { mainViewModel.fetchRentals() }
+            changeLoadingBarVisibility(false)
+        }
     }
 
     private fun onRentalCall() = { rental: Rental ->
@@ -90,6 +98,7 @@ class ProfileFragment : MainScopedFragment() {
         else toast("Cannot launch activity")
         */
     }
+
 
     override fun changeLoadingBarVisibility(isVisible: Boolean) {
         super.changeLoadingBarVisibility(isVisible)

@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.utils.DateUtil
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.handleCoroutineException
 
 // https://www.andreasjakl.com/kotlin-recyclerview-for-high-performance-lists-in-android/
@@ -20,7 +21,7 @@ class RentalAdapter(
     private val context: Context,
     val phoneListener: (Rental) -> Unit = {}, // default value is {}
     val locationListener: (Rental) -> Unit = {},
-    val cancelListener: (Rental) -> Unit = {}
+    val cancelListener: (Rental) -> Unit
 ) : RecyclerView.Adapter<RentalAdapter.ViewHolder>() {
 
     private var rentals = ArrayList<Rental>()
@@ -53,7 +54,6 @@ class RentalAdapter(
 
         // Expand the view and hide down arrow when clicked
         holder.arrowDownImageView.setOnClickListener {
-            // holder.imageView.visibility = View.VISIBLE
             holder.extrasLinearLayout.visibility = View.VISIBLE
             it.visibility = View.GONE
         }

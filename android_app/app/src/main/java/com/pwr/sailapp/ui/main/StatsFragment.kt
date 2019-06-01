@@ -1,6 +1,7 @@
 package com.pwr.sailapp.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,16 +46,27 @@ class StatsFragment : MainScopedFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        changeLoadingBarVisibility(true)
-
-        runBlocking(Dispatchers.IO) {
-            mainViewModel.fetchRentals()
+        launch {
+            changeLoadingBarVisibility(true)
+            withContext(Dispatchers.IO){mainViewModel.fetchRentals()}
+            changeLoadingBarVisibility(false)
+            mainViewModel.rentals.observe(viewLifecycleOwner, rentalsObserver)
         }
+    }
 
-        changeLoadingBarVisibility(false)
 
-        mainViewModel.rentals.observe(viewLifecycleOwner, rentalsObserver)
-
+    private fun plotPieChart(rentals: List<Rental>){
+        val centreRentalsMap = rentals.groupBy { it.centreName }
+        val centreFrequencyMap = centreRentalsMap.mapValues {
+            it.value.count()
+        }
+        val pie = AnyChart.pie()
+        val data = ArrayList<DataEntry> ()
+        for(entry in centreFrequencyMap){
+            data.add(ValueDataEntry(entry.key, entry.value))
+        }
+        pie.data(data)
+        stats_chart.setChart(pie)
     }
 
     private fun plotBarChart(rentalNumbers: ArrayList<Int>) {
@@ -64,7 +76,6 @@ class StatsFragment : MainScopedFragment() {
             data.add(ValueDataEntry(MONTHS[i], rentalNumber))
         }
         bar.data(data)
-        // bar.xAxis(true).title("Number of rentals")
         bar.yScale().ticks().allowFractional(false)
         stats_chart.setChart(bar)
     }
@@ -79,8 +90,7 @@ class StatsFragment : MainScopedFragment() {
     }
 
     private val rentalsObserver = Observer<List<Rental>>{
-        // TODO mainViewModel.prepareChartData
-        // TODO plotBarChart
+        plotPieChart(it)
         textView_rentals_number.text = it.size.toString()
     }
 
