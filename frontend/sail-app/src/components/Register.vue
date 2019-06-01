@@ -11,7 +11,7 @@
     </b-row>
     <b-row>
       <b-form-checkbox id="checkbox-1" v-model="status" name="checkbox-1" class='block'> I accept the <b-link href="https://ezelechowska-psycholog.pl/PolitykaPrywatnosci.pdf">terms and use</b-link> </b-form-checkbox>
-      <b-button block class='btnClass' variant="success" v-on:click="regiterNewAccount()">Register</b-button>
+      <b-button block class='btnClass' variant="success" v-on:click="regiterUserAccount()">Register</b-button>
       <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
     </b-row>
   </b-container>
@@ -45,32 +45,35 @@ export default {
               this.$parent.cookieData = false;
               this.$scrollTo('#alert', 200, {offset: -500});
             }else{
-              //console.log("User " + JSON.stringify(this.form) + " registred");
-              var obj = this;
-              let data = new FormData();
-              data.append("first_name", this.form.name);
-              data.append("last_name", this.form.surname);
-              data.append("email", this.form.email);
-              data.append("password", this.form.password);
-              data.append("phone_number", this.form.phone);
-              data.append("role", this.form.type);
-              console.log(data);
-              this.axios
-              .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/register", data, {
-                headers: {
-                  'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/register',
-                  'Content-Type': 'multipart/form-data',
-                  'accept': 'application/json'
-                }
-              })
-              .then(
-                (response) => {
-                  this.$router.replace({ name: "home" });
+              if(this.form.type.toLowerCase() == 'user'){
+                //console.log("User " + JSON.stringify(this.form) + " registred");
+                var obj = this;
+                let data = new FormData();
+                data.append("first_name", this.form.name);
+                data.append("last_name", this.form.surname);
+                data.append("email", this.form.email);
+                data.append("password", this.form.password);
+                data.append("phone_number", this.form.phone);
+                data.append("role", this.form.type);
+                this.axios
+                .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/register", data, {
+                  headers: {
+                    'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/register',
+                    'Content-Type': 'multipart/form-data',
+                    'accept': 'application/json'
+                  }
                 })
-              .catch(function (error){
-                obj.$parent.wrongData = true;
-                obj.$parent.noData = false;
-              });
+                .then(
+                  (response) => {
+                    //this.$router.replace({ name: "home" });
+                })
+                .catch(function (error){
+                  obj.$parent.wrongData = true;
+                  obj.$parent.noData = false;
+                });
+              }else if(this.form.type.toLowerCase() == 'owner'){
+                this.$router.replace({ name: "OwnerRegistration" });
+              }
             }
           }else{
             this.$parent.wrongPass = false;

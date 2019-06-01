@@ -32,6 +32,12 @@ export default new Router({
       name: "Registration",
       component: () =>
         import("./views/Registration.vue")
+    },
+    {
+      path: "/ownerRegistration",
+      name: "OwnerRegistration",
+      component: () =>
+        import("./views/OwnerRegistration.vue")
     }
   ]
 });
