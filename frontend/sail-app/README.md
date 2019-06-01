@@ -27,3 +27,14 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### ToDo
+
+```
+[ ] Utworzenie Centra jako osobny form
+    [x] Nowy komponent i widok
+    [x] Go back do strony wcześniej? Czy może do home od nowa?
+[ ] Dodanie i usuwanie sprzetu jako osobny form
+[ ] Przetłumaczenie na j.polski
+[ ] bezpieczeństwo
+```

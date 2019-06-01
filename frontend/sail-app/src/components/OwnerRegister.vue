@@ -24,7 +24,7 @@
       </b-container>
     </b-row>
     <b-row>
-      <b-button id="Add" class='btnClass'  block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button>
+      <!--b-button id="Add" class='btnClass'  block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button-->
       <b-form-checkbox id="checkbox-1" v-model="status" name="checkbox-1" class='block'> I accept the <b-link href="https://ezelechowska-psycholog.pl/PolitykaPrywatnosci.pdf">terms and use</b-link> </b-form-checkbox>
       <b-button block class='btnClass' variant="success" v-on:click="regiterNewAccount()">Register</b-button>
       <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
@@ -127,19 +127,6 @@ export default {
         this.$parent.noGear = false;
         this.$parent.noData = false;
         this.$scrollTo('#alert', 200, {offset: -500});
-      }
-    },
-    addGear(){
-      this.form.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
-      this.howManyNow++;
-      this.counter++;
-    },
-    deleteGear(elemId){
-      const index = this.form.gears.map(e => e.id).indexOf(elemId);
-      this.form.gears.splice(index, 1);
-      this.howManyNow--;
-      if(this.howManyNow < 0){
-        this.howManyNow = 0;  
       }
     },
     setPlace(place) {
