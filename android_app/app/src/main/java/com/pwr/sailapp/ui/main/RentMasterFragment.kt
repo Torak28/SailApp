@@ -46,33 +46,34 @@ class RentMasterFragment : MainScopedFragment() {
         recyclerView_master.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context!!)
         recyclerView_master.hasFixedSize() // makes recycler view more efficient
 
-        changeLoadingBarVisibility(isVisible = true)
+        launch {
 
-        runBlocking(Dispatchers.IO) {
-            mainViewModel.fetchCentres()
+            changeLoadingBarVisibility(isVisible = true)
+
+            withContext(Dispatchers.IO) { mainViewModel.fetchCentres() }
+
+            changeLoadingBarVisibility(isVisible = false)
+
+            val adapter =
+                CentreAdapter(context!!) { centre: Centre -> centreItemClicked(centre) }.apply { setCentres(ArrayList()) }
+            recyclerView_master.adapter = adapter
+
+
+            mainViewModel.centres.observe(viewLifecycleOwner, Observer {
+                adapter.setCentres(ArrayList(it))
+            })
+
+            search_view.setOnQueryTextListener(onCentreQueryListener)
+
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+            checkLocationPermission()
+            locateUser()
+            button_location.setOnClickListener { locateUser() }
+
+            button_sort.setOnClickListener(onSortClickListener)
+
+            button_filter.setOnClickListener(onFilterClickListener)
         }
-
-        changeLoadingBarVisibility(isVisible = false)
-
-        val adapter =
-            CentreAdapter(context!!) { centre: Centre -> centreItemClicked(centre) }.apply { setCentres(ArrayList()) }
-        recyclerView_master.adapter = adapter
-
-
-        mainViewModel.centres.observe(viewLifecycleOwner, Observer {
-            adapter.setCentres(ArrayList(it))
-        })
-
-        search_view.setOnQueryTextListener(onCentreQueryListener)
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        checkLocationPermission()
-        locateUser()
-        button_location.setOnClickListener { locateUser() }
-
-        button_sort.setOnClickListener(onSortClickListener)
-
-        button_filter.setOnClickListener(onFilterClickListener)
 
     }
 
@@ -90,10 +91,10 @@ class RentMasterFragment : MainScopedFragment() {
 
     private fun centreItemClicked(centre: Centre) {
         mainViewModel.selectedCentre = centre
-        findNavController().navigate(R.id.destination_rent_details) // TODO consider using nextAction and graph
+        findNavController().navigate(R.id.destination_rent_details)
     }
 
-    private fun checkLocationPermission(){
+    private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -113,8 +114,7 @@ class RentMasterFragment : MainScopedFragment() {
                     if (location != null) {
                         mainViewModel.location = location
                         mainViewModel.applyLocation()
-                    }
-                    else {
+                    } else {
                         // TODO inform user that couldn't fetch location
                     }
                 }

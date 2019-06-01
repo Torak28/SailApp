@@ -31,18 +31,8 @@ class MainActivity : ScopedActivity() {
     // Each NavHost has its own corresponding NavController
     private lateinit var navController: NavController
 
-    private val dataProvider by lazy {
-        DataProvider.getInstance(applicationContext)
-    }
-
     private val mainViewModel by lazy{
-        getViewModel {
-            MainViewModel(
-                application,
-                dataProvider.repository,
-                dataProvider.userManager
-            )
-        }
+        getViewModel { MainViewModel(application) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

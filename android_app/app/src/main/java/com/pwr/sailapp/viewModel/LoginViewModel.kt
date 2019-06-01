@@ -29,8 +29,7 @@ https://developer.android.com/guide/navigation/navigation-conditional#kotlin
 
 
 class LoginViewModel(
-    application: Application,
-    private val userManager: UserManager
+    application: Application
 ) : AndroidViewModel(application) {
 
     private val appContext = application.applicationContext

@@ -72,7 +72,7 @@ interface SailAppApiService {
     fun getPictureIdsOfCentreAsync(
         @Header("Authorization") authToken: String,
         @Path("centre_id") centreID: Int
-    ): Deferred<List<Centre>>
+    ): Deferred<List<Int>>
 
     @GET("/user/getPicture/{picture_id}")
     fun getPictureAsync(
@@ -95,14 +95,14 @@ interface SailAppApiService {
         @Field("rent_amount") rentAmount: Int,
         @Field("rent_start") rentStart: String,
         @Field("rent_end") rentEnd : String
-    ): Deferred<String>
+    ): Deferred<RentResponse>
 
     @FormUrlEncoded
     @DELETE("rental/cancelRent")
     fun cancelRentAsync(
         @Header("Authorization") authToken: String,
         @Field("rent_id") rentID: Int
-    ): Deferred<String>
+    ): Deferred<CancelResponse>
 
 
 

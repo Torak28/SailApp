@@ -11,22 +11,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.navigation.fragment.findNavController
 
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Gear
+import com.pwr.sailapp.data.sail.RentalState
 import com.pwr.sailapp.ui.generic.MainScopedFragment
 import com.pwr.sailapp.utils.formatCoordinate
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListener
 import kotlinx.android.synthetic.main.fragment_rent_details.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.util.*
 
 // https://www.tutorialkart.com/kotlin-android/android-datepicker-kotlin-example/
 
-const val ON_SUCCESS_TOAST = "Confirmed"
-const val ON_FAILURE_TOAST = "Error"
+const val SUCCESS_MESSAGE = "Confirmed"
+const val FAILURE_MESSAGE = "Error"
 
 class RentDetailsFragment : MainScopedFragment() {
 
@@ -43,50 +47,56 @@ class RentDetailsFragment : MainScopedFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        changeLoadingBarVisibility(isVisible = false)
+        launch {
+            changeLoadingBarVisibility(isVisible = true)
 
-        runBlocking(Dispatchers.IO) {
-            mainViewModel.fetchGear()
-        }
-
-        changeLoadingBarVisibility(isVisible = true)
-
-
-        val gearArrayAdapter = ArrayAdapter<Gear>(requireContext(), android.R.layout.simple_spinner_item, mainViewModel.gearList)
-        gearArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner_equipment.adapter = gearArrayAdapter
-
-
-        spinner_equipment.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
-                if (gearArrayAdapter.getItem(pos) == null) {
-                    Log.e("spinner_equipment", "gearArrayAdapter.getItem(pos) == null");return
-                }
-                mainViewModel.selectedGearId = gearArrayAdapter.getItem(pos)!!.ID
+            withContext(Dispatchers.IO) {
+                mainViewModel.fetchGear()
             }
-            override fun onNothingSelected(parent: AdapterView<*>) {}
+
+            changeLoadingBarVisibility(isVisible = false)
+
+
+            val gearArrayAdapter =
+                ArrayAdapter<Gear>(requireContext(), android.R.layout.simple_spinner_item, mainViewModel.gearList)
+            gearArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner_equipment.adapter = gearArrayAdapter
+
+
+            spinner_equipment.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                    if (gearArrayAdapter.getItem(pos) == null) {
+                        Log.e("spinner_equipment", "gearArrayAdapter.getItem(pos) == null");return
+                    }
+                    mainViewModel.selectedGearId = gearArrayAdapter.getItem(pos)!!.ID
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
+            showInitialDates()
+
+            textView_centre_name_confirm.text = mainViewModel.selectedCentre.name
+
+            // Date picker
+            button_choose_date.setOnClickListener(onDateClickListener)
+
+            // Start time picker
+            button_choose_start_time.setOnClickListener(onStartTimeClickListener)
+
+            // End time picker
+            button_choose_end_time.setOnClickListener(onEndTimeClickListener)
+
+            // Launch maps activity
+            button_maps.setOnClickListener { launchMaps() }
+
+            // Launch dial activity
+            button_call.setOnClickListener { launchDial() }
+
+            // Confirm rental and when it is ok then navigate to user profile
+            button_confirm.setOnClickListener(onConfirmClickListener)
+
         }
-
-        textView_centre_name_confirm.text = mainViewModel.selectedCentre.name
-
-        // Date picker
-        button_choose_date.setOnClickListener(onDateClickListener)
-
-        // Start time picker
-        button_choose_start_time.setOnClickListener(onStartTimeClickListener)
-
-        // End time picker
-        button_choose_end_time.setOnClickListener(onEndTimeClickListener)
-
-        // Launch maps activity
-        button_maps.setOnClickListener { launchMaps() }
-
-        // Launch dial activity
-        button_call.setOnClickListener { launchDial() }
-
-        // Confirm rental and when it is ok then navigate to user profile
-        button_confirm.setOnClickListener(onConfirmClickListener)
-
     }
 
     // implementation of OnDateSetListener one abstract method interface
@@ -95,7 +105,12 @@ class RentDetailsFragment : MainScopedFragment() {
         calendar[Calendar.YEAR] = year
         calendar[Calendar.MONTH] = month
         calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
-        mainViewModel.rentStart = calendar.time
+        calendar.time.let {
+            mainViewModel.apply {
+                rentStart = it
+                rentEnd = it
+            }
+        }
         val dateFormatted = DateFormat.getDateInstance().format(mainViewModel.rentStart)
         textView_choose_date.text = dateFormatted
     }
@@ -106,7 +121,7 @@ class RentDetailsFragment : MainScopedFragment() {
         calendar[Calendar.MINUTE] = minute
         calendar[Calendar.SECOND] = second
         mainViewModel.rentStart = calendar.time
-        val dateFormatted = DateFormat.getDateInstance().format(mainViewModel.rentStart)
+        val dateFormatted = DateFormat.getTimeInstance().format(mainViewModel.rentStart)
         textView_choose_start_time.text = dateFormatted
     }
 
@@ -116,12 +131,13 @@ class RentDetailsFragment : MainScopedFragment() {
         calendar[Calendar.MINUTE] = minute
         calendar[Calendar.SECOND] = second
         mainViewModel.rentEnd = calendar.time
-        val dateFormatted = DateFormat.getDateInstance().format(mainViewModel.rentEnd)
+        val dateFormatted = DateFormat.getTimeInstance().format(mainViewModel.rentEnd)
         textView_choose_end_time.text = dateFormatted
     }
 
     private val onDateClickListener = View.OnClickListener {
         // show DatePicker dialog if button clicked
+        calendar.time = mainViewModel.rentStart
         DatePickerDialog(
             requireActivity(),
             dateSetListener, // listener to data set
@@ -132,6 +148,7 @@ class RentDetailsFragment : MainScopedFragment() {
     }
 
     private val onStartTimeClickListener = View.OnClickListener {
+        calendar.time = mainViewModel.rentStart
         val timeDialog = com.wdullaer.materialdatetimepicker.time.TimePickerDialog.newInstance(
             startTimeSetListener, // listener to time set
             true
@@ -143,6 +160,7 @@ class RentDetailsFragment : MainScopedFragment() {
     }
 
     private val onEndTimeClickListener = View.OnClickListener {
+        calendar.time = mainViewModel.rentEnd
         val timeDialog = com.wdullaer.materialdatetimepicker.time.TimePickerDialog.newInstance(
             endTimeSetListener,
             true
@@ -155,19 +173,24 @@ class RentDetailsFragment : MainScopedFragment() {
     }
 
     private val onConfirmClickListener = View.OnClickListener {
-        changeLoadingBarVisibility(true)
-        runBlocking {
-            mainViewModel.rentGear()
+        launch {
+            changeLoadingBarVisibility(true)
+            withContext(Dispatchers.IO) {
+                mainViewModel.rentGear()
+            }
+            mainViewModel.rentalState.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                changeLoadingBarVisibility(false)
+                when (it) {
+                    RentalState.RENTAL_SUCCESSFUL -> {
+                        toast(SUCCESS_MESSAGE)
+                        findNavController().navigate(R.id.destination_profile)
+                    }
+                    else -> snack(FAILURE_MESSAGE)
+                }
+            })
         }
-        changeLoadingBarVisibility(false)
-        /*
-        val confirmationSuccess =
-        if (confirmationSuccess) {
-            toast(ON_SUCCESS_TOAST)
-            findNavController().navigate(R.id.destination_profile) // navigate to profile after confirmation to view rentals
-        } else toast(ON_FAILURE_TOAST)
-        */
     }
+
 
     // launches maps and shows location of a selected centre from the view model
     private fun launchMaps() {
@@ -191,15 +214,25 @@ class RentDetailsFragment : MainScopedFragment() {
 
     override fun changeLoadingBarVisibility(isVisible: Boolean) {
         super.changeLoadingBarVisibility(isVisible)
-        if(isVisible){
+        if (isVisible) {
             // show loading bar
             linearLayout_loading_details.visibility = View.VISIBLE
-            linearLayout_details.visibility = View.GONE
-        }
-        else{
+            button_confirm.visibility = View.GONE
+        } else {
             // hide loading bar
             linearLayout_loading_details.visibility = View.GONE
-            linearLayout_details.visibility = View.VISIBLE
+            button_confirm.visibility = View.VISIBLE
         }
+    }
+
+    private fun showInitialDates() {
+        val dateFormatted = DateFormat.getDateInstance().format(mainViewModel.rentStart)
+        textView_choose_date.text = dateFormatted
+
+        val startTimeFormatted = DateFormat.getTimeInstance().format(mainViewModel.rentStart)
+        textView_choose_start_time.text = startTimeFormatted
+
+        val endTimeFormatted = DateFormat.getTimeInstance().format(mainViewModel.rentEnd)
+        textView_choose_end_time.text = endTimeFormatted
     }
 }

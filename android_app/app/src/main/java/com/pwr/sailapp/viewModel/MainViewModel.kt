@@ -2,6 +2,7 @@ package com.pwr.sailapp.viewModel
 
 import android.app.Application
 import android.location.Location
+import android.media.session.MediaSession
 import android.util.Log
 import androidx.lifecycle.*
 import com.pwr.sailapp.data.RentalSummary
@@ -13,6 +14,8 @@ import com.pwr.sailapp.data.network.TOKEN_EXPIRED
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
+import com.pwr.sailapp.data.network.sail.response.REGISTER_OK_MESSAGE
+import com.pwr.sailapp.data.network.sail.response.RENTAL_OK_MESSAGE
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.*
 import com.pwr.sailapp.data.sail.*
@@ -37,9 +40,7 @@ https://developer.android.com/guide/navigation/navigation-conditional#kotlin
 https://developer.android.com/reference/android/arch/lifecycle/AndroidViewModel - AndroidViewModel provides application (and its context!)
  */
 class MainViewModel(
-    application: Application,
-    private val mainRepository: MainRepository,
-    private val userManager: UserManager
+    application: Application
 ) : AndroidViewModel(application) {
 
     companion object {
@@ -57,7 +58,7 @@ class MainViewModel(
 
     val centres = MediatorLiveData<List<Centre>>().apply {
         addSource(allCentres) {
-            // TODO filters etc ...
+            this.value = it
         }
     }
 
@@ -69,7 +70,7 @@ class MainViewModel(
     var gearList = ArrayList<Gear>()
 
     var selectedGearId = -1
-    var rentAmount = 0
+    var rentAmount = 1 // TODO enable choosing rent amount
     // var rentStart = "2019-05-30T08:25:31.129Z"
     // var rentEnd = "2019-05-30T08:35:31.129Z"
 
@@ -87,8 +88,10 @@ class MainViewModel(
 
     var rentID = -1
 
+    var resMsg = "Nothing"
 
     val authenticationState = MutableLiveData<AuthenticationState>()
+    val rentalState = MutableLiveData<RentalState>()
 
     // Dialogs
     var minRating = INITIAL_MIN_RATING
@@ -96,6 +99,11 @@ class MainViewModel(
     var actualDistance = INITIAL_MAX_DISTANCE
     var isByRating = false
 
+    init {
+        if(TokenHandler.refreshToken == NO_TOKEN){
+            authenticationState.value = AuthenticationState.UNAUTHENTICATED
+        }
+    }
 
     private suspend fun doNetworkOperation(
         logic: suspend () -> Unit
@@ -113,7 +121,7 @@ class MainViewModel(
                         }
                     } else authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED TODO diff if token expired or just unauthorized
                 }
-                Log.e("fetchUser", "${e.code} ${e.message}")
+                Log.e("doNetworkOperation", "${e.code} ${e.message}")
             }
         }
     }
@@ -154,25 +162,32 @@ class MainViewModel(
     }
 
     suspend fun rentGear() = doNetworkOperation {
-        val msgDeferred =
+        val rentStartStr = DateUtil.dateToString(rentStart)
+        val rentEndStr = DateUtil.dateToString(rentEnd)
+
+        val rentDeferred =
             sailAppApiService.rentGearAsync(
-                "Bearer${TokenHandler.accessToken}",
+                "Bearer ${TokenHandler.accessToken}",
                 centreID = selectedCentre.ID,
                 gearID = selectedGearId,
                 rentAmount = rentAmount,
-                rentStart = DateUtil.dateToString(rentStart),
-                rentEnd = DateUtil.dateToString(rentEnd)
+                rentStart = rentStartStr,
+                rentEnd = rentEndStr
             )
-        val msgRes = msgDeferred.await()
+        val rentRes = rentDeferred.await()
+        when(rentRes.msg){
+            RENTAL_OK_MESSAGE -> rentalState.postValue(RentalState.RENTAL_SUCCESSFUL)
+            else -> rentalState.postValue(RentalState.RENTAL_FAILED)
+        }
     }
 
     suspend fun cancelRental() = doNetworkOperation {
-        val msgDeferred =
+        val cancelDeferred =
             sailAppApiService.cancelRentAsync(
                 "Bearer ${TokenHandler.accessToken}",
                 rentID = rentID
             )
-        val msgRes = msgDeferred.await()
+        val cancelRes = cancelDeferred.await()
     }
 
     fun logOut() {
