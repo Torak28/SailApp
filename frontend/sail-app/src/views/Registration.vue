@@ -18,7 +18,7 @@ import Register from "@/components/Register.vue";
 export default {
   name: "Registration",
   components: {
-    Register,
+    Register
   },
   data() {
     return {
