@@ -123,6 +123,7 @@
 
 
             <TextView
+                    android:id="@+id/textView_gear_and_quantity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="Rower wodny   × 2"

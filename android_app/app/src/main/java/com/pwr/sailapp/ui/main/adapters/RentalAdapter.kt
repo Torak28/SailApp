@@ -13,6 +13,7 @@ import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.utils.DateUtil
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.handleCoroutineException
+import org.w3c.dom.Text
 
 // https://www.andreasjakl.com/kotlin-recyclerview-for-high-performance-lists-in-android/
 
@@ -50,7 +51,9 @@ class RentalAdapter(
 
         holder.textViewName.text = currentRental.centreName
         holder.textViewRentalDate.text = currentRental.rentStartDateStr
-        holder.textViewRentalStart.text = currentRental.rentEndDateStr
+        holder.textViewRentalEndDate.text = currentRental.rentEndDateStr
+        val gearAndQuantity = "${currentRental.equipmentName}   × ${currentRental.rentQuantity}"
+        holder.textViewGearAndQuantity.text = gearAndQuantity
 
         // Expand the view and hide down arrow when clicked
         holder.arrowDownImageView.setOnClickListener {
@@ -82,6 +85,7 @@ class RentalAdapter(
         val imageView: ImageView = itemView.findViewById(R.id.imageView_rental_photo)
         val textViewName: TextView = itemView.findViewById(R.id.textView_rental_name)
         val textViewRentalDate: TextView = itemView.findViewById(R.id.textView_rental_date)
+        val textViewRentalEndDate: TextView = itemView.findViewById(R.id.textView_rental_end_date)
         val textViewRentalStart: TextView = itemView.findViewById(R.id.textView_rental_start)
         val arrowDownImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_down)
         val arrowUpImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_up)
@@ -90,5 +94,6 @@ class RentalAdapter(
         val cancelImageButton: ImageButton = itemView.findViewById(R.id.imageButton_cancel)
         val extrasLinearLayout: LinearLayout = itemView.findViewById(R.id.linearLayout_extras)
         // val textViewTemperature: TextView = itemView.findViewById(R.id.textView_temperature)
+        val textViewGearAndQuantity : TextView = itemView.findViewById(R.id.textView_gear_and_quantity)
     }
 }
