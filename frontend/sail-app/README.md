@@ -34,8 +34,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 [ ] Utworzenie Centra jako osobny form
     [x] Nowy komponent i widok
     [x] Go back do strony wcześniej? Czy może do home od nowa?
+    [ ] Logowanie Usera i dopiero zalogowany Owner przechodzi dalej
     [ ] Error inside
-    [ ] Do Owner Register może tylko raz sie dostać, nie można ot tak z linku - trzeba przekazać coś z poprzedniego forma
+    [ ] Do Owner Register może tylko raz sie dostać, nie można ot tak z linku - trzeba przekazać access token
     [ ] Zdjątka nie działają jak coś
 [ ] Dodanie i usuwanie sprzetu jako osobny form
 [ ] Przetłumaczenie na j.polski
