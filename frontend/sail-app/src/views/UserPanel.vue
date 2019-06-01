@@ -237,7 +237,11 @@ export default {
         console.log(error);
       });
     },
-    getCentreData(){
+    getAllCentreData(){
+      this.getAllCentreBasicData(this.companyForms);
+      //this.getCentrePic(this.companyForms);
+    },
+    getAllCentreBasicData(data){
       var obj = this;
       this.axios
       .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/centre/getCentres", {
@@ -251,41 +255,68 @@ export default {
         (response) => {
           for (let i = 0; i < response.data.length; i++) {
             console.log('poczatek pierwszego Centrum --- z getCentreData');
-            obj.companyForms.push({
+            data.push({
               name: response.data[i].centre_name,
               latitude: response.data[i].latitude,
               longtitude: response.data[i].longitude,
               phone: response.data[i].phone_number,
               centre_id: response.data[i].centre_id,
               gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
-              photo: obj.getCentrePic(response.data[i].centre_id)
+              //photo: obj.getCentrePic(response.data[i].centre_id)
             });
             console.log('koniec pierwszego Centrum --- z getCentreData');
           }
+          return this.getAllCentrePicId(data);
         })
       .catch(function (error){
         console.log(error);
       });
     },
-    getCentrePic(id){
-      var obj = this;
-      this.axios
-      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/" + id.toString(), {
-        headers: {
-          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre',
-          'accept': 'application/json',
-          'Authorization': "Bearer " + this.user.token
-        }
-      })
-      .then(
-        (response) => {
-          console.log('zdjecie pierwszego Centrum --- z getCentrePic');
-          console.log(response.data[0].picture_id);
-          return response.data[0].picture_id;
+    getAllCentrePicId(data){
+      console.log(JSON.stringify(data));
+      console.log(data.length);
+      //console.log(data[0].centre_id);
+      for (let i = 0; i < data.length; i++) {
+        console.log('Zdjątko ID');
+        this.axios
+        .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/" + data[i].centre_id.toString(), {
+          headers: {
+            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre',
+            'accept': 'application/json',
+            'Authorization': "Bearer " + this.user.token
+          }
         })
-      .catch(function (error){
-        console.log(error);
-      });
+        .then(
+          (response) => {
+            data[0].photo = response.data[0].picture_id.toString();
+            return this.getAllCentrePic(data);
+          })
+        .catch(function (error){
+          console.log(error);
+        });
+      }
+      //console.log('Data z getAllCentrePicId' + JSON.stringify(data));
+    },
+    getAllCentrePic(data){
+      console.log('Data z getAllCentrePic' + JSON.stringify(data));
+      for (let i = 0; i < data.length; i++) {
+        console.log('Zdjątko');
+        this.axios
+        .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicture/" + data[i].photo.toString(), {
+          headers: {
+            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicture',
+            'accept': 'application/json',
+            'Authorization': "Bearer " + this.user.token
+          }
+        })
+        .then(
+          (response) => {
+            data[0].photo = response.data[0].picture_id.toString();
+          })
+        .catch(function (error){
+          console.log(error);
+        });
+      }
     }
   },
   created () {
@@ -297,7 +328,7 @@ export default {
 
       //Dane uzytkownika
       this.getUserData();
-      this.getCentreData();
+      this.getAllCentreData(this.companyForms);
       this.breachAlert = false;
 
       //Dane wypozyczalni
