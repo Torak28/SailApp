@@ -56,7 +56,7 @@ data class RentalSummary(
         get() = rental.equipmentName
 
     val photoURL : String
-        get() = rental.centre.photoURL
+        get() = rental.centre.photoURL ?: ""
 
     override fun toString(): String {
         return "$centreName $startDate $startTime $temperature $wind $iconName\n"

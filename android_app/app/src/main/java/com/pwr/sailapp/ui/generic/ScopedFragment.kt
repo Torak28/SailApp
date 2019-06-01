@@ -1,7 +1,10 @@
 package com.pwr.sailapp.ui.generic
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
+import com.pwr.sailapp.ui.login.INVALID_CREDENTIALS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,5 +24,18 @@ abstract class ScopedFragment : Fragment(), CoroutineScope{
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
+    }
+
+    protected fun toast(text: String) = Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
+
+    // TODO make it abstract:
+    protected open fun changeLoadingBarVisibility(isVisible: Boolean){}
+
+    protected fun snack(msg: String){
+        Snackbar.make(
+            view!!,
+            msg,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 }

@@ -6,7 +6,7 @@ import com.pwr.sailapp.data.sail.Centre
 
 object FiltersAndLocationUtil {
 
-    fun filterAndSortCentres(inputCentres : ArrayList<Centre>?, minimalRating:Double, isByRatingSort:Boolean, actualDistance:Double):ArrayList<Centre>{
+    fun filterAndSortCentres(inputCentres : Collection<Centre>?, minimalRating:Double, isByRatingSort:Boolean, actualDistance:Double):ArrayList<Centre>{
         if(inputCentres == null) {
             Log.e("MainViewModel", "filterAndSortCentres: inputCentres = null"); return ArrayList() }
         val filteredCentres = inputCentres.filter { centre ->
@@ -16,11 +16,9 @@ object FiltersAndLocationUtil {
         return ArrayList(sortedFilteredCentres)
     }
 
-    fun calculateDistances(inputCentres: ArrayList<Centre>?, myLocation: Location?):ArrayList<Centre> {
-        if(inputCentres == null) {
-            Log.e("MainViewModel", "calculateDistances: inputCentres = null"); return ArrayList()
-        }
-        if(myLocation == null){ Log.d("MainViewModel", "calculateDistances: myLocation = null"); return inputCentres}
+    fun calculateDistances(inputCentres: Collection<Centre>?, myLocation: Location?):ArrayList<Centre> {
+        if(inputCentres == null) { Log.e("MainViewModel", "calculateDistances: inputCentres = null"); return ArrayList() }
+        if(myLocation == null){ Log.d("MainViewModel", "calculateDistances: myLocation = null"); return ArrayList(inputCentres)}
         val outputCentres = inputCentres.map { centre ->
             val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
             centre.distance = distance.toDouble()

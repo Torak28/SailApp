@@ -2,7 +2,10 @@ package com.pwr.sailapp.data.network.sail
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.pwr.sailapp.data.network.sail.response.*
+import com.pwr.sailapp.data.sail.Centre
+import com.pwr.sailapp.data.sail.Gear
 import com.pwr.sailapp.data.sail.Rental
+import com.pwr.sailapp.data.sail.User
 import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -27,10 +30,16 @@ interface SailAppApiService {
     ):Deferred<LoginUserResponse>
 
 
-    @GET("default/refreshToken")
+    @GET("default/refreshToken") // TODO delete it
     fun refreshTokenAsync(
         @Body refresh_token: String
     ):Deferred<LoginUserResponse>
+
+    // Good one
+    @GET("default/refreshToken")
+    fun refreshAuthTokenAsync(
+        @Body refresh_token: String
+    ):Deferred<String>
 
 
     @FormUrlEncoded
@@ -48,6 +57,57 @@ interface SailAppApiService {
     fun getAllUserRentals(
         @Header("Authorization") authToken: String
     ):Deferred<List<Rental>>
+
+    @GET("accounts/getUserData")
+    fun getUserDataAsync(
+        @Header("Authorization") authToken: String
+    ): Deferred<User>
+
+    @GET("centre/getCentres")
+    fun getCentresAsync(
+        @Header("Authorization") authToken: String
+    ): Deferred<List<Centre>>
+
+    @GET("user/getPicturesIdsOfCentre/{centre_id}")
+    fun getPictureIdsOfCentreAsync(
+        @Header("Authorization") authToken: String,
+        @Path("centre_id") centreID: Int
+    ): Deferred<List<Centre>>
+
+    @GET("/user/getPicture/{picture_id}")
+    fun getPictureAsync(
+        @Header("Authorization") authToken: String,
+        @Path("picture_id") centreID: Int
+    ): Deferred<String>
+
+    @GET("gear/getAllGear/{centre_id}")
+    fun getAllGearAsync(
+        @Header("Authorization") authToken: String,
+        @Path("centre_id") centreID: Int
+    ): Deferred<List<Gear>>
+
+    @FormUrlEncoded
+    @POST("rental/rentGear")
+    fun rentGearAsync(
+        @Header("Authorization") authToken: String,
+        @Field("centre_id") centreID: Int,
+        @Field("gear_id") gearID: Int,
+        @Field("rent_amount") rentAmount: Int,
+        @Field("rent_start") rentStart: String,
+        @Field("rent_end") rentEnd : String
+    ): Deferred<String>
+
+    @FormUrlEncoded
+    @DELETE("rental/cancelRent")
+    fun cancelRentAsync(
+        @Header("Authorization") authToken: String,
+        @Field("rent_id") rentID: Int
+    ): Deferred<String>
+
+
+
+
+
 
     @GET("getCentres")
     fun getCentres(): Deferred<CentresResponse> // defer - odraczać

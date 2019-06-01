@@ -10,7 +10,7 @@ class ErrorHandlingInterceptor : Interceptor{
         val request = chain.request()
         val response = chain.proceed(request)
         if(response.isSuccessful) return response
-        else throw ErrorCodeException()
+        else throw ErrorCodeException(response.code(), response.message())
     }
 
 }

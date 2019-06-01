@@ -14,6 +14,7 @@ import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.data.network.sail.SailNetworkDataSource
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.network.weather.WeatherNetworkDataSource
+import com.pwr.sailapp.data.sail.User
 import com.pwr.sailapp.utils.DateUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -34,6 +35,7 @@ class MainRepositoryImpl(
     private val allCentreGear = MutableLiveData<ArrayList<Equipment>>()
     private val allUserRentals = MutableLiveData<ArrayList<Rental>>()
     private val rentalSummaries = MutableLiveData<ArrayList<RentalSummary>>()
+    private val userData = MutableLiveData<User>()
 
     override val responseStatus = MutableLiveData<ResponseStatus>()
 
@@ -56,6 +58,9 @@ class MainRepositoryImpl(
                     responseStatus.postValue(Success())
                 }
             }
+            userData.observeForever {
+                userData.postValue(it)
+            }
         }
     }
 
@@ -64,6 +69,13 @@ class MainRepositoryImpl(
         return withContext(Dispatchers.IO) {
             fetchAllUserRentals(authToken)
             allUserRentals
+        }
+    }
+
+    override suspend fun getUserData(authToken: String): LiveData<User> {
+        return withContext(Dispatchers.IO){
+            fetchUserData(authToken)
+            userData
         }
     }
 
@@ -112,5 +124,9 @@ class MainRepositoryImpl(
 
     private suspend fun fetchAllUserRentals(authToken: String) {
         sailNetworkDataSource.fetchAllUserRentals(authToken)
+    }
+
+    private suspend fun fetchUserData(authToken: String) {
+        sailNetworkDataSource.fetchUserData(authToken)
     }
 }

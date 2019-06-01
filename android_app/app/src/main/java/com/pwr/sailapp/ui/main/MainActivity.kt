@@ -15,6 +15,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.DataProvider
 import com.pwr.sailapp.data.sail.AuthenticationState
+import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.ui.generic.ScopedActivity
 import com.pwr.sailapp.viewModel.MainViewModel
 import com.pwr.sailapp.viewModel.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,7 +24,7 @@ import kotlinx.android.synthetic.main.navigationview_header.view.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity(), CoroutineScope {
+class MainActivity : ScopedActivity() {
 
     // Navigating to a destination is done using a NavController,
     // an object that manages app navigation within a NavHost.
@@ -43,26 +45,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private lateinit var job: Job
-    override val coroutineContext: CoroutineContext
-        get() = job + Dispatchers.Main
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        job = Job()
         setContentView(R.layout.activity_main)
         setSupportActionBar(my_toolbar)
+
 
         navigationView.setNavigationItemSelectedListener { item: MenuItem ->
             item.isChecked = true // menuItem is now highlighted
             drawerLayout.closeDrawers()
             true
         }
-
-        // Handling navigation ...
         navController = Navigation.findNavController(this, R.id.my_nav_host_fragment)
-        // Add nav controller to drawer's toolbar
         navigationView.setupWithNavController(navController)
+
 
         mainViewModel.authenticationState.observe(this, Observer {
             when(it){
@@ -77,20 +73,24 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
         logoutItem.setOnMenuItemClickListener {
             Toast.makeText(applicationContext, "Logging out", Toast.LENGTH_SHORT).show()
-            launch {
-                // show loading bar Logging out ...
-                val logoutOperation = async {
-                    mainViewModel.logOut()
-                }
-                logoutOperation.await()
-                // hide loading bar ...
-                drawerLayout.closeDrawers()
-            }
+            mainViewModel.logOut()
+            drawerLayout.closeDrawers()
             true
         }
-       //  changeNavigationHeaderInfo() // set user name in navigation header
-    }
 
+        launch {
+            val operation = async{
+                mainViewModel.fetchUser()
+            }
+            operation.await()
+
+            mainViewModel.user.observe(this@MainActivity, Observer {
+                if(it == null) {Log.e("MainAct", "user = null"); return@Observer}
+                changeNavigationHeaderInfo(it)
+            })
+
+        }
+    }
 
     // Opening the drawer menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -103,14 +103,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
-    }
-
     // Changing the navigation header info
-    private fun changeNavigationHeaderInfo() {
+    private fun changeNavigationHeaderInfo(user: User) {
         val headerView = navigationView.getHeaderView(0)
-        headerView.textView_user_nav_name.text = mainViewModel.currentUser.firstName
+        headerView.textView_user_nav_name.text = user.firstName
     }
 }

@@ -7,6 +7,7 @@ import com.pwr.sailapp.data.network.ResponseStatus
 import com.pwr.sailapp.data.sail.Centre
 import com.pwr.sailapp.data.sail.Equipment
 import com.pwr.sailapp.data.sail.Rental
+import com.pwr.sailapp.data.sail.User
 
 interface MainRepository{
     val responseStatus: MutableLiveData<ResponseStatus>
@@ -14,4 +15,5 @@ interface MainRepository{
     suspend fun getCentres(): LiveData<ArrayList<Centre>>
     suspend fun getAllCentreGear(centreID: Int) : LiveData<ArrayList<Equipment>>
     suspend fun getRentalSummary(rental: Rental) : RentalSummary
+    suspend fun getUserData(authToken: String): LiveData<User>
 }

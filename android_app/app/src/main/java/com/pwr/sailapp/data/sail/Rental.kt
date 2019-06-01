@@ -9,16 +9,17 @@ import java.util.*
 // TODO add number of hours
 data class Rental (
     @SerializedName("rent_id")
-    val id: Int,
+    val ID: Int,
 
+    // TODO remove the centre or make it nullable at first
     val centre: Centre = Centre(20,
         "Default centre",
         3.0,
         "Default location",
         54.692867,
         18.691693,
-        "https://imageog.flaticon.com/icons/png/512/36/36601.png?size=1200x630f&pad=10,10,10,10&ext=png&bg=FFFFFFFF",
-        123456789
+        "123456789",
+        "https://imageog.flaticon.com/icons/png/512/36/36601.png?size=1200x630f&pad=10,10,10,10&ext=png&bg=FFFFFFFF"
         ),
 
     @SerializedName("rent_start")
@@ -42,7 +43,7 @@ data class Rental (
     val rentQuantity : Int? = null
 ){
 
-    override fun toString() = "$id, ${centre.name} , $rentStartDateStr, $rentEndDateStr, $equipmentName"
+    override fun toString() = "$ID, ${centre.name} , $rentStartDateStr, $rentEndDateStr, $equipmentName"
 
 
   //  private val dateFormatDate = DateFormat.getDateInstance()
@@ -91,8 +92,8 @@ data class Rental (
     // Required for correctly removing rentals from array list
     override fun equals(other: Any?): Boolean {
         return  if(other == null || other !is Rental) false
-            else other.id == this.id
+            else other.ID == this.ID
     }
 
-    override fun hashCode() = id
+    override fun hashCode() = ID
 }

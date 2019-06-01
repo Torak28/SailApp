@@ -14,7 +14,7 @@ object MockCentres {
                 54.692867,
                 18.691693,
                 "https://www.surfpoint.pl/wp-content/uploads/2015/03/kursy-ins-head-compressor.jpg",
-                511754113
+                "511754113"
             )
         )
         centres.add(
@@ -26,7 +26,7 @@ object MockCentres {
                 54.678396,
                 18.717527,
                 "https://i.ytimg.com/vi/-OpbV7Kd98M/maxresdefault.jpg",
-                123456789
+                "123456789"
             )
         )
         centres.add(
@@ -38,7 +38,7 @@ object MockCentres {
                 52.667909,
                 20.508873,
                 "https://surfmix.com/oferta/surfmix_354110511Aquarius_Trek_2011_2011_01.jpg",
-                511754113
+                "511754113"
             )
         )
     }

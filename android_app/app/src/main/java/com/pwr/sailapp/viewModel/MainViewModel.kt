@@ -16,15 +16,21 @@ import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.*
 import com.pwr.sailapp.data.sail.*
+import com.pwr.sailapp.internal.ErrorCodeException
+import com.pwr.sailapp.internal.NoConnectivityException
 import com.pwr.sailapp.utils.CredentialsUtil
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.internal.http2.ErrorCode
 import java.util.*
 import kotlin.collections.ArrayList
+
+const val NO_DATE = ""
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
@@ -41,44 +47,48 @@ class MainViewModel(
         const val INITIAL_MAX_DISTANCE = 1000000.00
     }
 
-    var test = 1
-
     private val appContext = application.applicationContext
 
-    // Authentication
-    private val authToken = userManager.authToken
+    private val sailAppApiService = SailAppApiService(connectivityInterceptor = ConnectivityInterceptorImpl(appContext))
 
-    private val refreshToken = MediatorLiveData<String>().apply {
-        addSource(userManager.refreshToken) {
-            this.value = it
-            CredentialsUtil.saveRefreshToken(appContext, it)
+    val user = MutableLiveData<User>()
+    val rentals = MutableLiveData<List<Rental>>()
+    private val allCentres = MutableLiveData<List<Centre>>()
+
+    val centres = MediatorLiveData<List<Centre>>().apply {
+        addSource(allCentres) {
+            // TODO filters etc ...
         }
     }
 
-    val authenticationState = MediatorLiveData<AuthenticationState>().apply {
-        addSource(userManager.authStatus) {
-            this.value = it
-        }
-        addSource(refreshToken) {
-            if(it == null) this.value = AuthenticationState.UNAUTHENTICATED
-        }
-    }
-
-
-
-    var currentUser: User
-    lateinit var currentRental: Rental
-
-    /*
-    Transformations.switchMap lets you create a new LiveData that reacts to changes of other LiveData instances. It also allows carrying over the observer Lifecycle information across the chain:
-    Mediator - combines multiple live data sources into single live data
-     */
-    lateinit var centres: MediatorLiveData<ArrayList<Centre>>
-    private lateinit var allCentres: LiveData<ArrayList<Centre>>
-
-
-    val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
     var location: Location? = null
+
+    lateinit var selectedCentre: Centre
+    //  var selectedCentreId = -1
+
+    var gearList = ArrayList<Gear>()
+
+    var selectedGearId = -1
+    var rentAmount = 0
+    // var rentStart = "2019-05-30T08:25:31.129Z"
+    // var rentEnd = "2019-05-30T08:35:31.129Z"
+
+    var rentStart: Date? = null
+        get() {
+            if (field == null) field = Calendar.getInstance().time
+            return field
+        }
+
+    var rentEnd: Date? = null
+        get() {
+            if (field == null) field = Calendar.getInstance().time
+            return field
+        }
+
+    var rentID = -1
+
+
+    val authenticationState = MutableLiveData<AuthenticationState>()
 
     // Dialogs
     var minRating = INITIAL_MIN_RATING
@@ -86,166 +96,91 @@ class MainViewModel(
     var actualDistance = INITIAL_MAX_DISTANCE
     var isByRating = false
 
-    // Rent details fragment
-    lateinit var centreEquipment: LiveData<ArrayList<Equipment>>
-    val selectedEquipment = MutableLiveData<Equipment>()
 
-    val startTime = MutableLiveData<Date>()
-    val endTime = MutableLiveData<Date>()
-
-    // Profile fragment
-    // val rentals = MutableLiveData<ArrayList<Rental>>()
-    lateinit var rentals: LiveData<ArrayList<Rental>>
-    val rentalSummaries by lazy {
-        MediatorLiveData<ArrayList<RentalSummary>>()
+    private suspend fun doNetworkOperation(
+        logic: suspend () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                logic()
+            } catch (e: NoConnectivityException) {
+                Log.e("fetchUser", "No connectivity exception")
+            } catch (e: ErrorCodeException) {
+                when (e.code) {
+                    401 -> if (e.message == TOKEN_EXPIRED) {
+                        runBlocking(Dispatchers.IO) {
+                            refreshAuthToken()
+                        }
+                    } else authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED TODO diff if token expired or just unauthorized
+                }
+                Log.e("fetchUser", "Error Code exception")
+            }
+        }
     }
-    lateinit var rentalHistory: MediatorLiveData<ArrayList<Rental>>
-    var rentalNumbers = ArrayList<Int>()
 
-    init {
-        currentUser = fetchUserData()
+    suspend fun fetchUser() = doNetworkOperation {
+        val userDeferred = sailAppApiService.getUserDataAsync("Bearer ${TokenHandler.accessToken}")
+        val userRes = userDeferred.await()
+        user.postValue(userRes)
+    }
+
+    suspend fun fetchRentals() = doNetworkOperation {
+        val rentalsDeferred = sailAppApiService.getAllUserRentals("Bearer ${TokenHandler.accessToken}")
+        val rentalsRes = rentalsDeferred.await()
+        rentals.postValue(rentalsRes)
+    }
+
+    private suspend fun refreshAuthToken() = doNetworkOperation {
+        val tokenDeferred = sailAppApiService.refreshAuthTokenAsync("Bearer ${TokenHandler.refreshToken}")
+        val tokenRes = tokenDeferred.await()
+        TokenHandler.accessToken = tokenRes // TODO check if you can do it on background thread
+    }
+
+    suspend fun fetchCentres() = doNetworkOperation {
+        val centresDeferred = sailAppApiService.getCentresAsync("Bearer ${TokenHandler.accessToken}")
+        val centresRes = centresDeferred.await()
+        // TODO picture for each centre
+        // 1. getPicturesIdsOfCentre
+        // if 1. is not null then 2. else 4.
+        // 2. getPicture
+        // 3. setPicture to centre object
+        allCentres.postValue(centresRes)
+    }
+
+    suspend fun fetchGear() = doNetworkOperation {
+        val gearDeferred = sailAppApiService.getAllGearAsync("Bearer ${TokenHandler.accessToken}", selectedCentre.ID)
+        val gearRes = gearDeferred.await()
+        gearList = ArrayList(gearRes) // TODO check if you can do it on background thread
+    }
+
+    suspend fun rentGear() = doNetworkOperation {
+        val msgDeferred =
+            sailAppApiService.rentGearAsync(
+                "Bearer${TokenHandler.accessToken}",
+                centreID = selectedCentre.ID,
+                gearID = selectedGearId,
+                rentAmount = rentAmount,
+                rentStart = DateUtil.dateToString(rentStart),
+                rentEnd = DateUtil.dateToString(rentEnd)
+            )
+        val msgRes = msgDeferred.await()
+    }
+
+    suspend fun cancelRental() = doNetworkOperation {
+        val msgDeferred =
+            sailAppApiService.cancelRentAsync(
+                "Bearer ${TokenHandler.accessToken}",
+                rentID = rentID
+            )
+        val msgRes = msgDeferred.await()
     }
 
     fun logOut() {
-        userManager.logoutUser()
+        TokenHandler.accessToken = NO_TOKEN
+        TokenHandler.refreshToken = NO_TOKEN // TODO erase token from shared preferences
+        authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
-    suspend fun fetchCentres() {
-        val fetchedCentres = mainRepository.getCentres()
-        allCentres = fetchedCentres
-        if (allCentres.value == null) {
-            Log.e("MainViewModel", "fetchCentres: allCentres.value = null")
-        }
-        // Transformation of live data
-        // centres = Transformations.map(allCentres) { inputCentres -> filterAndSortCentres(inputCentres, INITIAL_MIN_RATING)}
-        centres = MediatorLiveData()
-        centres.addSource(allCentres) { inputCentres ->
-            val centresDist = calculateDistances(inputCentres, location)
-            centres.value = filterAndSortCentres(centresDist, minRating, isByRating, actualDistance)
-        }
-    }
-
-    suspend fun fetchEquipment(centreID: Int) {
-        val fetchedEquipment = mainRepository.getAllCentreGear(centreID)
-        centreEquipment = fetchedEquipment
-        if (centreEquipment.value == null) {
-            Log.e("MainViewModel", "fetchEquipment: centreEquipment.value = null")
-        }
-    }
-
-    suspend fun fetchRentals() {
-        if (authToken.value == null) {
-            Log.e("fetchRentals", "authToken.value = null")
-            if (refreshToken.value == null) {
-                Log.e("fetchRentals", "refreshToken.value = null")
-                refreshToken.postValue(CredentialsUtil.loadRefreshToken(appContext))
-            }
-            if (refreshToken.value != null && refreshToken.value != NO_TOKEN) {
-                withContext(Dispatchers.IO) {
-                    userManager.refreshToken(refreshToken = refreshToken.value!!)
-                }
-            } else {
-                Log.e("fetchRentals", "refreshToken.value = null || NO_TOKEN")
-                authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
-                return
-            }
-        }
-        val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
-        rentals = fetchedRentals
-        if (rentals.value == null) {
-            Log.e("MainViewModel", "fetchRentals: rentals.value = null)")
-        }
-
-        //    rentalSummaries = MediatorLiveData()
-        val today = Calendar.getInstance().time
-        rentalSummaries.addSource(rentals) {
-            viewModelScope.launch {
-                val rentalSums = ArrayList<RentalSummary>()
-                for (rental in it) {
-                    if (rental.rentStartDate == null) Log.e("fetchRentals", "rental.rentStartDay = null")
-                    else if (rental.rentStartDate!! == today || rental.rentStartDate!!.after(today)) {
-                        val summary = withContext(Dispatchers.IO) { summariseRental(rental) }
-                        rentalSums.add(summary)
-                    }
-                }
-                rentalSummaries.value = rentalSums
-            }
-        }
-    }
-
-    private suspend fun summariseRental(rental: Rental): RentalSummary = mainRepository.getRentalSummary(rental)
-
-    suspend fun fetchStats() {
-        if (authToken.value == null) {
-            Log.e("fetchStats()", "authToken.value = null")
-            if (refreshToken.value == null) {
-
-            }
-            if (refreshToken.value != null) {
-                withContext(Dispatchers.IO) {
-                    userManager.refreshToken(refreshToken = refreshToken.value!!)
-                }
-            }
-        }
-        val fetchedRentals = mainRepository.getAllUserRentals(authToken = authToken.value!!)
-        rentals = fetchedRentals
-        if (rentals.value == null) {
-            Log.e("MainViewModel", "fetchStats: rentals.value = null")
-        }
-        rentalHistory = MediatorLiveData()
-        val today = Calendar.getInstance().time
-
-        rentalHistory.addSource(rentals) {
-            val previousRentals = it.filter { rental ->
-                rental.rentStartDate != null && rental.rentStartDate!!.before(today)
-            }
-            rentalHistory.value = ArrayList(previousRentals)
-        }
-    }
-
-    fun prepareGraphData(): Boolean {
-        if (rentalHistory.value == null) {
-            Log.e("isGraphAvailable", "rentalHistory.value = null"); return false
-        }
-        if (rentalHistory.value!!.size == 0) return false
-        else {
-            val calendar = Calendar.getInstance()
-            val today = calendar.time
-            val currentMonth = calendar.get(Calendar.MONTH)
-
-            val occurrences = Array(currentMonth + 1) { 0 }
-            for (rental in rentalHistory.value!!) {
-                if (rental.rentStartDate == null) Log.e("fetchStats", "rental.rentStartDate = null")
-                else if (DateUtil.isTheSameYear(rental.rentStartDate!!, today)) {
-                    if (DateUtil.getMonth(rental.rentStartDate!!) > occurrences.size) Log.e(
-                        "fetchStats",
-                        "rental.rentStartDate!!.year >= occurrences.size"
-                    )
-                    else {
-                        val rentalMonth = DateUtil.getMonth(rental.rentStartDate!!)
-                        occurrences[rentalMonth - 1]++
-                    }
-                }
-            }
-            rentalNumbers = ArrayList(occurrences.toList())
-            return true
-        }
-    }
-
-    fun selectCentre(centre: Centre) {
-        selectedCentre.value = centre
-    }
-
-    fun confirmRental(): Boolean {
-        if (centreEquipment.value == null) {
-            Log.e("MainViewModel", "confirmRental: equipment.options = null"); return false
-        }
-        return (selectedCentre.value != null
-                && startTime.value != null
-                && endTime.value != null
-                && selectedEquipment.value != null
-                && selectedEquipment.value != null)
-    }
 
     // Search (filter) centres by name
     fun search(query: String?) {
@@ -287,8 +222,5 @@ class MainViewModel(
     }
 
     fun cancelRental(rental: Rental) {}
-
-
-    private fun fetchUserData(): User = MockUsers.usersList[0]
 }
 

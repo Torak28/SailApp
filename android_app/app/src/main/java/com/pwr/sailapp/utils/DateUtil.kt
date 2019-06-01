@@ -11,13 +11,13 @@ const val MAX_FORECAST_DAYS = 10
 Format the date according to format used in JSON
  */
 object DateUtil{
-    private const val DATE_PATTERN = "dd-MM-yyyy'T'HH:mm:ss"
+    private const val DATE_PATTERN = "dd-MM-yyyy'T'HH:mm:ss.SSS"
 
     @SuppressLint("SimpleDateFormat")
-    fun dateToString(date: Date?): String? {
+    fun dateToString(date: Date?): String {
         val simpleDateFormat = SimpleDateFormat(DATE_PATTERN)
         val dateStr = simpleDateFormat.format(date)
-        return dateStr
+        return dateStr+"Z"
     }
 
     @SuppressLint("SimpleDateFormat")

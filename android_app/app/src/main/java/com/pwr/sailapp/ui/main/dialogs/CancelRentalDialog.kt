@@ -17,7 +17,7 @@ class CancelRentalDialog : DialogFragment() {
 
             builder.setMessage(R.string.cancel_reservation)
                 .setPositiveButton(R.string.yes) { dialog, id ->
-                    mainViewModel.cancelRental(mainViewModel.currentRental)
+                    // mainViewModel.cancelRental(mainViewModel.currentRental)TODO dialogs with vm
                     dialog.dismiss()
                 }
                 .setNegativeButton(R.string.no) { dialog, id -> dialog.dismiss() }
