@@ -17,14 +17,12 @@ import com.pwr.sailapp.ui.generic.LoginScopedFragment
 import com.pwr.sailapp.ui.generic.ScopedFragment
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 // https://developer.android.com/guide/navigation/navigation-conditional
 
 const val INVALID_CREDENTIALS = "Invalid email or credentials"
+const val LOGIN_SUCCESSFUL = "Login successful"
 
 class LoginFragment : LoginScopedFragment() {
 
@@ -49,13 +47,12 @@ class LoginFragment : LoginScopedFragment() {
             val email = editText_email.text.toString()
             val password = editText_password.text.toString()
 
-            changeLoadingBarVisibility(true)
-            runBlocking(Dispatchers.IO) {
-                loginViewModel.authenticate(email, password)
+            launch {
+                changeLoadingBarVisibility(true)
+                withContext(Dispatchers.IO) {loginViewModel.authenticate(email, password)}
+                changeLoadingBarVisibility(false)
+                loginViewModel.authenticationState.observe(viewLifecycleOwner, authenticationStateObserver)
             }
-            changeLoadingBarVisibility(false)
-
-            loginViewModel.authenticationState.observe(viewLifecycleOwner, authenticationStateObserver)
         }
     }
 
@@ -65,13 +62,25 @@ class LoginFragment : LoginScopedFragment() {
             return@Observer
         }
         when (it) {
-            AuthenticationState.AUTHENTICATED -> navController.navigate(R.id.destination_main)
-            else -> Snackbar.make(
-                view!!,
-                INVALID_CREDENTIALS,
-                Snackbar.LENGTH_SHORT
-            ).show()
+            AuthenticationState.AUTHENTICATED -> {
+                snack(LOGIN_SUCCESSFUL)
+                navController.navigate(R.id.destination_main)
+            }
+            else -> snack(INVALID_CREDENTIALS)
         }
     }
 
+    override fun changeLoadingBarVisibility(isVisible: Boolean) {
+        super.changeLoadingBarVisibility(isVisible)
+        if(isVisible){
+            button_login.visibility = View.GONE
+            button_register.visibility = View.GONE
+            linearLayout_logging.visibility = View.VISIBLE
+        }
+        else{
+            button_login.visibility = View.VISIBLE
+            button_register.visibility = View.VISIBLE
+            linearLayout_logging.visibility = View.GONE
+        }
+    }
 }

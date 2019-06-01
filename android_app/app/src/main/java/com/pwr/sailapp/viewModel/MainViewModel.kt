@@ -113,7 +113,7 @@ class MainViewModel(
                         }
                     } else authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED TODO diff if token expired or just unauthorized
                 }
-                Log.e("fetchUser", "Error Code exception")
+                Log.e("fetchUser", "${e.code} ${e.message}")
             }
         }
     }
