@@ -8,7 +8,6 @@
     <b-alert :show=wrongPass variant="danger">{{wrongPassMsg}}</b-alert>
     <b-alert :show=noGear variant="danger">{{noGearMsg}}</b-alert>
     <b-alert :show=cookieData variant="danger">{{cookieDataMsg}}</b-alert>
-    <Register />
     <OwnerRegister :token=access_token />
   </b-container>
 </template>

@@ -26,6 +26,8 @@ export default {
       noGear: false,
       wrongPass: false,
       cookieData: false,
+      wrongData: false,
+      wrongDataMsg: 'You provide worng data',
       cookieDataMsg: "Accept terms and use",
       noDataMsg: "All data must be present",
       noGearMsg: "Gear tab is not filled properly",

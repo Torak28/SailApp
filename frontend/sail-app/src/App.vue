@@ -2,7 +2,7 @@
   <div id="app">
     <b-container fluid class="cont">
       <b-navbar :sticky="true" type="light" class="nav-background">
-        <b-navbar-brand href="#" class="mx-auto" >
+        <b-navbar-brand href="/" class="mx-auto" >
           <img src="./assets/logoNavbar.png" class="align-centre" alt="Logo">
         </b-navbar-brand>
       </b-navbar>

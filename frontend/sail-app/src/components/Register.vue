@@ -71,6 +71,7 @@ export default {
                     }
                 })
                 .catch(function (error){
+                  console.log('blad');
                   obj.$parent.wrongData = true;
                   obj.$parent.noData = false;
                 });
