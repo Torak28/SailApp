@@ -35,7 +35,7 @@
 <script>
 export default {
   name: "OwnerRegister",
-  props: ['token'],
+  props: ['user'],
   data() {
     return {
       form: {
@@ -51,65 +51,44 @@ export default {
       place: null,
       status: false,
       center: { lat: 52.237049, lng: 21.017532 },
-      zoom: 6
+      zoom: 6,
+      token: null
     }
   },
   methods: {
     registerOwnerAccoount() {
       if(this.status == true){
-        if(this.form.name != '' && this.form.surname != '' && this.form.phone != '' && this.form.email != '' &&  this.form.password != '' && this.form.checkPassword != '' && this.form.companyName != '' &&  this.form.lattitude != '' &&  this.form.longtitude != '' &&  this.form.companyTel != '' &&  this.form.photoFile != ''){
+        if(this.form.companyName != '' &&  this.form.lattitude != '' &&  this.form.longtitude != '' &&  this.form.companyTel != '' &&  this.form.photoFile != ''){
           if(this.form.password != this.form.checkPassword){
             this.$parent.wrongPass = true;
             this.$parent.noData = false;
-            this.$parent.noGear = false;
+            //this.$parent.noGear = false;
             this.$parent.cookieData = false;
             this.$scrollTo('#alert', 200, {offset: -500});
           }else{
-            if(this.form.gears.length == 0){
-              this.$parent.wrongPass = false;
-              this.$parent.noGear = true;
-              this.$parent.noData = false;
-              this.$parent.cookieData = false;
-              this.$scrollTo('#alert', 200, {offset: -500});
-            }else{
-              let flag = false;
-              for (var i = 0; i < this.form.gears.length; ++i) {
-                if(Object.values(this.form.gears[i]).includes('') == true){
-                  flag = true;
-                }
+            var obj = this;
+            let data = new FormData();
+            data.append("centre_name", this.form.companyName);
+            data.append("latitude", this.form.lattitude);
+            data.append("longitude", this.form.longtitude);
+            data.append("phone_number", this.form.companyTel);
+            this.axios
+            .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/addWaterCentre", data, {
+              headers: {
+                'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addWaterCentre',
+                'Content-Type': 'multipart/form-data',
+                'accept': 'application/json',
+                'Authorization': "Bearer " + this.token
               }
-              if(flag == false) {
-                //Rejestr Centrum wodnego
-                var obj = this;
-                let data = new FormData();
-                data.append("centre_name", this.form.companyName);
-                data.append("latitude", this.form.lattitude);
-                data.append("longitude", this.form.longtitude);
-                data.append("phone_number", this.form.companyTel);
-                this.axios
-                .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/AddWaterCentre", data, {
-                  headers: {
-                    'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/AddWaterCentre',
-                    'Content-Type': 'multipart/form-data',
-                    'accept': 'application/json'
-                  }
-                })
-                .then(
-                  (response) => {
-                    console.log(JSON.stringify(response));
-                  });
-              }else{
-                this.$parent.wrongPass = false;
-                this.$parent.noGear = true;
-                this.$parent.noData = false;
-                this.$parent.cookieData = false;
-                this.$scrollTo('#alert', 200, {offset: -500});
-              }
-            }
+            })
+            .then(
+              (response) => {
+                console.log(JSON.stringify(response));
+                console.log(this.form.photoFile);
+              });
           }
         }else{
           this.$parent.wrongPass = false;
-          this.$parent.noGear = false;
           this.$parent.noData = true;
           this.$parent.cookieData = false;
           this.$scrollTo('#alert', 200, {offset: -500});
@@ -117,7 +96,6 @@ export default {
       }else{
         this.$parent.cookieData = true;
         this.$parent.wrongPass = false;
-        this.$parent.noGear = false;
         this.$parent.noData = false;
         this.$scrollTo('#alert', 200, {offset: -500});
       }
@@ -129,6 +107,24 @@ export default {
       this.center = {lat: this.form.lattitude, lng: this.form.longtitude};
       this.zoom = 9
     }
+  },
+  created() {
+    var obj = this;
+    let data = new FormData();
+    data.append("email", this.user.email);
+    data.append("password", this.user.password);
+    this.axios
+    .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/login", data, {
+      headers: {
+        'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+        'Content-Type': 'multipart/form-data',
+        'accept': 'application/json'
+      }
+    })
+    .then(
+      (response) => {
+        obj.token = response.data.access_token;
+      })
   }
 }
 </script>

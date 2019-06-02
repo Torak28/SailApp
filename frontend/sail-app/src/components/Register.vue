@@ -67,7 +67,8 @@ export default {
                     if(this.form.type.toLowerCase() == 'user'){
                       this.$router.replace({ name: "home" });
                     }else if(this.form.type.toLowerCase() == 'owner'){
-                      this.$router.replace({ name: "OwnerRegistration", params: {token: response.data.access_token} });
+                      console.log(JSON.stringify(obj.form));
+                      this.$router.replace({ name: "OwnerRegistration", params: {user: obj.form} });
                     }
                 })
                 .catch(function (error){

@@ -48,7 +48,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [ ] Potwierdzenie ownera
     [ ] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera
     [ ] Same wypożyczenie jako takie
+[ ] Nie udało się wczytać arkusza stylów XD
 [ ] Przetłumaczenie na j.polski
 [x] Obrazek Sail kieruje do home
-[x] bezpieczeństwo
+[x] Bezpieczeństwo
 ```
