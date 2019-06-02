@@ -99,7 +99,10 @@ class LoginViewModel(
                 Log.e("fetchUser", "No connectivity exception")
             } catch (e: ErrorCodeException) {
                 when (e.code) {
-                    401 -> authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED TODO diff if token expired or just unauthorized
+                    401 ->{
+                        authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
+                        registrationState.postValue(RegistrationState.FAILED)
+                    }
                 }
                 Log.e("fetchUser", "Error Code exception")
             }

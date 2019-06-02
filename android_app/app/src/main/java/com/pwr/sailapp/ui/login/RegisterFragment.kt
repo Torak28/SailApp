@@ -18,10 +18,7 @@ import com.pwr.sailapp.ui.generic.LoginScopedFragment
 import com.pwr.sailapp.ui.generic.ScopedFragment
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_register.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 const val INCORRECT_DATA = "Incorrect data"
 const val CORRECT_REGISTRATION = "Registered successfully"
@@ -52,13 +49,15 @@ class RegisterFragment : LoginScopedFragment() {
             }
             val userToRegister = createUser()
 
-            changeLoadingBarVisibility(true)
-            runBlocking(Dispatchers.IO) {
-                loginViewModel.registerUser(userToRegister)
-            }
-            changeLoadingBarVisibility(false)
+            launch {
+                changeLoadingBarVisibility(true)
+                withContext(Dispatchers.IO) {
+                    loginViewModel.registerUser(userToRegister)
+                }
+                changeLoadingBarVisibility(false)
 
-            loginViewModel.registrationState.observe(viewLifecycleOwner, registrationStateObserver)
+                loginViewModel.registrationState.observe(viewLifecycleOwner, registrationStateObserver)
+            }
         }
 
     }
@@ -109,6 +108,18 @@ class RegisterFragment : LoginScopedFragment() {
                 snack(INCORRECT_REGISTRATION)
                 textView_registration_error.visibility = View.VISIBLE
             }
+        }
+    }
+
+    override fun changeLoadingBarVisibility(isVisible: Boolean) {
+        super.changeLoadingBarVisibility(isVisible)
+        if(isVisible){
+            button_confirm_registration.visibility = View.GONE
+            linearLayout_registering.visibility = View.VISIBLE
+        }
+        else{
+            linearLayout_registering.visibility = View.GONE
+            button_confirm_registration.visibility = View.VISIBLE
         }
     }
 
