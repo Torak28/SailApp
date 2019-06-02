@@ -72,6 +72,7 @@
     <string name="register_error">Registration error: Account already exists.</string>
     <string name="end_time">End time:</string>
     <string name="years_rentals">Your year\'s rentals:</string>
+    <string name="years_favourite_centres">Your favourite centres:</string>
     <string name="total_number_of_rentals">Total number of rentals:</string>
     <string name="rentals_history">Rentals\' history:</string>
     <string name="anchor">anchor</string>

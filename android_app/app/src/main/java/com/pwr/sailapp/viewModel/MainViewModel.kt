@@ -43,7 +43,8 @@ class MainViewModel(
     private val darkSkyApiService = DarkSkyApiService(connectivityInterceptor = ConnectivityInterceptorImpl(appContext))
 
     val user = MutableLiveData<User>()
-    val rentals = MutableLiveData<List<Rental>>()
+    val upcomingRentals = MutableLiveData<List<Rental>>()
+    val allRentals = MutableLiveData<List<Rental>>()
     private val allCentres = MutableLiveData<List<Centre>>()
 
     val centres = MediatorLiveData<List<Centre>>().apply {
@@ -143,9 +144,17 @@ class MainViewModel(
             }
         }
 
-        rentals.postValue(futureRentals)
-        //
-        // rentals.postValue(rentalsRes)
+        val sortedFutureRentals = futureRentals.sortedBy {
+            it.timestampSecs
+        }
+
+        upcomingRentals.postValue(sortedFutureRentals)
+    }
+
+    suspend fun fetchAllRentals() = doNetworkOperation {
+        val rentalsDeferred = sailAppApiService.getAllUserRentals("Bearer ${TokenHandler.accessToken}")
+        val rentalsRes = rentalsDeferred.await()
+        allRentals.postValue(rentalsRes)
     }
 
     private suspend fun refreshAuthToken() = doNetworkOperation {

@@ -52,7 +52,7 @@ class ProfileFragment : MainScopedFragment() {
 
             changeLoadingBarVisibility(isVisible = false)
 
-            mainViewModel.rentals.observe(viewLifecycleOwner, rentalsObserver)
+            mainViewModel.upcomingRentals.observe(viewLifecycleOwner, rentalsObserver)
         }
     }
 
