@@ -18,7 +18,7 @@ class WeatherNetworkDataSourceImpl(
 
     override suspend fun fetchWeather(latitude: String, longitude: String, timestamp: String) {
         withContext(Dispatchers.IO){
-            val response = darkSkyApiService.getForecast(latitude, longitude, timestamp).await()
+            val response = darkSkyApiService.getForecastAsync(latitude, longitude, timestamp).await()
             _downloadedWeather.postValue(response.currently)
         }
     }

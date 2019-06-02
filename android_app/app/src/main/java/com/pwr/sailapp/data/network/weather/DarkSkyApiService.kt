@@ -23,7 +23,7 @@ const val DEFAULT_UNITS = "ca"
 interface DarkSkyApiService {
 
     @GET("{latitude},{longitude},{timestamp}")
-    fun getForecast(
+    fun getForecastAsync(
         @Path(value="latitude") latitude:String,
         @Path(value="longitude") longitude:String,
         @Path(value = "timestamp") timestamp: String,

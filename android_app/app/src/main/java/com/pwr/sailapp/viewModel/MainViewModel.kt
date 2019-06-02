@@ -2,34 +2,23 @@ package com.pwr.sailapp.viewModel
 
 import android.app.Application
 import android.location.Location
-import android.media.session.MediaSession
 import android.util.Log
 import androidx.lifecycle.*
-import com.pwr.sailapp.data.RentalSummary
-import com.pwr.sailapp.data.mocks.MockUsers
-import com.pwr.sailapp.data.network.Error
-import com.pwr.sailapp.data.network.ResponseStatus
-import com.pwr.sailapp.data.network.Success
 import com.pwr.sailapp.data.network.TOKEN_EXPIRED
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
-import com.pwr.sailapp.data.network.sail.SailNetworkDataSourceImpl
-import com.pwr.sailapp.data.network.sail.response.REGISTER_OK_MESSAGE
 import com.pwr.sailapp.data.network.sail.response.RENTAL_OK_MESSAGE
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.*
 import com.pwr.sailapp.data.sail.*
 import com.pwr.sailapp.internal.ErrorCodeException
 import com.pwr.sailapp.internal.NoConnectivityException
-import com.pwr.sailapp.utils.CredentialsUtil
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import okhttp3.internal.http2.ErrorCode
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -51,6 +40,7 @@ class MainViewModel(
     private val appContext = application.applicationContext
 
     private val sailAppApiService = SailAppApiService(connectivityInterceptor = ConnectivityInterceptorImpl(appContext))
+    private val darkSkyApiService = DarkSkyApiService(connectivityInterceptor = ConnectivityInterceptorImpl(appContext))
 
     val user = MutableLiveData<User>()
     val rentals = MutableLiveData<List<Rental>>()
@@ -91,7 +81,7 @@ class MainViewModel(
     val authenticationState = MutableLiveData<AuthenticationState>()
     val rentalState = MutableLiveData<RentalState>()
 
-    var isCancellationAllowed : Boolean = false
+    var isCancellationAllowed: Boolean = false
 
     // Dialogs
     var minRating = INITIAL_MIN_RATING
@@ -100,7 +90,7 @@ class MainViewModel(
     var isByRating = false
 
     init {
-        if(TokenHandler.refreshToken == NO_TOKEN){
+        if (TokenHandler.refreshToken == NO_TOKEN) {
             authenticationState.value = AuthenticationState.UNAUTHENTICATED
         }
     }
@@ -133,10 +123,29 @@ class MainViewModel(
         user.postValue(userRes)
     }
 
-    suspend fun fetchRentals() = doNetworkOperation {
+    suspend fun fetchUpcomingRentals() = doNetworkOperation {
         val rentalsDeferred = sailAppApiService.getAllUserRentals("Bearer ${TokenHandler.accessToken}")
         val rentalsRes = rentalsDeferred.await()
-        rentals.postValue(rentalsRes)
+        //
+        val futureRentals = rentalsRes.filter {
+            if(it.rentStartDate == null){Log.e("fetchRentals", "Filter: rentStartDate = null"); false}
+            else DateUtil.isFutureDate(it.rentStartDate!!)
+        }
+        for (rental in futureRentals) {
+            if (DateUtil.isForecastAvailable(rental.rentStartDate)) {
+                val forecastDeferred = darkSkyApiService.getForecastAsync(
+                    rental.centreLatitude,
+                    rental.centreLongitude,
+                    rental.timestampSecs!!
+                )
+                val forecastRes = forecastDeferred.await()
+                rental.currently = forecastRes.currently
+            }
+        }
+
+        rentals.postValue(futureRentals)
+        //
+        // rentals.postValue(rentalsRes)
     }
 
     private suspend fun refreshAuthToken() = doNetworkOperation {
@@ -176,14 +185,14 @@ class MainViewModel(
                 rentEnd = rentEndStr
             )
         val rentRes = rentDeferred.await()
-        when(rentRes.msg){
+        when (rentRes.msg) {
             RENTAL_OK_MESSAGE -> rentalState.postValue(RentalState.RENTAL_SUCCESSFUL)
             else -> rentalState.postValue(RentalState.RENTAL_FAILED)
         }
     }
 
     suspend fun cancelRental(rentID: Int) = doNetworkOperation {
-        if (isCancellationAllowed){
+        if (isCancellationAllowed) {
             val cancelDeferred =
                 sailAppApiService.cancelRentAsync(
                     "Bearer ${TokenHandler.accessToken}",

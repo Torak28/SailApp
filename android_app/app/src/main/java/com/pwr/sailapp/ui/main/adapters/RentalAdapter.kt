@@ -10,6 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Rental
+import com.pwr.sailapp.data.weather.Currently.Companion.CLEAR_DAY
+import com.pwr.sailapp.data.weather.Currently.Companion.CLEAR_NIGHT
+import com.pwr.sailapp.data.weather.Currently.Companion.CLOUDY
+import com.pwr.sailapp.data.weather.Currently.Companion.FOG
+import com.pwr.sailapp.data.weather.Currently.Companion.PARTLY_CLOUDY_DAY
+import com.pwr.sailapp.data.weather.Currently.Companion.PARTLY_CLOUDY_NIGHT
+import com.pwr.sailapp.data.weather.Currently.Companion.RAIN
+import com.pwr.sailapp.data.weather.Currently.Companion.SLEET
+import com.pwr.sailapp.data.weather.Currently.Companion.SNOW
+import com.pwr.sailapp.data.weather.Currently.Companion.WIND
 import com.pwr.sailapp.utils.DateUtil
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.handleCoroutineException
@@ -41,17 +51,14 @@ class RentalAdapter(
 
         val currentRental = rentals[position]
 
-        /*
-        Glide.with(context).asBitmap()
-            .load(currentRental.centre.photoURL)
-            .centerCrop()
-            .into(holder.imageView)
-            */
-        holder.imageView.visibility = View.GONE // TODO
-
         holder.textViewName.text = currentRental.centreName
-        holder.textViewRentalDate.text = currentRental.rentStartDateStr
-        holder.textViewRentalEndDate.text = currentRental.rentEndDateStr
+
+        holder.textViewRentalStartDate.text = currentRental.rentStartDateFormatted
+        holder.textViewRentalStartTime.text = currentRental.rentStartTimeFormatted
+
+        holder.textViewRentalEndDate.text = currentRental.rentEndDateFormatted
+        holder.textViewRentalEndTime.text = currentRental.rentEndTimeFormatted
+
         val gearAndQuantity = "${currentRental.equipmentName}   × ${currentRental.rentQuantity}"
         holder.textViewGearAndQuantity.text = gearAndQuantity
 
@@ -68,6 +75,27 @@ class RentalAdapter(
             holder.extrasLinearLayout.visibility = View.GONE
         }
 
+        if(currentRental.currently != null){
+            holder.linearLayoutWeatherSection.visibility = View.VISIBLE
+            holder.textViewTemperature.text = currentRental.currently!!.temperatureFormatted
+            holder.textViewWind.text = currentRental.currently!!.windSpeedFormatted
+            val iconID = when(currentRental.currently!!.icon){
+                CLEAR_DAY -> R.drawable.clear_day
+                CLEAR_NIGHT -> R.drawable.clear_night
+                RAIN -> R.drawable.rain
+                SNOW -> R.drawable.snow
+                SLEET -> R.drawable.sleet
+                WIND -> R.drawable.wind
+                FOG -> R.drawable.fog
+                CLOUDY -> R.drawable.cloudy
+                PARTLY_CLOUDY_DAY -> R.drawable.partly_cloudy_day
+                PARTLY_CLOUDY_NIGHT -> R.drawable.partly_cloudy_night
+                else -> R.drawable.unknown
+            }
+            holder.imageViewWeather.setImageResource(iconID)
+        }
+        else holder.linearLayoutWeatherSection.visibility = View.GONE
+
         // Handlers for image buttons
         holder.phoneImageButton.setOnClickListener { phoneListener(currentRental) }
         holder.locationImageButton.setOnClickListener { locationListener(currentRental) }
@@ -82,18 +110,27 @@ class RentalAdapter(
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-        val imageView: ImageView = itemView.findViewById(R.id.imageView_rental_photo)
         val textViewName: TextView = itemView.findViewById(R.id.textView_rental_name)
-        val textViewRentalDate: TextView = itemView.findViewById(R.id.textView_rental_date)
+
+        val textViewRentalStartDate: TextView = itemView.findViewById(R.id.textView_rental_start_date)
+        val textViewRentalStartTime: TextView = itemView.findViewById(R.id.textView_rental_start_time)
+
+        val textViewGearAndQuantity : TextView = itemView.findViewById(R.id.textView_gear_and_quantity)
+
         val textViewRentalEndDate: TextView = itemView.findViewById(R.id.textView_rental_end_date)
-        val textViewRentalStart: TextView = itemView.findViewById(R.id.textView_rental_start)
+        val textViewRentalEndTime: TextView = itemView.findViewById(R.id.textView_rental_end_time)
+
         val arrowDownImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_down)
         val arrowUpImageView: ImageView = itemView.findViewById(R.id.imageView_arrow_up)
+
         val phoneImageButton: ImageButton = itemView.findViewById(R.id.imageButton_phone)
         val locationImageButton: ImageButton = itemView.findViewById(R.id.imageButton_location)
         val cancelImageButton: ImageButton = itemView.findViewById(R.id.imageButton_cancel)
+
         val extrasLinearLayout: LinearLayout = itemView.findViewById(R.id.linearLayout_extras)
-        // val textViewTemperature: TextView = itemView.findViewById(R.id.textView_temperature)
-        val textViewGearAndQuantity : TextView = itemView.findViewById(R.id.textView_gear_and_quantity)
+        val linearLayoutWeatherSection : LinearLayout = itemView.findViewById(R.id.linearLayout_weather_section)
+        val textViewTemperature: TextView = itemView.findViewById(R.id.textView_temperature)
+        val textViewWind: TextView = itemView.findViewById(R.id.textView_wind)
+        val imageViewWeather : ImageView = itemView.findViewById(R.id.imageView_weather_icon)
     }
 }

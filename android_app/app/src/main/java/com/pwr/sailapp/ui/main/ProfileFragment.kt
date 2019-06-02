@@ -6,15 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pwr.sailapp.R
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.ui.generic.MainScopedFragment
-import com.pwr.sailapp.ui.main.adapters.RentalSummaryAdapter
-import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
-import com.pwr.sailapp.utils.formatCoordinate
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,9 +48,7 @@ class ProfileFragment : MainScopedFragment() {
         launch {
             changeLoadingBarVisibility(isVisible = true)
 
-            withContext(Dispatchers.IO) {
-                mainViewModel.fetchRentals()
-            }
+            withContext(Dispatchers.IO) { mainViewModel.fetchUpcomingRentals() }
 
             changeLoadingBarVisibility(isVisible = false)
 
@@ -70,33 +64,25 @@ class ProfileFragment : MainScopedFragment() {
         runBlocking {
             changeLoadingBarVisibility(true)
             withContext(Dispatchers.IO) { mainViewModel.cancelRental(rental.ID) }
-            withContext(Dispatchers.IO) { mainViewModel.fetchRentals() }
+            withContext(Dispatchers.IO) { mainViewModel.fetchUpcomingRentals() }
             changeLoadingBarVisibility(false)
         }
     }
 
     private fun onRentalCall() = { rental: Rental ->
-        /*
-        TODO fetch centre for each rental and then enable phones
-        val phone = rental.centre.phone
+        val phone = rental.centrePhoneNumber
         val uri = Uri.parse("tel:$phone")
         val intent = Intent(Intent.ACTION_DIAL, uri)
         if (intent.resolveActivity(activity!!.packageManager) != null) startActivity(intent)
-        else toast("Cannot launch activity")
-        */
+        else snack("Cannot launch activity")
     }
 
     private fun onRentalMap() = { rental: Rental ->
-        /*
-        TODO same as above
-        val coordinateXFormatted = formatCoordinate(rental.centre.coordinateX, 4) // TODO !!.
-        val coordinateYFormatted = formatCoordinate(rental.centre.coordinateY, 4)
-        val label = rental.centre.name
-        val uri = Uri.parse("geo:0,0?q=$coordinateXFormatted,$coordinateYFormatted($label)")
+        val label = rental.centreName
+        val uri = Uri.parse("geo:0,0?q=${rental.centreLatitude},${rental.centreLongitude}($label)")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         if (intent.resolveActivity(activity!!.packageManager) != null) startActivity(intent)
-        else toast("Cannot launch activity")
-        */
+        else snack("Cannot launch activity")
     }
 
 

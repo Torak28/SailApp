@@ -48,7 +48,7 @@ class StatsFragment : MainScopedFragment() {
 
         launch {
             changeLoadingBarVisibility(true)
-            withContext(Dispatchers.IO){mainViewModel.fetchRentals()}
+            withContext(Dispatchers.IO){mainViewModel.fetchUpcomingRentals()}
             changeLoadingBarVisibility(false)
             mainViewModel.rentals.observe(viewLifecycleOwner, rentalsObserver)
         }

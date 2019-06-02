@@ -10,22 +10,24 @@ const val MAX_FORECAST_DAYS = 10
 /*
 Format the date according to format used in JSON
  */
+
+const val DATE_PATTERN_ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+const val DATE_PATTERN_SIMPLE = "EEE',' dd MMM yyyy HH:mm:ss Z" // Sat, 01 Jun 2019 19:39:43 GMT
+
 object DateUtil{
     // 2019-05-30T02:00:00.118Z
-    private const val DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+
 
     @SuppressLint("SimpleDateFormat")
-    fun dateToString(date: Date?): String {
-        val simpleDateFormat = SimpleDateFormat(DATE_PATTERN)
-        val dateStr = simpleDateFormat.format(date)
-        return dateStr+"Z"
+    fun dateToString(date: Date?, datePattern : String = DATE_PATTERN_ISO_8601): String {
+        val simpleDateFormat = SimpleDateFormat(datePattern)
+        return simpleDateFormat.format(date)
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun stringToDate(dateStr: String?): Date? {
-        val simpleDateFormat = SimpleDateFormat(DATE_PATTERN)
-        val date =  simpleDateFormat.parse(dateStr)
-        return date
+    fun stringToDate(dateStr: String?, datePattern : String = DATE_PATTERN_SIMPLE): Date? {
+        val simpleDateFormat = SimpleDateFormat(datePattern)
+        return simpleDateFormat.parse(dateStr)
     }
 
     fun timeDiff(dateStart: Date, dateEnd:Date):Pair<Int, Int>{
@@ -33,6 +35,14 @@ object DateUtil{
         val hours:Int = (diffSeconds / (60 * 60)).toInt()
         val minutes:Int = (diffSeconds / 60 % 60 ).toInt()
         return Pair(hours, minutes)
+    }
+
+    fun isFutureDate(dateToCheck: Date) : Boolean{
+        val calendar = Calendar.getInstance()
+        val nowDate = calendar.time
+        val nowDateTime = DateTime(nowDate)
+        val toCheckDateTime = DateTime(dateToCheck)
+        return toCheckDateTime >= nowDateTime
     }
 
 
