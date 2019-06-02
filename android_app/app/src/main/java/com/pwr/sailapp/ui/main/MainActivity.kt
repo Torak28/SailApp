@@ -16,6 +16,7 @@ import com.pwr.sailapp.R
 import com.pwr.sailapp.data.DataProvider
 import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.data.sail.User
+import com.pwr.sailapp.internal.NetworkStatus
 import com.pwr.sailapp.ui.generic.ScopedActivity
 import com.pwr.sailapp.viewModel.MainViewModel
 import com.pwr.sailapp.viewModel.getViewModel
@@ -24,6 +25,8 @@ import kotlinx.android.synthetic.main.navigationview_header.view.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
+const val DISCONNECTED_MSG = "No connection"
+
 class MainActivity : ScopedActivity() {
 
     // Navigating to a destination is done using a NavController,
@@ -31,7 +34,7 @@ class MainActivity : ScopedActivity() {
     // Each NavHost has its own corresponding NavController
     private lateinit var navController: NavController
 
-    private val mainViewModel by lazy{
+    private val mainViewModel by lazy {
         getViewModel { MainViewModel(application) }
     }
 
@@ -51,7 +54,7 @@ class MainActivity : ScopedActivity() {
 
 
         mainViewModel.authenticationState.observe(this, Observer {
-            when(it){
+            when (it) {
                 null -> Log.e("MainActivity", "mainViewModel.authenticationState = null")
                 AuthenticationState.UNAUTHENTICATED -> findNavController(R.id.my_nav_host_fragment).navigate(R.id.destination_login)
                 else -> return@Observer
@@ -68,14 +71,18 @@ class MainActivity : ScopedActivity() {
             true
         }
 
+        mainViewModel.networkStatus.observe(this, networkStatusObserver)
+
         launch {
-            val operation = async{
+            val operation = async {
                 mainViewModel.fetchUser()
             }
             operation.await()
 
             mainViewModel.user.observe(this@MainActivity, Observer {
-                if(it == null) {Log.e("MainAct", "user = null"); return@Observer}
+                if (it == null) {
+                    Log.e("MainAct", "user = null"); return@Observer
+                }
                 changeNavigationHeaderInfo(it)
             })
 
@@ -97,5 +104,12 @@ class MainActivity : ScopedActivity() {
     private fun changeNavigationHeaderInfo(user: User) {
         val headerView = navigationView.getHeaderView(0)
         headerView.textView_user_nav_name.text = user.firstName
+    }
+
+    private val networkStatusObserver = Observer<NetworkStatus> {
+        when (it) {
+            NetworkStatus.DISCONNECTED -> toast(DISCONNECTED_MSG)
+            else -> {}
+        }
     }
 }

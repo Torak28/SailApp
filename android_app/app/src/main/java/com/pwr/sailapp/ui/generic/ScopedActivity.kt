@@ -1,7 +1,6 @@
 package com.pwr.sailapp.ui.generic
 
-import android.os.Bundle
-import android.os.PersistableBundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,4 +18,6 @@ abstract class ScopedActivity : AppCompatActivity(), CoroutineScope {
         super.onDestroy()
         job.cancel()
     }
+
+    protected fun toast(text: String) = Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
 }

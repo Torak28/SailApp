@@ -12,6 +12,7 @@ import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.*
 import com.pwr.sailapp.data.sail.*
 import com.pwr.sailapp.internal.ErrorCodeException
+import com.pwr.sailapp.internal.NetworkStatus
 import com.pwr.sailapp.internal.NoConnectivityException
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
@@ -46,6 +47,7 @@ class MainViewModel(
     val upcomingRentals = MutableLiveData<List<Rental>>()
     val allRentals = MutableLiveData<List<Rental>>()
     private val allCentres = MutableLiveData<List<Centre>>()
+    val networkStatus = MutableLiveData<NetworkStatus>()
 
     val centres = MediatorLiveData<List<Centre>>().apply {
         addSource(allCentres) {
@@ -103,15 +105,18 @@ class MainViewModel(
         withContext(Dispatchers.IO) {
             try {
                 logic()
+                networkStatus.postValue(NetworkStatus.CONNECTED)
             } catch (e: NoConnectivityException) {
+                networkStatus.postValue(NetworkStatus.DISCONNECTED)
                 Log.e("doNetworkOperation", "No connectivity exception")
+
             } catch (e: ErrorCodeException) {
                 when (e.code) {
                     401 -> if (e.message == TOKEN_EXPIRED) {
                         runBlocking(Dispatchers.IO) {
                             refreshAuthToken()
                         }
-                    } else authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED TODO diff if token expired or just unauthorized
+                    } else authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED
                 }
                 Log.e("doNetworkOperation", "${e.code} ${e.message}")
             }
