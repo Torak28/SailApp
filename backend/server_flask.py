@@ -542,7 +542,7 @@ class AddPicture(Resource):
 
     parser = reqparse.RequestParser()
     parser.add_argument('centre_id', type=int, required=True, location='form',
-                        help='New rent end (If not changed send old value).')
+                        help='Centre ID to which the picture will be added.')
     parser.add_argument('file', type=FileStorage, required=True, location='files')
 
     @api.expect(parser)
@@ -555,7 +555,7 @@ class AddPicture(Resource):
         user_id = get_jwt_identity()
         uploaded_file = kwargs['file']  # This is FileStorage instance
         if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
-            filepath = pictures.save_file(uploaded_file)
+            filepath = pictures.send_file_to_imgur(uploaded_file)
             pictures.add_picture_to_centre(kwargs['centre_id'], filepath)
             return {'msg': 'Picture was saved and added.'}, 201
         return {'msg': 'Permission denied. You are not the owner.'}, 403

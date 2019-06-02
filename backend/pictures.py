@@ -1,13 +1,17 @@
 import os
 from database.database_classes import connection_to_db, Picture
 from database.create_objects_of_classes import create_picture, add_object_to_database
+from imgurpython import ImgurClient
 
 
 def get_current_path():
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def save_file(file):
+def send_file_to_imgur(file):
+    client_id = 'aa5de24b298c96e'
+    client_secret = '9adf1eead953b72c004d6a7540e91e1480298c91'
+    client = ImgurClient(client_id, client_secret)
     i = 1
     filepath = os.path.join(get_current_path(), 'pictures', file.filename)
     new_filepath = filepath
@@ -18,7 +22,9 @@ def save_file(file):
             continue
         break
     file.save(new_filepath)
-    return filepath
+    response_data = client.upload_from_path(new_filepath)
+    os.remove(new_filepath)
+    return response_data['link']
 
 
 def add_picture_to_centre(centre_id, filepath):
@@ -39,3 +45,4 @@ def get_pictures_ids_of_centre(centre_id, session=None):
     for one_id in ids:
         list_of_formatted_ids.append({'picture_id': one_id.id})
     return list_of_formatted_ids
+

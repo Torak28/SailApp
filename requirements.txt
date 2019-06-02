@@ -10,3 +10,5 @@ psycopg2==2.8.2
 gunicorn
 werkzeug
 datetimerange==0.6.1
+oauth2
+imgurpython
