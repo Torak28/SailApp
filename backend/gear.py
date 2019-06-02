@@ -58,6 +58,10 @@ def get_rented_gear_by_user(user_id, session=None):
         one_gear_dict['rent_end'] = one_gear.GearRental.rent_end
         one_gear_dict['rent_quantity'] = one_gear.GearRental.rent_amount
         one_gear_dict['gear_name'] = one_gear.Gear.name
+        one_gear_dict['centre_latitude'] = one_gear.WaterCentre.latitude
+        one_gear_dict['centre_longitude'] = one_gear.WaterCentre.longitude
+        one_gear_dict['centre_phone_number'] = one_gear.WaterCentre.contact_number
+
         formatted_rented_gears.append(one_gear_dict)
     return formatted_rented_gears
 

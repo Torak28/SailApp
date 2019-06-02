@@ -402,7 +402,10 @@ class GetRentedGear(Resource):
         'rent_start': fields.DateTime,
         'rent_end': fields.DateTime,
         'rent_quantity': fields.Integer,
-        'gear_name': fields.String
+        'gear_name': fields.String,
+        'centre_latitude': fields.String,
+        'centre_longitude': fields.String,
+        'centre_phone_number': fields.String,
     })
 
     @jwt_required
@@ -627,8 +630,6 @@ class EditCentre(Resource):
 
             return {'msg': 'Water centre edited successfully.'}, 200
         return {'msg': 'User does not have the proper rights.'}, 403
-
-
 
 
 if __name__ == '__main__':
