@@ -45,7 +45,6 @@ export default {
               this.$parent.cookieData = false;
               this.$scrollTo('#alert', 200, {offset: -500});
             }else{
-              if(this.form.type.toLowerCase() == 'user'){
                 //console.log("User " + JSON.stringify(this.form) + " registred");
                 var obj = this;
                 let data = new FormData();
@@ -65,15 +64,16 @@ export default {
                 })
                 .then(
                   (response) => {
-                    //this.$router.replace({ name: "home" });
+                    if(this.form.type.toLowerCase() == 'user'){
+                      this.$router.replace({ name: "home" });
+                    }else if(this.form.type.toLowerCase() == 'owner'){
+                      this.$router.replace({ name: "OwnerRegistration", params: {token: response.data.access_token} });
+                    }
                 })
                 .catch(function (error){
                   obj.$parent.wrongData = true;
                   obj.$parent.noData = false;
                 });
-              }else if(this.form.type.toLowerCase() == 'owner'){
-                this.$router.replace({ name: "OwnerRegistration" });
-              }
             }
           }else{
             this.$parent.wrongPass = false;

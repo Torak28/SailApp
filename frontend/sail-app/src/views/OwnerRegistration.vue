@@ -9,7 +9,7 @@
     <b-alert :show=noGear variant="danger">{{noGearMsg}}</b-alert>
     <b-alert :show=cookieData variant="danger">{{cookieDataMsg}}</b-alert>
     <Register />
-    <OwnerRegister />
+    <OwnerRegister :token=access_token />
   </b-container>
 </template>
 
@@ -18,6 +18,7 @@ import OwnerRegister from "@/components/OwnerRegister.vue";
 
 export default {
   name: "OwnerRegistration",
+  props: ['access_token'],
   components: {
     OwnerRegister
   },

@@ -35,6 +35,7 @@
 <script>
 export default {
   name: "OwnerRegister",
+  props: ['token'],
   data() {
     return {
       form: {
@@ -78,9 +79,7 @@ export default {
                 }
               }
               if(flag == false) {
-                //console.log("Owner " + JSON.stringify(this.form) + " registred");
-                //Nie ma tworzenia Centrum Wodnego :c
-                //I sprzetu i wgl :c
+                //Rejestr Centrum wodnego
                 var obj = this;
                 let data = new FormData();
                 data.append("first_name", this.form.name);
@@ -101,10 +100,6 @@ export default {
                   (response) => {
                     this.$router.replace({ name: "home" });
                   })
-                .catch(function (error){
-                  obj.$parent.wrongData = true;
-                  obj.$parent.noData = false;
-                });
               }else{
                 this.$parent.wrongPass = false;
                 this.$parent.noGear = true;
