@@ -104,7 +104,7 @@ class MainViewModel(
             try {
                 logic()
             } catch (e: NoConnectivityException) {
-                Log.e("fetchUser", "No connectivity exception")
+                Log.e("doNetworkOperation", "No connectivity exception")
             } catch (e: ErrorCodeException) {
                 when (e.code) {
                     401 -> if (e.message == TOKEN_EXPIRED) {

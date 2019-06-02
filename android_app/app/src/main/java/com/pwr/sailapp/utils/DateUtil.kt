@@ -12,7 +12,7 @@ Format the date according to format used in JSON
  */
 
 const val DATE_PATTERN_ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-const val DATE_PATTERN_SIMPLE = "EEE',' dd MMM yyyy HH:mm:ss Z" // Sat, 01 Jun 2019 19:39:43 GMT
+const val DATE_PATTERN_SIMPLE = "EEE, dd MMM yyyy HH:mm:ss z" // Sat, 01 Jun 2019 19:39:43 GMT
 
 object DateUtil{
     // 2019-05-30T02:00:00.118Z
@@ -26,8 +26,9 @@ object DateUtil{
 
     @SuppressLint("SimpleDateFormat")
     fun stringToDate(dateStr: String?, datePattern : String = DATE_PATTERN_SIMPLE): Date? {
-        val simpleDateFormat = SimpleDateFormat(datePattern)
-        return simpleDateFormat.parse(dateStr)
+        val simpleDateFormat = SimpleDateFormat(datePattern, Locale.ENGLISH)
+        val dateFormatted = simpleDateFormat.parse(dateStr)
+        return dateFormatted
     }
 
     fun timeDiff(dateStart: Date, dateEnd:Date):Pair<Int, Int>{
