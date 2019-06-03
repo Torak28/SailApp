@@ -108,8 +108,6 @@ export default {
       })
       .then(
         (response) => {
-          console.log('CentreID: ' + obj.form.centre_id);
-          console.log('Zdjęcie dodanie: ' + JSON.stringify(response));
           this.$router.replace({ name: "GearRegistration", params: {user: obj.form} });
         });
     },

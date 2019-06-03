@@ -45,7 +45,6 @@ export default {
               this.$parent.cookieData = false;
               this.$scrollTo('#alert', 200, {offset: -500});
             }else{
-                //console.log("User " + JSON.stringify(this.form) + " registred");
                 var obj = this;
                 let data = new FormData();
                 data.append("first_name", this.form.name);
@@ -67,12 +66,10 @@ export default {
                     if(this.form.type.toLowerCase() == 'user'){
                       this.$router.replace({ name: "home" });
                     }else if(this.form.type.toLowerCase() == 'owner'){
-                      console.log(JSON.stringify(obj.form));
                       this.$router.replace({ name: "OwnerRegistration", params: {user: obj.form} });
                     }
                 })
                 .catch(function (error){
-                  console.log('blad');
                   obj.$parent.wrongData = true;
                   obj.$parent.noData = false;
                 });

@@ -50,31 +50,16 @@ export default {
     getPictureId(){
       let obj = this;
       this.axios
-        .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/" + this.form.centre_id, {
+        .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/" + this.form.centre_id, {
           headers: {
-            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/',
+            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/',
             'Authorization': "Bearer " + this.form.token
           }
         })
         .then(
           (response) => {
             obj.pic_id = response.data[0].picture_id;
-            obj.getPicture();
-          })
-    },
-    getPicture(){
-      let obj = this;
-      this.axios
-        .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicture/" + this.pic_id, {
-          headers: {
-            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/',
-            'Authorization': "Bearer " + this.form.token
-          }
-        })
-        .then(
-          (response) => {
-            obj.form.photoFile = response.data.picture_link;
-            console.log('Internal Error JSON? ' + JSON.stringify(response));
+            obj.form.photoFile = response.data[0].picture_link;
           })
     }
   },

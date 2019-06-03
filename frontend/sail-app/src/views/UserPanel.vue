@@ -239,7 +239,6 @@ export default {
     },
     getAllCentreData(){
       this.getAllCentreBasicData();
-      //this.getCentrePic(this.companyForms);
     },
     getAllCentreBasicData(){
       var obj = this;
@@ -254,7 +253,6 @@ export default {
       .then(
         (response) => {
           for (let i = 0; i < response.data.length; i++) {
-            //console.log('poczatek pierwszego Centrum --- z getCentreData');
             obj.companyForms.push({
               name: response.data[i].centre_name,
               latitude: response.data[i].latitude,
@@ -266,17 +264,15 @@ export default {
               photo: null
               //photo: obj.getCentrePic(response.data[i].centre_id)
             });
-            //console.log('koniec pierwszego Centrum --- z getCentreData');
           }
           obj.getAllCentrePicId();
-          obj.getAllGear();
+          //obj.getAllGear();
         })
       .catch(function (error){
         console.log(error);
       });
     },
     getAllGear(){
-      console.log('Get all gear');
       let obj = this;
       for (let i = 0; i < this.companyForms.length; i++) {
         this.axios
@@ -303,34 +299,18 @@ export default {
       let obj = this;
       for (let i = 0; i < this.companyForms.length; i++) {
         this.axios
-          .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/" + this.companyForms[i].centre_id, {
+          .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/" + this.companyForms[i].centre_id, {
             headers: {
-              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/',
+              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/',
               'Authorization': "Bearer " + this.user.token
             }
           })
           .then(
             (response) => {
-              obj.companyForms[i].photo = response.data[0].picture_id;
-              obj.getAllCentrePic();
+              obj.companyForms[i].photo = response.data[0].picture_link;
             })
       }
-    },
-    getAllCentrePic(){
-      for (let i = 0; i < this.companyForms.length; i++) {
-        let obj = this;
-        this.axios
-          .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicture/" + this.companyForms[i].photo, {
-            headers: {
-              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/',
-              'Authorization': "Bearer " + this.user.token
-            }
-          })
-          .then(
-            (response) => {
-              obj.companyForms[i].photo = response.data.picture_link;
-            })
-      }
+      obj.getAllGear();
     }
   },
   created () {
@@ -341,68 +321,11 @@ export default {
       this.userForm.checkPassword = this.user.password;
 
       //Dane uzytkownika
+      this.calcDistAll(this.companyForms);
       this.getUserData();
-      this.getAllCentreData(this.companyForms);
+      this.getAllCentreData();
       this.breachAlert = false;
 
-      //Dane wypozyczalni
-      function xd(){
-        console.log('func');
-      }
-
-      
-
-
-      xd();
-      console.log('pomiedzy');
-
-      //Zdjecie wypozyczalni
-      /*for (let i = 0; i < this.companyForms.length; i++) {
-        let url = 'https://projekt-gospodarka-backend.herokuapp.com/user/getPicturesIdsOfCentre/' + this.companyForms[i].centre_id
-        console.log('inside');
-        console.log(url);
-        this.axios
-        .get(url, {
-          headers: {
-            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
-            'accept': 'application/json',
-            'Authorization': "Bearer " + this.user.token
-          }
-        })
-        .then(
-          (response) => {
-            console.log(response);
-          })
-        .catch(function (error){
-          console.log(error);
-        });
-      }*/
-
-      /*this.companyForms.push({
-        name: 'XKajak',
-        latitude: '50.3483816',
-        longtitude: '18.915717599999994',
-        phone: '666 777 888',
-        photo: 'https://picsum.photos/450/300/?image=10',
-        gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}]
-      });
-      this.companyForms.push({
-        name: 'KajaX',
-        latitude: '51.1078852',
-        longtitude: '17.03853760000004',
-        phone: '123 123 123',
-        photo: 'https://picsum.photos/450/300/?image=20',
-        gears: [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
-      });
-      this.companyForms.push({
-        name: 'Opole',
-        latitude: '50.671062',
-        longtitude: '17.926126',
-        phone: '123 123 123',
-        photo: 'https://picsum.photos/450/300/?image=30',
-        gears: [{"id":"0","gearType":"Boats","gearAmount":"20","gearCost":"250"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}]
-      });*/
-      this.calcDistAll(this.companyForms);
     }else{
       this.breachAlert = true;
     }
