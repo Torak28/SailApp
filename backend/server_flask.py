@@ -577,7 +577,7 @@ class GetCentres(Resource):
         return jsonify(water_centres)
 
 
-@ns_user.route('/getPicturesIdsOfCentre/<int:centre_id>')
+@ns_user.route('/getPicturesOfCentre/<int:centre_id>')
 class GetPicturesIdsOfCentre(Resource):
     resource_fields = api.model('getPicturesIdsOfCentre', {
         'picture_id': fields.String,
