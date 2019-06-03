@@ -171,11 +171,17 @@ class MainViewModel(
     suspend fun fetchCentres() = doNetworkOperation {
         val centresDeferred = sailAppApiService.getCentresAsync("Bearer ${TokenHandler.accessToken}")
         val centresRes = centresDeferred.await()
-        // TODO picture for each centre
-        // 1. getPicturesIdsOfCentre
-        // if 1. is not null then 2. else 4.
-        // 2. getPicture
-        // 3. setPicture to centre object
+        for(centre in centresRes){
+            val picIdsDeferred = sailAppApiService.getPictureIdsOfCentreAsync("Bearer ${TokenHandler.accessToken}", centre.ID)
+            val picIds = picIdsDeferred.await()
+            if(picIds.isNotEmpty()){
+                if(picIds[0].picture_id != 1){ // TODO ...
+                    val picLinkDeferred = sailAppApiService.getPictureAsync("Bearer ${TokenHandler.accessToken}", picIds[0].picture_id)
+                    val picLinkRes = picLinkDeferred.await()
+                    centre.photoURL = picLinkRes.picture_link
+                }
+            }
+        }
         allCentres.postValue(centresRes)
     }
 

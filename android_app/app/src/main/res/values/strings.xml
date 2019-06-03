@@ -67,7 +67,7 @@
     <string name="stats_fragment">Stats fragment</string>
     <string name="gear">Gear:</string>
     <string name="rental_duration">Rental duration:</string>
-    <string name="downloading">Downloading…</string>
+    <string name="downloading">Loading…</string>
     <string name="my_localization_button">My localization button</string>
     <string name="register_error">Registration error: Account already exists.</string>
     <string name="end_time">End time:</string>

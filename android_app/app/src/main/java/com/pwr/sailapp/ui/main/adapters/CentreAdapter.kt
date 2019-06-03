@@ -43,13 +43,11 @@ class CentreAdapter(
                 .load(currentCentre.photoURL)
                 .centerCrop()
                 .into(holder.imageView)
+            holder.imageView.visibility = View.VISIBLE
         }
         else holder.imageView.visibility = View.GONE
 
         holder.textViewName.text = currentCentre.name
-
-        holder.ratingBar.rating = currentCentre.rating.toFloat() // TODO remove it
-        holder.textViewLocation.text = currentCentre.location // TODO remove it
 
         if(currentCentre.distance < Double.POSITIVE_INFINITY){
             holder.textViewDistance.text = formatDistance(currentCentre.distance)
@@ -69,10 +67,9 @@ class CentreAdapter(
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val imageView:ImageView = itemView.findViewById(R.id.imageView_centre_photo)
         val textViewName:TextView = itemView.findViewById(R.id.textView_centre_name)
-        val ratingBar:RatingBar = itemView.findViewById(R.id.ratingBar_centre)
-        val textViewLocation:TextView = itemView.findViewById(R.id.textView_location)
-        val cardView:CardView = itemView.findViewById(R.id.centre_card)
         val textViewDistance: TextView = itemView.findViewById(R.id.textView_distance)
+        val cardView:CardView = itemView.findViewById(R.id.centre_card)
+
     }
 
 }
