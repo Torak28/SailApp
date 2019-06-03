@@ -1,13 +1,11 @@
 <template>
-  <b-container class="OwnerRegistration">
-    <h1 class='title'>Register Company:</h1>
+  <b-container class="GearRegistration">
+    <h1 class='title'>Add Gear to Company:</h1>
     <br>
     <br>
     <br>
-    <b-alert :show=noData variant="danger">{{noDataMsg}}</b-alert>
     <b-alert :show=noGear variant="danger">{{noGearMsg}}</b-alert>
-    <b-alert :show=cookieData variant="danger">{{cookieDataMsg}}</b-alert>
-    <OwnerRegister :user=user />
+    <GearRegister :user=user />
   </b-container>
 </template>
 
@@ -15,18 +13,14 @@
 import OwnerRegister from "@/components/OwnerRegister.vue";
 
 export default {
-  name: "OwnerRegistration",
+  name: "GearRegistration",
   props: ['user'],
   components: {
     OwnerRegister
   },
   data() {
     return {
-      noData: false,
       noGear: false,
-      cookieData: false,
-      cookieDataMsg: "Accept terms and use",
-      noDataMsg: "All data must be present",
       noGearMsg: "Gear tab is not filled properly"
     }
   }

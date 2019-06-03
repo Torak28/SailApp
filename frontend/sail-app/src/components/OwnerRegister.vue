@@ -16,16 +16,8 @@
         }"
         />
       </gmap-map>
-      <b-container v-for="gear in form.gears" :key="gear.id">
-        <b-form-input  class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
-        <b-form-input  class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
-        <b-form-input  class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
-        <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
-        <hr>
-      </b-container>
     </b-row>
     <b-row>
-      <!--b-button id="Add" class='btnClass'  block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000}">Add new Gear</b-button-->
       <b-form-checkbox id="checkbox-1" v-model="status" name="checkbox-1" class='block'> I accept the <b-link href="https://ezelechowska-psycholog.pl/PolitykaPrywatnosci.pdf">terms and use</b-link> </b-form-checkbox>
       <b-button block class='btnClass' variant="success" v-on:click="registerOwnerAccoount()">Register Water Centre</b-button>
       <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
@@ -50,15 +42,14 @@ export default {
         photoFile: null,
         lattitude: '',
         longtitude: '',
-        gears: []
+        gears: [],
+        token: null,
+        type: 'Owner'
       },
-      howManyNow: 0,
-      counter: 0,
       place: null,
       status: false,
       center: { lat: 52.237049, lng: 21.017532 },
       zoom: 6,
-      token: null,
       breachAlert: null
     }
   },
@@ -66,42 +57,33 @@ export default {
     registerOwnerAccoount() {
       if(this.status == true){
         if(this.form.companyName != '' &&  this.form.lattitude != '' &&  this.form.longtitude != '' &&  this.form.companyTel != '' &&  this.form.photoFile != ''){
-          if(this.form.password != this.form.checkPassword){
-            this.$parent.wrongPass = true;
-            this.$parent.noData = false;
-            //this.$parent.noGear = false;
-            this.$parent.cookieData = false;
-            this.$scrollTo('#alert', 200, {offset: -500});
-          }else{
-            var obj = this;
-            let data = new FormData();
-            data.append("centre_name", this.form.companyName);
-            data.append("latitude", this.form.lattitude);
-            data.append("longitude", this.form.longtitude);
-            data.append("phone_number", this.form.companyTel);
-            this.axios
-            .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/addWaterCentre", data, {
-              headers: {
-                'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addWaterCentre',
-                'Content-Type': 'multipart/form-data',
-                'accept': 'application/json',
-                'Authorization': "Bearer " + this.token
-              }
-            })
-            .then(
-              (response) => {
-                obj.getCentreId();
-              });
-          }
+          var obj = this;
+          let data = new FormData();
+          data.append("centre_name", this.form.companyName);
+          data.append("latitude", this.form.lattitude);
+          data.append("longitude", this.form.longtitude);
+          data.append("phone_number", this.form.companyTel);
+          this.axios
+          .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/addWaterCentre", data, {
+            headers: {
+              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addWaterCentre',
+              'Content-Type': 'multipart/form-data',
+              'accept': 'application/json',
+              'Authorization': "Bearer " + this.token
+            }
+          })
+          .then(
+            (response) => {
+              obj.getCentreId();
+            });
+        
         }else{
-          this.$parent.wrongPass = false;
           this.$parent.noData = true;
           this.$parent.cookieData = false;
           this.$scrollTo('#alert', 200, {offset: -500});
         }
       }else{
         this.$parent.cookieData = true;
-        this.$parent.wrongPass = false;
         this.$parent.noData = false;
         this.$scrollTo('#alert', 200, {offset: -500});
       }
@@ -121,13 +103,14 @@ export default {
           'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addPicture',
           'Content-Type': 'multipart/form-data',
           'accept': 'application/json',
-          'Authorization': "Bearer " + this.token
+          'Authorization': "Bearer " + this.form.token
         }
       })
       .then(
         (response) => {
           console.log('CentreID: ' + obj.form.centre_id);
           console.log('Zdjęcie dodanie: ' + JSON.stringify(response));
+          this.$router.replace({ name: "GearRegistration", params: {user: obj.form} });
         });
     },
     getCentreId(){
@@ -138,7 +121,7 @@ export default {
           'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getMyCentres',
           'Content-Type': 'multipart/form-data',
           'accept': 'application/json',
-          'Authorization': "Bearer " + this.token
+          'Authorization': "Bearer " + this.form.token
         }
       })
       .then(
@@ -167,7 +150,7 @@ export default {
       })
       .then(
         (response) => {
-          obj.token = response.data.access_token;
+          obj.form.token = response.data.access_token;
         })
       this.breachAlert = false;
     }else{
