@@ -69,7 +69,7 @@ export default {
               'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addWaterCentre',
               'Content-Type': 'multipart/form-data',
               'accept': 'application/json',
-              'Authorization': "Bearer " + this.token
+              'Authorization': "Bearer " + this.form.token
             }
           })
           .then(

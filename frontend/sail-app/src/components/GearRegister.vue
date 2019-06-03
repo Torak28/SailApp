@@ -3,9 +3,9 @@
     <div v-if="breachAlert == false">
     <b-row>
       <b-container v-for="gear in form.gears" :key="gear.id">
-        <b-form-input  class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
-        <b-form-input  class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
-        <b-form-input  class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+        <b-form-input  class="block" type="text" v-model="gear.gearName" placeholder="Type of gear e.g. water bikes" />
+        <b-form-input  class="block" type="number" v-model="gear.gearQuantity" placeholder="How many of those You have?" />
+        <b-form-input  class="block" type="number" v-model="gear.gearPrice" placeholder="How much cost 1 hour?" />
         <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
         <hr>
       </b-container>
@@ -40,7 +40,6 @@ export default {
         type: 'Owner'
       },
       howManyNow: 0,
-      counter: 0,
       place: null,
       status: false,
       token: null,
@@ -49,12 +48,51 @@ export default {
   },
   methods: {
     registerGear(){
-
+      if(this.form.gears.length == 0){
+        this.$parent.noGear = true;
+        this.$scrollTo('#alert', 200, {offset: -500});
+      }else{
+        let flag = false;
+        for (let i = 0; i < this.form.gears.length; ++i) {
+          if(Object.values(this.form.gears[i]).includes('') == true){
+            flag = true;
+          }
+        }
+        if(flag == false){
+          this.$parent.noGear = false;
+          var obj = this;
+          for (let i = 0; i < this.form.gears.length; i++) {
+            console.log(JSON.stringify(this.form.gears[i]));
+            let data = new FormData();
+            data.append("centre_id", this.form.centre_id);
+            data.append('gear_name', this.form.gears[i].gearName);
+            data.append('gear_quantity', this.form.gears[i].gearQuantity);
+            data.append('gear_price', this.form.gears[i].gearPrice);
+            this.axios
+              .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/addGear", data, {
+                headers: {
+                  'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/addGear',
+                  'Content-Type': 'multipart/form-data',
+                  'accept': 'application/json',
+                  'Authorization': "Bearer " + this.form.token
+                }
+              })
+              .then(
+                (response) => {
+                  //console.log(JSON.stringify(response));
+                  //Tutaj lecimy dalej
+                  this.$router.replace({ name: "OwnerRegistrationSuccess", params: {user: obj.form} });
+                });
+          }
+        }else{
+          this.$parent.noGear = true;
+          this.$scrollTo('#alert', 200, {offset: -500});
+        }
+      }
     },
     addGear(){
-      this.form.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
+      this.form.gears.push({ gearName: '',  gearPrice: '', gearQuantity: ''});
       this.howManyNow++;
-      this.counter++;
     },
     deleteGear(elemId){
       const index = this.form.gears.map(e => e.id).indexOf(elemId);

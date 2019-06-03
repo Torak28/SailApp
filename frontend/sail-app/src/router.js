@@ -46,6 +46,13 @@ export default new Router({
       props: true,
       component: () =>
         import("./views/GearRegistration.vue")
+    },
+    {
+      path: "/ownerRegistrationSuccess",
+      name: "OwnerRegistrationSuccess",
+      props: true,
+      component: () =>
+        import("./views/OwnerRegistrationSuccess.vue")
     }
   ]
 });

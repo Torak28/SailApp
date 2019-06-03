@@ -39,10 +39,15 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Do Owner Register może tylko raz sie dostać, nie można ot tak z linku - trzeba przekazać access token
     [x] Dodanie zdjątka
     [x] Kolejna strona do Gearu, 
-    [ ] Form Gearu - wypożyczenie
-    [ ] Kolejna strona do Udanej Rejestracji z Preview
+    [x] Form Gearu - wypożyczenie
+    [x] Kolejna strona do Udanej Rejestracji z Preview
+        [ ] Poprawne wyświetalnie nazwy miejsca
+        [ ] Wyświetlanie gearu
+        [ ] Obrazek
     [ ] Udana rejestracja Usera
     [ ] Zdjątka nie działają jak coś(działają - sprawdzić)
+[ ] Company Card
+    [ ] Ogarniecie zdjatka(Patrz basic ComapnyCard)
 [ ] Admin
     [ ] Akceptacja rejestracji
 [ ] Owner - redesign

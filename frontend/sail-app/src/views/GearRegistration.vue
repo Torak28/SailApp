@@ -1,5 +1,5 @@
 <template>
-  <b-container class="GearRegistration">
+  <b-container id='alert' class="GearRegistration">
     <h1 class='title'>Add Gear to Company:</h1>
     <br>
     <br>
@@ -10,13 +10,13 @@
 </template>
 
 <script>
-import OwnerRegister from "@/components/OwnerRegister.vue";
+import GearRegister from "@/components/GearRegister.vue";
 
 export default {
   name: "GearRegistration",
   props: ['user'],
   components: {
-    OwnerRegister
+    GearRegister
   },
   data() {
     return {
