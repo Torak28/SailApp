@@ -31,6 +31,7 @@ import java.util.*
 
 const val SUCCESS_MESSAGE = "Confirmed"
 const val FAILURE_MESSAGE = "Error"
+const val NO_GEAR_MSG = "This centre has no gear"
 
 class RentDetailsFragment : MainScopedFragment() {
 
@@ -96,6 +97,10 @@ class RentDetailsFragment : MainScopedFragment() {
             // Confirm rental and when it is ok then navigate to user profile
             button_confirm.setOnClickListener(onConfirmClickListener)
 
+            if(mainViewModel.gearList.isEmpty()){
+                snack(NO_GEAR_MSG)
+                findNavController().navigate(R.id.destination_rent_master)
+            }
         }
     }
 
