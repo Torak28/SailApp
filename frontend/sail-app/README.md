@@ -52,6 +52,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Ogarniecie zdjatka(Patrz basic ComapnyCard) - jako tako jest
     [ ] Performance tego pokazywania zdjęć
     [ ] Sprzęt
+[ ] Filtrowanie nie działa
 [ ] Admin
     [ ] Akceptacja rejestracji
 [ ] Owner - redesign

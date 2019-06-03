@@ -261,17 +261,43 @@ export default {
               longtitude: response.data[i].longitude,
               phone: response.data[i].phone_number,
               centre_id: response.data[i].centre_id,
-              gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
+              //gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
+              gears: null,
               photo: null
               //photo: obj.getCentrePic(response.data[i].centre_id)
             });
             //console.log('koniec pierwszego Centrum --- z getCentreData');
           }
           obj.getAllCentrePicId();
+          obj.getAllGear();
         })
       .catch(function (error){
         console.log(error);
       });
+    },
+    getAllGear(){
+      console.log('Get all gear');
+      let obj = this;
+      for (let i = 0; i < this.companyForms.length; i++) {
+        this.axios
+          .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/" + this.companyForms[i].centre_id, {
+            headers: {
+              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/',
+              'Authorization': "Bearer " + this.user.token
+            }
+          })
+          .then(
+            (response) => {
+              for (let j = 0; j < response.data.length; j++) {
+                obj.companyForms[i].geras.push({
+                  "id" : response.data[j].gear_id.toString(),
+                  "gearType" : response.data[j].gear_name.toString(),
+                  "gearAmount" : response.data[j].gear_quantity.toString(),
+                  "gearCost" : response.data[j].gear_price.toString()
+                });
+              }
+            })
+      }
     },
     getAllCentrePicId(){
       let obj = this;
