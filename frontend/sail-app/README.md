@@ -31,7 +31,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ### ToDo
 
 ```
-[ ] Utworzenie Centra jako osobny form
+[x] Utworzenie Centra jako osobny form
     [x] Nowy komponent i widok
     [x] Go back do strony wcześniej? Czy może do home od nowa?
     [x] Logowanie Usera i dopiero zalogowany Owner przechodzi dalej
@@ -49,7 +49,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Udana rejestracja Ownera
     [x] Zdjątka nie działają jak coś(działają - sprawdzić)
 [ ] Company Card
-    [ ] Ogarniecie zdjatka(Patrz basic ComapnyCard)
+    [x] Ogarniecie zdjatka(Patrz basic ComapnyCard) - jako tako jest
+    [ ] Performance tego pokazywania zdjęć
+    [ ] Sprzęt
 [ ] Admin
     [ ] Akceptacja rejestracji
 [ ] Owner - redesign

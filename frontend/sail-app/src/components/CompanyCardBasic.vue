@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-        form: {
+      form: {
         centre_id: '',
         companyName: '',
         companyTel: '',
