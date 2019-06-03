@@ -593,10 +593,10 @@ class GetPicturesIdsOfCentre(Resource):
 @ns_user.route('/getPicture/<int:picture_id>')
 class GetPicture(Resource):
     @jwt_required
-    @api.response(200, 'Picture returned successfully.')
+    @api.response(200, 'Picture link returned successfully.')
     def get(self, picture_id):
         picture_filepath = pictures.get_picture(picture_id)
-        return {'filepath': picture_filepath}, 200
+        return {'picture_link': picture_filepath}, 200
 
 
 @ns_owner.route('/editCentre')
