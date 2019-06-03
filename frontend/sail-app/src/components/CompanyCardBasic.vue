@@ -88,7 +88,7 @@ export default {
     this.form.gears = this.parentForm.gears;
     this.form.token = this.parentForm.token;
     
-    //this.form.photoFile = this.parentForm.photoFile;
+    //this.form.photoFile = this.form.photoFile;
     this.getPictureId();
 
     //Ilosc są zle nie to jest wyciagane w gearTypach
@@ -130,6 +130,7 @@ export default {
     } else {
       //console.log('No geolocation error');
     }
+    this.form.photoFile = this.form.photoFile;
   }
 };
 </script>

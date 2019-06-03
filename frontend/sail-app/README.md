@@ -43,10 +43,11 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Kolejna strona do Udanej Rejestracji z Preview
         [x] Poprawne wyświetalnie nazwy miejsca
         [x] Wyświetlanie gearu
-        [ ] Obrazek
-        [ ] Zabezpieczyć
-    [ ] Udana rejestracja Usera
-    [ ] Zdjątka nie działają jak coś(działają - sprawdzić)
+        [x] Odświeżyć token(potrzebny refresh token :c)
+        [x] Obrazek
+        [x] Zabezpieczyć
+    [x] Udana rejestracja Ownera
+    [x] Zdjątka nie działają jak coś(działają - sprawdzić)
 [ ] Company Card
     [ ] Ogarniecie zdjatka(Patrz basic ComapnyCard)
 [ ] Admin
