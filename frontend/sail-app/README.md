@@ -41,9 +41,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Kolejna strona do Gearu, 
     [x] Form Gearu - wypożyczenie
     [x] Kolejna strona do Udanej Rejestracji z Preview
-        [ ] Poprawne wyświetalnie nazwy miejsca
-        [ ] Wyświetlanie gearu
+        [x] Poprawne wyświetalnie nazwy miejsca
+        [x] Wyświetlanie gearu
         [ ] Obrazek
+        [ ] Zabezpieczyć
     [ ] Udana rejestracja Usera
     [ ] Zdjątka nie działają jak coś(działają - sprawdzić)
 [ ] Company Card

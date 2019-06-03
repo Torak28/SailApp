@@ -73,8 +73,7 @@ export default {
         })
         .then(
           (response) => {
-            obj.this.photoFile = response;
-            console.log('Internal Error? ' + response);
+            obj.form.photoFile = response.data.picture_link;
             console.log('Internal Error JSON? ' + JSON.stringify(response));
           })
     }
@@ -105,7 +104,9 @@ export default {
       .then(
         (response) => {
           console.log(response);
-          this.place = response.data.results[0].address_components[3].long_name;
+          this.place = response.data.results[0].address_components[3].long_name + ', '
+                       //+ response.data.results[0].address_components[1].long_name + ' '
+                       + response.data.results[0].address_components[0].long_name;
         })
     if (navigator.geolocation) {
       var obj = this;
@@ -113,7 +114,7 @@ export default {
         obj.currentLat = position.coords.latitude;
         obj.currentLng = position.coords.longitude;
         var R = 6371e3; // metres
-        var φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
+        var φ1 = Number(obj.form.lattitude) * Math.PI / 180;
         var φ2 = obj.currentLat * Math.PI / 180;
         var Δφ = (obj.currentLat-Number(obj.form.lattitude)) * Math.PI / 180;
         var Δλ = (obj.currentLng-Number(obj.form.longtitude)) * Math.PI / 180;
