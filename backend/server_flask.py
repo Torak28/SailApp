@@ -596,7 +596,7 @@ class GetPicture(Resource):
     @api.response(200, 'Picture returned successfully.')
     def get(self, picture_id):
         picture_filepath = pictures.get_picture(picture_id)
-        return send_file(picture_filepath, mimetype='image/gif')
+        return {'filepath': picture_filepath}, 200
 
 
 @ns_owner.route('/editCentre')
