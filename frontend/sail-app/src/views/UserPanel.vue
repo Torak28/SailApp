@@ -289,7 +289,7 @@ export default {
           .then(
             (response) => {
               for (let j = 0; j < response.data.length; j++) {
-                obj.companyForms[i].geras.push({
+                obj.companyForms[i].gears.push({
                   "id" : response.data[j].gear_id.toString(),
                   "gearType" : response.data[j].gear_name.toString(),
                   "gearAmount" : response.data[j].gear_quantity.toString(),
