@@ -106,7 +106,6 @@ export default {
         var d = R * c;
         obj.dist = Math.floor(d/1000);
       });
-    } else {
     }
     this.form.photoFile = this.form.photoFile;
   }

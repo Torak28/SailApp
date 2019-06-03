@@ -269,15 +269,12 @@ export default {
               longtitude: response.data[i].longitude,
               phone: response.data[i].phone_number,
               centre_id: response.data[i].centre_id,
-              gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
-              //gears: null,
+              gears: [],
               photo: null,
-              //photo: obj.getCentrePic(response.data[i].centre_id)
               dist: null
             });
           }
           obj.getAllCentrePicId();
-          //obj.getAllGear();
         })
       .catch(function (error){
         console.log(error);
@@ -332,7 +329,6 @@ export default {
       this.userForm.password = this.user.password;
       this.userForm.checkPassword = this.user.password;
 
-      //Dane uzytkownika
       this.getUserData();
       this.getAllCentreData();
       this.breachAlert = false;

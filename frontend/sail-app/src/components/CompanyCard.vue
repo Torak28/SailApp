@@ -263,7 +263,6 @@ export default {
           var d = R * c;
           obj.dist = Math.floor(d/1000);
         });
-      } else {
       }
       this.axios
         .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
