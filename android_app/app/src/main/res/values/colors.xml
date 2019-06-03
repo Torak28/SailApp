@@ -9,4 +9,5 @@
     <color name="colorSuccess">#4CAF50</color>
     <color name="colorWarning">#FB8C00</color>
     <color name="colorCardLight">#f7edd9</color>
+    <color name="black">#000000</color>
 </resources>

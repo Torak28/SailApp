@@ -10,7 +10,6 @@
     <string name="my_profile">My profile</string>
     <string name="sail_now">Sail now</string>
     <string name="my_stats">My stats</string>
-    <string name="settings">Settings</string>
     <string name="log_out">Log out</string>
     <string name="login_screen_banner">Login screen banner</string>
     <string name="sailapp_banner">SailApp banner</string>
@@ -77,4 +76,9 @@
     <string name="rentals_history">Rentals\' history:</string>
     <string name="anchor">anchor</string>
     <string name="seems_like_no_sailing">Seems like no sailing this year. Want to sail a bit?</string>
+    <string name="change">Change</string>
+    <string name="settings">Settings</string>
+    <string name="your_account">Your account</string>
+    <string name="save_changes">Save changes</string>
+    <string name="change_data">Change data</string>
 </resources>

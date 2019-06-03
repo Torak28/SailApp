@@ -68,17 +68,17 @@ interface SailAppApiService {
         @Header("Authorization") authToken: String
     ): Deferred<List<Centre>>
 
-    @GET("user/getPicturesIdsOfCentre/{centre_id}")
-    fun getPictureIdsOfCentreAsync(
+    @GET("user/getPicturesOfCentre/{centre_id}")
+    fun getPicturesOfCentreAsync(
         @Header("Authorization") authToken: String,
         @Path("centre_id") centreID: Int
-    ): Deferred<List<PictureIdResponse>>
+    ): Deferred<List<PictureOfCentreResponse>>
 
     @GET("/user/getPicture/{picture_id}")
     fun getPictureAsync(
         @Header("Authorization") authToken: String,
         @Path("picture_id") centreID: Int
-    ): Deferred<PictureResponse>
+    ): Deferred<PictureOfCentreResponse>
 
     @GET("gear/getAllGear/{centre_id}")
     fun getAllGearAsync(

@@ -172,13 +172,11 @@ class MainViewModel(
         val centresDeferred = sailAppApiService.getCentresAsync("Bearer ${TokenHandler.accessToken}")
         val centresRes = centresDeferred.await()
         for(centre in centresRes){
-            val picIdsDeferred = sailAppApiService.getPictureIdsOfCentreAsync("Bearer ${TokenHandler.accessToken}", centre.ID)
-            val picIds = picIdsDeferred.await()
-            if(picIds.isNotEmpty()){
-                if(picIds[0].picture_id != 1){ // TODO ...
-                    val picLinkDeferred = sailAppApiService.getPictureAsync("Bearer ${TokenHandler.accessToken}", picIds[0].picture_id)
-                    val picLinkRes = picLinkDeferred.await()
-                    centre.photoURL = picLinkRes.picture_link
+            val picDeferred = sailAppApiService.getPicturesOfCentreAsync("Bearer ${TokenHandler.accessToken}", centre.ID)
+            val picRes = picDeferred.await()
+            if(picRes.isNotEmpty()){
+                if(picRes[0].picture_id != "1"){
+                    centre.photoURL = picRes[0].picture_link
                 }
             }
         }
@@ -188,7 +186,7 @@ class MainViewModel(
     suspend fun fetchGear() = doNetworkOperation {
         val gearDeferred = sailAppApiService.getAllGearAsync("Bearer ${TokenHandler.accessToken}", selectedCentre.ID)
         val gearRes = gearDeferred.await()
-        gearList = ArrayList(gearRes) // TODO check if you can do it on background thread
+        gearList = ArrayList(gearRes)
     }
 
     suspend fun rentGear() = doNetworkOperation {

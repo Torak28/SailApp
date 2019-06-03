@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.pwr.sailapp.ui.main.adapters.RentalAdapter
+import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
 import kotlinx.coroutines.runBlocking
 
 // TODO consider using generic adapter for view model
@@ -58,15 +59,18 @@ class ProfileFragment : MainScopedFragment() {
 
 
     private fun onRentalCancel() = { rental: Rental ->
-    //    val cancelRentalDialog = CancelRentalDialog()
-    //    fragmentManager.let { cancelRentalDialog.show(it!!, "Cancel dialog") }
+        val cancelRentalDialog = CancelRentalDialog()
+        fragmentManager.let { cancelRentalDialog.show(it!!, "Cancel dialog") }
         mainViewModel.isCancellationAllowed = true
+        snack("Removal not allowed yet")
+        /*
         runBlocking {
             changeLoadingBarVisibility(true)
             withContext(Dispatchers.IO) { mainViewModel.cancelRental(rental.ID) }
             withContext(Dispatchers.IO) { mainViewModel.fetchUpcomingRentals() }
             changeLoadingBarVisibility(false)
         }
+        */
     }
 
     private fun onRentalCall() = { rental: Rental ->
