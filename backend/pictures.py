@@ -39,10 +39,11 @@ def get_picture(picture_id, session=None):
 
 
 @connection_to_db
-def get_pictures_ids_of_centre(centre_id, session=None):
-    ids = session.query(Picture).filter_by(water_centre_id=centre_id).all()
-    list_of_formatted_ids = []
-    for one_id in ids:
-        list_of_formatted_ids.append({'picture_id': one_id.id})
-    return list_of_formatted_ids
+def get_pictures_ids_and_links_of_centre(centre_id, session=None):
+    pictures = session.query(Picture).filter_by(water_centre_id=centre_id).all()
+    list_of_formatted_data = []
+    for picture in pictures:
+        list_of_formatted_data.append({'picture_id': picture.id,
+                                       'picture_link': picture.file_path})
+    return list_of_formatted_data
 

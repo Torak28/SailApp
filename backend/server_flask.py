@@ -580,14 +580,15 @@ class GetCentres(Resource):
 @ns_user.route('/getPicturesIdsOfCentre/<int:centre_id>')
 class GetPicturesIdsOfCentre(Resource):
     resource_fields = api.model('getPicturesIdsOfCentre', {
-        'picture_id': fields.String
+        'picture_id': fields.String,
+        'picture_link': fields.String
     })
 
     @jwt_required
     @api.response(200, 'List of pictures IDs returned successfully.', [resource_fields])
     def get(self, centre_id):
-        list_of_ids = pictures.get_pictures_ids_of_centre(centre_id)
-        return jsonify(list_of_ids)
+        ids_and_links = pictures.get_pictures_ids_and_links_of_centre(centre_id)
+        return jsonify(ids_and_links)
 
 
 @ns_user.route('/getPicture/<int:picture_id>')
