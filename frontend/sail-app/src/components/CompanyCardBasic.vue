@@ -72,12 +72,7 @@ export default {
     this.form.longtitude = this.parentForm.longtitude;
     this.form.gears = this.parentForm.gears;
     this.form.token = this.parentForm.token;
-    
-    //this.form.photoFile = this.form.photoFile;
     this.getPictureId();
-
-    //Ilosc są zle nie to jest wyciagane w gearTypach
-    //Zdjecia nie ma
 
     let tmp = [];
     for (let i = 0; i < this.form.gears.length; i++) {
@@ -88,9 +83,7 @@ export default {
       .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.form.lattitude + "," + this.form.longtitude + "&key=" + apiKey.API_KEY2)
       .then(
         (response) => {
-          console.log(response);
           this.place = response.data.results[0].address_components[3].long_name + ', '
-                       //+ response.data.results[0].address_components[1].long_name + ' '
                        + response.data.results[0].address_components[0].long_name;
         })
     if (navigator.geolocation) {
@@ -113,7 +106,6 @@ export default {
         obj.dist = Math.floor(d/1000);
       });
     } else {
-      //console.log('No geolocation error');
     }
     this.form.photoFile = this.form.photoFile;
   }

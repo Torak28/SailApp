@@ -51,6 +51,7 @@
           <br>
           <h1 class='title'>Upcoming events</h1>
           <br>
+          <br>
           <b-container v-if="rent == true">
             <b-card title="Rent">
               <b-card-text>
@@ -59,6 +60,10 @@
                 Rent Start: <b>{{rentForm.rent_start.toISOString().substring(0, 10)}}</b>
                 <br>
                 Type of Gear: <b>{{rentForm.gear_id}}</b>
+                <br>
+                Place: <b>{{rentForm.place}}</b>
+                <br>
+                Cost: <b>{{rentForm.cost}}</b>
               </b-card-text>
               <b-button variant="primary" v-on:click="Return()">Return</b-button>
             </b-card>
@@ -104,7 +109,9 @@ export default {
         is_returned: null,
         user_id: '',
         gear_id: '',
-        gear_centre_id: ''
+        gear_centre_id: '',
+        place: null,
+        cost: null
       },
       companyForms: [],
       changeName: true,
@@ -134,17 +141,18 @@ export default {
     changePasswordProp(){
       this.changePassword = !this.changePassword;
     },
-    calcDistAll(all){
-      for (let i = 0; i < all.length; i++) {
+    calcDistAll(){
+      let obj = this;
+      for (let i = 0; i < this.companyForms.length; i++) {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             let currentLat = position.coords.latitude;
             let currentLng = position.coords.longitude;
             let R = 6371e3; // metres
-            let φ1 = Number(all[i].latitude) * Math.PI / 180;
+            let φ1 = Number(obj.companyForms[i].latitude) * Math.PI / 180;
             let φ2 = currentLat * Math.PI / 180;
-            let Δφ = (currentLat-Number(all[i].latitude)) * Math.PI / 180;
-            let Δλ = (currentLng-Number(all[i].longtitude)) * Math.PI / 180;
+            let Δφ = (currentLat-Number(obj.companyForms[i].latitude)) * Math.PI / 180;
+            let Δλ = (currentLng-Number(obj.companyForms[i].longtitude)) * Math.PI / 180;
 
             let a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
                     Math.cos(φ1) * Math.cos(φ2) *
@@ -153,7 +161,7 @@ export default {
             
             let d = R * c;
             let result = Math.floor(d/1000);
-            all[i].dist = result;
+            obj.companyForms[i].dist = result;
           });
         } else {
           //console.log('No geolocation error');
@@ -174,6 +182,8 @@ export default {
       this.rentForm.user_id = value.user_id;
       this.rentForm.gear_id = value.gear_id;
       this.rentForm.gear_centre_id = value.gear_centre_id;
+      this.rentForm.place = value.place;
+      this.rentForm.cost = value.cost;
       this.rent = true;
     },
     Return(){
@@ -261,8 +271,9 @@ export default {
               centre_id: response.data[i].centre_id,
               gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
               //gears: null,
-              photo: null
+              photo: null,
               //photo: obj.getCentrePic(response.data[i].centre_id)
+              dist: null
             });
           }
           obj.getAllCentrePicId();
@@ -294,6 +305,7 @@ export default {
               }
             })
       }
+      obj.calcDistAll();
     },
     getAllCentrePicId(){
       let obj = this;
@@ -321,7 +333,6 @@ export default {
       this.userForm.checkPassword = this.user.password;
 
       //Dane uzytkownika
-      this.calcDistAll(this.companyForms);
       this.getUserData();
       this.getAllCentreData();
       this.breachAlert = false;

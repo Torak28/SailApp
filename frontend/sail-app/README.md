@@ -49,12 +49,16 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Udana rejestracja Ownera
     [x] Zdjątka nie działają jak coś(działają - sprawdzić)
     [x] Naprawić zdjątka
-[ ] User Panel
+[x] User Panel
     [x] Company Card
     [x] Ogarniecie zdjatka(Patrz basic ComapnyCard) - jako tako jest
-    [ ] Performance tego pokazywania zdjęć
-    [ ] Sprzęt
-    [ ] Filtrowanie nie działa
+    [x] Performance tego pokazywania zdjęć
+    [x] Sprzęt
+    [x] Filtrowanie nie działa
+    [ ] Cost
+    [ ] Wypozyczenie - func
+    [ ] Wypozyczenie - tresc
+    [ ] Wypozyczenie - oddanie
 [ ] Admin
     [ ] Akceptacja rejestracji
 [ ] Owner - redesign
