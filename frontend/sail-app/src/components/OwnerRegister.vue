@@ -1,5 +1,6 @@
 <template>
   <b-container class="OwnerRegister">
+    <div v-if="breachAlert == false">
     <b-row>
       <b-form-input class="block" type="text" v-model='form.companyName' placeholder="Company Name" />
       <b-form-input class="block" type="tel" v-model='form.companyTel' placeholder="Company Phone Number" />
@@ -29,6 +30,10 @@
       <b-button block class='btnClass' variant="success" v-on:click="registerOwnerAccoount()">Register Water Centre</b-button>
       <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
     </b-row>
+    </div>
+    <div v-if="breachAlert == true || breachAlert == null">
+      <h3>You have to be log in to view this site, go to the <b-link href="/">homepage</b-link>!</h3>
+    </div>
   </b-container>
 </template>
 
@@ -39,6 +44,7 @@ export default {
   data() {
     return {
       form: {
+        centre_id: '',
         companyName: '',
         companyTel: '',
         photoFile: null,
@@ -52,7 +58,8 @@ export default {
       status: false,
       center: { lat: 52.237049, lng: 21.017532 },
       zoom: 6,
-      token: null
+      token: null,
+      breachAlert: null
     }
   },
   methods: {
@@ -83,8 +90,7 @@ export default {
             })
             .then(
               (response) => {
-                console.log(JSON.stringify(response));
-                console.log(this.form.photoFile);
+                obj.getCentreId();
               });
           }
         }else{
@@ -106,25 +112,67 @@ export default {
       this.form.longtitude = this.place.geometry.location.lng();
       this.center = {lat: this.form.lattitude, lng: this.form.longtitude};
       this.zoom = 9
+    },
+    addPicture(data){
+      let obj = this;
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/addPicture", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addPicture',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.token
+        }
+      })
+      .then(
+        (response) => {
+          console.log('CentreID: ' + obj.form.centre_id);
+          console.log('Zdjęcie dodanie: ' + JSON.stringify(response));
+        });
+    },
+    getCentreId(){
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/getMyCentres", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getMyCentres',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.form.centre_id = response.data[0].centre_id;
+          let data = new FormData();
+          data.append("centre_id", this.form.centre_id);
+          data.append("file", this.form.photoFile);
+          this.addPicture(data);
+        });
     }
   },
   created() {
-    var obj = this;
-    let data = new FormData();
-    data.append("email", this.user.email);
-    data.append("password", this.user.password);
-    this.axios
-    .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/login", data, {
-      headers: {
-        'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
-        'Content-Type': 'multipart/form-data',
-        'accept': 'application/json'
-      }
-    })
-    .then(
-      (response) => {
-        obj.token = response.data.access_token;
+    if(this.user.type.toLowerCase() == 'owner'){
+      var obj = this;
+      let data = new FormData();
+      data.append("email", this.user.email);
+      data.append("password", this.user.password);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/login", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json'
+        }
       })
+      .then(
+        (response) => {
+          obj.token = response.data.access_token;
+        })
+      this.breachAlert = false;
+    }else{
+      this.breachAlert = true;
+    }
   }
 }
 </script>
