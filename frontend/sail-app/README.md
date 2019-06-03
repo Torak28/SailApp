@@ -38,7 +38,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Error inside
     [x] Do Owner Register może tylko raz sie dostać, nie można ot tak z linku - trzeba przekazać access token
     [x] Dodanie zdjątka
-    [ ] Kolejna strona do Gearu, kolejna strona do Udanej Rejestracji z Preview
+    [x] Kolejna strona do Gearu, 
+    [ ] Form Gearu - wypożyczenie
+    [ ] Kolejna strona do Udanej Rejestracji z Preview
     [ ] Udana rejestracja Usera
     [ ] Zdjątka nie działają jak coś(działają - sprawdzić)
 [ ] Admin
