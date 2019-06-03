@@ -55,17 +55,17 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Performance tego pokazywania zdjęć
     [x] Sprzęt
     [x] Filtrowanie nie działa
-    [ ] Cost
+    [x] Cost
     [ ] Wypozyczenie - func
     [ ] Wypozyczenie - tresc
     [ ] Wypozyczenie - oddanie
 [ ] Admin
     [ ] Akceptacja rejestracji
 [ ] Owner - redesign
-    [ ] Taby dla Ownera(Pdst data, Obrazek, Gear, Wypożyczenia)
+    [ ] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
 [ ] Wypożyczenie
     [ ] Potwierdzenie ownera
-    [ ] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera
+    [x] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera
     [ ] Same wypożyczenie jako takie
 [ ] Nie udało się wczytać arkusza stylów XD
 [ ] Przetłumaczenie na j.polski

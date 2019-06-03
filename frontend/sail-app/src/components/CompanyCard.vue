@@ -46,7 +46,8 @@
       <br>
       Amount:
       <b-form-input :readonly=parentRent class="block" type="number" :min="min" :max="max" v-model="amount" />
-
+      <br>
+      Cost: {{this.rentForm.cost}}
       <template slot="modal-footer" slot-scope="{ ok, cancel }">
       <b-button size="sm" variant="success" @click="ok()">
         Rent
@@ -127,6 +128,7 @@ export default {
       }
       this.max = tmpV.gearAmount;
       this.index = index;
+      this.rentForm.cost = this.companyForm.gears[this.index].gearCost * Number(this.amount);
     },
     handleOk(){
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
@@ -194,7 +196,9 @@ export default {
       .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
       .then(
         (response) => {
-          this.place = response.data.results[0].address_components[3].long_name;
+          this.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
+                       + response.data.results[0].address_components[0].long_name;
         })
     if (navigator.geolocation) {
       var obj = this;
@@ -219,6 +223,13 @@ export default {
     }
   },
    watch: {
+     'amount': function(newV){
+       if(this.index == null){
+        this.rentForm.cost = 0;
+      }else{
+        this.rentForm.cost = this.companyForm.gears[this.index].gearCost * Number(newV);
+      }
+     },
     'parentCompanyForm.name': function(newV){
       this.companyForm.name = newV;
     },

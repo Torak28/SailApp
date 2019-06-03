@@ -84,6 +84,7 @@ export default {
       .then(
         (response) => {
           this.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
                        + response.data.results[0].address_components[0].long_name;
         })
     if (navigator.geolocation) {
