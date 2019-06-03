@@ -3,39 +3,79 @@
     <b-container v-if="breachAlert == false">
       <br>
       <b-tabs content-class="mt-3" align="center">
-        <h1 class='title'>Preview</h1>
-        <br>
-        <br>
-        <b-row>
-          <b-col>
-            <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
-            <br>
-            <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
-          </b-col>
-        </b-row>
-        <br>
-        <h1 class='title'>Company</h1>
-        <br>
-        <br>
-        <b-row>
-          <b-col sm="9">
-            <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='companyForm.name' placeholder="Company Name" />
-            <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='companyForm.phone' placeholder="Company Phone Number" />
-          </b-col>
-          <b-col sm="3">
-            <b-button block class="block" variant="info" v-on:click="changeCompanyNameProp()">Change</b-button>
-            <b-button block class="block" variant="info" v-on:click="changeCompanyTelProp()">Change</b-button>
-          </b-col>
-          <b-col>
-          <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
-          <gmap-marker
-            :position="{
-              lat: Number(this.companyForm.latitude),
-              lng: Number(this.companyForm.longtitude),
-            }"
-            />
-          </gmap-map>
-          <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
+        <b-tab title="Company Data" active>
+          <br>
+          <h1 class='title'>Preview</h1>
+          <br>
+          <br>
+          <b-row>
+            <b-col>
+              <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
+              <br>
+              <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
+            </b-col>
+          </b-row>
+          <br>
+          <br>
+          <h1 class='title'>Company</h1>
+          <br>
+          <br>
+          <b-row>
+            <b-col sm="9">
+              <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='companyForm.name' placeholder="Company Name" />
+              <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='companyForm.phone' placeholder="Company Phone Number" />
+            </b-col>
+            <b-col sm="3">
+              <b-button block class="block" variant="info" v-on:click="changeCompanyNameProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeCompanyTelProp()">Change</b-button>
+            </b-col>
+            <b-col>
+            <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
+            <gmap-marker
+              :position="{
+                lat: Number(this.companyForm.latitude),
+                lng: Number(this.companyForm.longtitude),
+              }"
+              />
+            </gmap-map>
+            <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
+            </b-col>
+          </b-row>
+        </b-tab> 
+        <b-tab title="User Data">
+          <h1 class='title'>User Data</h1>
+          <br>
+          <br>
+          <b-row>
+            <b-col sm="9">
+              <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
+              <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
+              <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
+              <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
+              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
+              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
+            </b-col>
+            <b-col sm="3">
+              <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+            </b-col>
+          </b-row>
+          <b-row>
+          </b-row>
+          <br>
+          <br>
+          <b-button block variant="success" v-on:click="Change()">Change</b-button>
+          <b-button block variant="warning" to="/">Go back</b-button>
+        </b-tab>
+        <b-tab title="Gear">
+          <br>
+          <h1 class='title'>Gear</h1>
+          <br>
+          <br>
           <b-container v-for="gear in companyForm.gears" :key="gear.id">
             <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
             <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
@@ -45,36 +85,15 @@
           </b-container>
           <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000, offset: -210}">Add new Gear</b-button>
           <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
-          </b-col>
-        </b-row>
-        <br>
-        <h1 class='title'>User Options</h1>
-        <br>
-        <br>
-        <b-row>
-          <b-col sm="9">
-            <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
-            <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
-            <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
-            <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
-            <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
-            <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
-          </b-col>
-          <b-col sm="3">
-            <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
-            <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
-            <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
-            <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
-            <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-            <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-          </b-col>
-        </b-row>
-        <b-row>
-        </b-row>
-        <br>
-        <br>
-        <b-button block variant="success" v-on:click="Change()">Change</b-button>
-        <b-button block variant="warning" to="/">Go back</b-button>
+
+        </b-tab>
+        <b-tab title="Rents">
+          <br>
+          <h1 class='title'>Rents</h1>
+          <br>
+          <br>
+          <!-- Dodać Rent-->
+        </b-tab>
       </b-tabs>
     </b-container>
     <b-container v-if="breachAlert == true || breachAlert == null">

@@ -62,7 +62,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 [ ] Admin
     [ ] Akceptacja rejestracji
 [ ] Owner - redesign
-    [ ] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
+    [x] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
+    [ ] API dla Ownera
 [ ] Wypożyczenie
     [ ] Potwierdzenie ownera
     [x] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera
