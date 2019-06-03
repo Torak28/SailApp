@@ -261,8 +261,8 @@ export default {
               longtitude: response.data[i].longitude,
               phone: response.data[i].phone_number,
               centre_id: response.data[i].centre_id,
-              //gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
-              gears: null,
+              gears: [{"id":"0","gearType":"Kayak","gearAmount":"20","gearCost":"250"}],
+              //gears: null,
               photo: null
               //photo: obj.getCentrePic(response.data[i].centre_id)
             });
