@@ -225,7 +225,7 @@ class AddWaterCentre(Resource):
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id):
             wc.add_water_centre(user_id, kwargs['centre_name'], kwargs['latitude'],
-                                kwargs['longitude'], kwargs['phone_number'])
+                                kwargs['longitude'], kwargs['phone_number'], is_accepted=False)
             return {'msg': 'Water Centre added successfully.'}, 200
         return {'msg': 'You do not have the proper rights.'}, 403
 
@@ -365,7 +365,7 @@ class RentGear(Resource):
                                                 kwargs['rent_start'], kwargs['rent_end'], total_qty):
 
                 rental.create_rental(user_id, kwargs['centre_id'], kwargs['gear_id'], kwargs['rent_amount'],
-                                     kwargs['rent_start'], kwargs['rent_end'])
+                                     kwargs['rent_start'], kwargs['rent_end'], is_accepted=False)
                 return {'msg': 'Rent was successful.'}, 200
             else:
                 return {'msg': 'Rent was unsuccessful. Rent for this amount of '
@@ -536,7 +536,7 @@ class EditRent(Resource):
 
 @ns_owner.route('/addPicture')
 class AddPicture(Resource):
-    resource_fields = api.model('editRent', {
+    resource_fields = api.model('addPicture', {
         'centre_id': fields.String,
         'file': FileStorage})
 
@@ -563,7 +563,7 @@ class AddPicture(Resource):
 
 @ns_centre.route('/getCentres')
 class GetCentres(Resource):
-    resource_fields = api.model('editRent', {
+    resource_fields = api.model('getCentres', {
         'centre_id': fields.String,
         'latitude': fields.String,
         'longitude': fields.String,

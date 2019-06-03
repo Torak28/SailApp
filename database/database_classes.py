@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Sequence, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Sequence, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
@@ -45,6 +45,7 @@ class User(Base):
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
     owner = relationship('WaterCentre')
+    is_accepted = Column(Boolean)
 
 
 class Role(Base):
@@ -96,6 +97,7 @@ class GearRental(Base):
     rent_start = Column(DateTime)
     rent_end = Column(DateTime)
     rent_amount = Column(Integer)
+    is_accepted = Column(Boolean)
 
 
 class WaterCentre(Base):
@@ -113,10 +115,10 @@ class WaterCentre(Base):
     latitude = Column(String)
     longitude = Column(String)
     contact_number = Column(String)
-
     gear = relationship("Gear")
     gear_rental = relationship("GearRental")
     file_path = relationship("Picture", back_populates="parent")
+    is_accepted = Column(Boolean)
 
 
 class Picture(Base):

@@ -32,7 +32,8 @@ def register_new_person(first_name, last_name, email, password, phone_number, ro
         hashed_password = hash_password(password)
         role_id = get_role_id(role.lower().capitalize())
         if not is_user_in_database_by_mail(email):
-            user = create_user(first_name, last_name, email, hashed_password, phone_number, role_id)
+            is_accepted = True if role.lower() in ['user', 'admin'] else False
+            user = create_user(first_name, last_name, email, hashed_password, phone_number, role_id, is_accepted)
             add_object_to_database(user)
             print("Added new {} - {} {}".format(role, first_name, last_name))
             return True

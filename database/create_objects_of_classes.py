@@ -2,9 +2,9 @@ import database.database_classes as db
 from database.database_classes import connection_to_db
 
 
-def create_user(name, surname, email, password, number, role):
+def create_user(name, surname, email, password, number, role, is_accepted):
     user = db.User(first_name=name, last_name=surname, email=email,
-                   password=password, phone_number=number, role_id=role)
+                   password=password, phone_number=number, role_id=role, is_accepted=is_accepted)
     return user
 
 
@@ -18,15 +18,15 @@ def create_gear(centre_id, name, quantity, price):
     return gear
 
 
-def create_rental(user_id, gear_id, centre_id, start, end, amount):
+def create_rental(user_id, gear_id, centre_id, start, end, amount, is_accepted):
     rental = db.GearRental(user_id=user_id, gear_id=gear_id, centre_id=centre_id,
-                           rent_start=start, rent_end=end, rent_amount=amount)
+                           rent_start=start, rent_end=end, rent_amount=amount, is_accepted=is_accepted)
     return rental
 
 
-def create_centre(owner_id, name, latitude, longitude, telephone_number):
+def create_centre(owner_id, name, latitude, longitude, telephone_number, is_accepted):
     centre = db.WaterCentre(owner_id=owner_id, name=name, latitude=latitude, longitude=longitude,
-                            contact_number=telephone_number)
+                            contact_number=telephone_number, is_accepted=is_accepted)
     return centre
 
 

@@ -6,8 +6,8 @@ from datetimerange import DateTimeRange
 from pprint import pprint
 
 
-def create_rental(user_id, centre_id, gear_id, rent_amount, rent_start, rent_end):
-    rental = create_rent(user_id, gear_id, centre_id, rent_start, rent_end, rent_amount)
+def create_rental(user_id, centre_id, gear_id, rent_amount, rent_start, rent_end, is_accepted):
+    rental = create_rent(user_id, gear_id, centre_id, rent_start, rent_end, rent_amount, is_accepted)
     add_object_to_database(rental)
 
 

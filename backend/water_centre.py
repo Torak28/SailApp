@@ -1,8 +1,9 @@
 from database.create_objects_of_classes import create_centre, add_object_to_database
 from database.database_classes import connection_to_db, WaterCentre
 
-def add_water_centre(owner_id, centre_name, centre_latitude, centre_longitude, telephone_no):
-    centre = create_centre(owner_id, centre_name, centre_latitude, centre_longitude, telephone_no)
+
+def add_water_centre(owner_id, centre_name, centre_latitude, centre_longitude, telephone_no, is_accepted):
+    centre = create_centre(owner_id, centre_name, centre_latitude, centre_longitude, telephone_no, is_accepted)
     add_object_to_database(centre)
 
 
