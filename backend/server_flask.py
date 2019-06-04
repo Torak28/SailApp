@@ -708,7 +708,7 @@ class DecideAboutOwner(Resource):
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
-        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(kwargs['centre_id']):  # TODO: Kazdy owner moze zdecydowac o pending rentalu, Sec Threat!
+        if user.is_user_the_owner(user_id):  # TODO: Kazdy owner moze zdecydowac o pending rentalu, Sec Threat!
             rental.decide_about_rental(kwargs['rental_id'], kwargs['decision'])
             return {'msg': 'Successfully decided about rent.'}, 200
         return {'msg': 'User does not have the proper rights.'}, 403
