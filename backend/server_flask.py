@@ -652,7 +652,7 @@ class DecideAboutOwner(Resource):
     @api.expect(parser)
     @api.doc(body=resource_fields)
     @jwt_required
-    @api.response(200, 'Water centre edited successfully.')
+    @api.response(200, 'Successfully decided about owner.')
     @api.response(403, 'User does not have the proper rights.')
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
@@ -665,8 +665,15 @@ class DecideAboutOwner(Resource):
 
 @ns_admin.route('/getPendingOwners')
 class GetPendingOwners(Resource):
+    resource_fields = api.model('getPendingOwners', {
+        'first_name': fields.String,
+        'last_name': fields.String,
+        'email': fields.String,
+        'phone_number': fields.String,
+        'owner_id': fields.Integer
+    })
     @jwt_required
-    @api.response(200, 'Pending owners returned successfully.')
+    @api.response(200, 'Pending owners returned successfully.', [resource_fields])
     @api.response(403, 'User does not have the proper rights.')
     def get(self):
         user_id = get_jwt_identity()
@@ -678,8 +685,18 @@ class GetPendingOwners(Resource):
 
 @ns_owner.route('/getPendingRentals')
 class GetPendingRentals(Resource):
+    resource_fields = api.model('getPendingRentals', {
+        'gear_id': fields.Integer,
+        'gear_name': fields.String,
+        'rent_id': fields.Integer,
+        'rent_start': fields.String,
+        'rent_end': fields.String,
+        'rent_quantity': fields.Integer,
+        'centre_name': fields.String,
+        'centre_id': fields.Integer,
+    })
     @jwt_required
-    @api.response(200, 'Pending rentals returned successfully.')
+    @api.response(200, 'Pending rentals returned successfully.', [resource_fields])
     @api.response(403, 'User does not have the proper rights.')
     def get(self):
         user_id = get_jwt_identity()
@@ -703,7 +720,7 @@ class DecideAboutOwner(Resource):
     @api.expect(parser)
     @api.doc(body=resource_fields)
     @jwt_required
-    @api.response(200, 'Water centre edited successfully.')
+    @api.response(200, 'Successfully decided about rent.')
     @api.response(403, 'User does not have the proper rights.')
     def post(self):
         kwargs = self.parser.parse_args(strict=True)
