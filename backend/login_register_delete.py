@@ -1,13 +1,12 @@
 import secrets
 from passlib.hash import sha256_crypt as crypter
-from backend.user import is_user_in_database_by_mail
+import backend.user as user_
 from database.create_objects_of_classes import create_user, add_object_to_database, create_gear, create_rental
 from database.database_classes import connection_to_db, Role, User, Gear, GearRental, WaterCentre
 from datetime import datetime                  # do overlap ten i nast import
-from collections import namedtuple
 import backend.roles as roles
 from flask_jwt_extended import create_access_token, create_refresh_token
-Range = namedtuple('Range', ['start', 'end'])
+# Range = namedtuple('Range', ['start', 'end'])
 
 
 def hash_password(password):
@@ -31,7 +30,7 @@ def register_new_person(first_name, last_name, email, password, phone_number, ro
     if role.lower() in ['user', 'admin', 'owner']:
         hashed_password = hash_password(password)
         role_id = get_role_id(role.lower().capitalize())
-        if not is_user_in_database_by_mail(email):
+        if not user_.is_user_in_database_by_mail(email):
             is_accepted = True if role.lower() in ['user', 'admin'] else False
             user = create_user(first_name, last_name, email, hashed_password, phone_number, role_id, is_accepted)
             add_object_to_database(user)
@@ -44,33 +43,16 @@ def register_new_person(first_name, last_name, email, password, phone_number, ro
         return False
 
 
-#nast 3 funkcje do sprawdzenia, wzsystkie do rent gear prze usera
-def is_overlapped(start1,end1, start2, end2, rent_amount, quantity_gear): #wszystkie - datetime; z indeksem 1 - od usera, z indeksem 2 - z bazy wszystkie
-    r1 = Range(start=start1, end=end1)
-    r2 = Range(start=start2, end=end2)
-    x=0
-    q=0
-    while x<len(start2):
-        latest_start = max(r1.start, r2.start[x])
-        earliest_end = min(r1.end, r2.end[x])
-        if(latest_start < earliest_end):   #jesli range podany przez usera sie naklada z jakimkolwiek gearRental z bazy
-            q=q+rent_amount[x]              #zwiekszamy wartosc q, czyli ile sprzetu w range podanym przez usera jest zajete
-            if (q+rent_amount)>=quantity_gear:             #jesli ilosc zajetego sprzetu + ilosc sprzetu podanego przez usera > ilosc sprzetu jakim dysponuje watercentre, to true
-                return True
-        x+=1
-    return False
-
-
-@connection_to_db
-def check(start, end, centre_id, gear_id, session=None):
-    rent_start_db=session.query(GearRental).filter_by(centre_id=centre_id).oredr_by('gear_rental_id_seq').all().rent_start  #czy to z order ok?
-    rent_end_db=session.query(GearRental).filter_by(centre_id=centre_id).order_by('gear_rental_id_seq').all().rent_end
-    rent_amount_db=session.query(GearRental).filter_by(centre_id=centre_id).order_by('gear_rental_id_seq').all().rent_amount
-    quantity_gear_watercentre=session.query(Gear).filter_by(centre_id=centre_id).filter_by(gear_id).first().total_quantity
-    if not is_overlapped(start,end,rent_start_db,rent_end_db,rent_amount_db,quantity_gear_watercentre):    #jesli is_overlapped jest true. to nie mozna wypozyczyc, bo za malo sprzetu zostalo
-        return True
-    else:
-        return False
+# @connection_to_db
+# def check(start, end, centre_id, gear_id, session=None):
+#     rent_start_db=session.query(GearRental).filter_by(centre_id=centre_id).oredr_by('gear_rental_id_seq').all().rent_start  #czy to z order ok?
+#     rent_end_db=session.query(GearRental).filter_by(centre_id=centre_id).order_by('gear_rental_id_seq').all().rent_end
+#     rent_amount_db=session.query(GearRental).filter_by(centre_id=centre_id).order_by('gear_rental_id_seq').all().rent_amount
+#     quantity_gear_watercentre=session.query(Gear).filter_by(centre_id=centre_id).filter_by(gear_id).first().total_quantity
+#     if not is_overlapped(start,end,rent_start_db,rent_end_db,rent_amount_db,quantity_gear_watercentre):    #jesli is_overlapped jest true. to nie mozna wypozyczyc, bo za malo sprzetu zostalo
+#         return True
+#     else:
+#         return False
 
 
 def gear_rent(user_id, gear_id, centre_id, start, end, rent_amount):
@@ -128,9 +110,16 @@ def login_user(email, password, session=None):
         access_token = create_access_token(identity=user_object.id, fresh=True)
         refresh_token = create_refresh_token(user_object.id)
         role_name = roles.get_role_name_by_id(user_object.role_id)
-        return access_token, refresh_token, role_name
+        account_status = user_.get_user_status(user_object.id)
+        if str(account_status) == '-1':
+            account_status = 'denied'
+        elif str(account_status) == '0':
+            account_status = 'pending'
+        elif str(account_status) == '1':
+            account_status = 'accepted'
+        return access_token, refresh_token, role_name, account_status
     else:
-        return None, None, None
+        return None, None, None, None
 
 
 @connection_to_db

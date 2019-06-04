@@ -106,12 +106,13 @@ class UserLogin(Resource):
     @api.response(401, 'Login not successful.')
     def post(self):
         args = self.parser.parse_args(strict=True)
-        access_token, refresh_token, role_name = login_user(args['email'], args['password'])
+        access_token, refresh_token, role_name, account_status = login_user(args['email'], args['password'])
         if access_token:
             return {
                        'access_token': access_token,
                        'refresh_token': refresh_token,
-                       'role': role_name.lower()
+                       'role': role_name.lower(),
+                       'account_status':  account_status
                    }, 200
         else:
             return {'msg': 'Login not successful.'}, 401
@@ -225,7 +226,7 @@ class AddWaterCentre(Resource):
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id):
             wc.add_water_centre(user_id, kwargs['centre_name'], kwargs['latitude'],
-                                kwargs['longitude'], kwargs['phone_number'], is_accepted=False)
+                                kwargs['longitude'], kwargs['phone_number'])
             return {'msg': 'Water Centre added successfully.'}, 200
         return {'msg': 'You do not have the proper rights.'}, 403
 

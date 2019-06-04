@@ -38,3 +38,8 @@ def get_user_by_id(user_id, session=None):
 def update_user(kwargs, session=None):
     session.query(User).filter_by(id=kwargs['id']).update(kwargs)
     return True
+
+
+@connection_to_db
+def get_user_status(user_id, session=None):
+    session.query(User).filter_by(id=user_id).first()

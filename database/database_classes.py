@@ -45,7 +45,8 @@ class User(Base):
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
     owner = relationship('WaterCentre')
-    is_accepted = Column(Boolean)
+    account_status = Column(Integer)
+
 
 
 class Role(Base):
@@ -97,7 +98,7 @@ class GearRental(Base):
     rent_start = Column(DateTime)
     rent_end = Column(DateTime)
     rent_amount = Column(Integer)
-    is_accepted = Column(Boolean)
+    rent_status = Column(Integer)
 
 
 class WaterCentre(Base):
@@ -118,7 +119,6 @@ class WaterCentre(Base):
     gear = relationship("Gear")
     gear_rental = relationship("GearRental")
     file_path = relationship("Picture", back_populates="parent")
-    is_accepted = Column(Boolean)
 
 
 class Picture(Base):

@@ -19,8 +19,8 @@ def prepare_db():
     register_new_person('Przemysław', 'Szczurzewski', 'swamp.admin@test.com', 'haslo_ownera', '500600700', 'owner')
     register_new_person('Jerzy', 'Dudek', 'jerzy.dudek@test.com', 'testowe_haslo', '700800299', 'user')
 
-    centre1 = create_centre(2, 'Wodna Nuta', '50.3483816', '18.9157175', '500600701', True)
-    centre2 = create_centre(2, 'Melodia', '50.3413816', '18.3157175', '773000109', False)
+    centre1 = create_centre(2, 'Wodna Nuta', '50.3483816', '18.9157175', '500600701')
+    centre2 = create_centre(2, 'Melodia', '50.3413816', '18.3157175', '773000109')
     centre1_1 = create_gear(1, 'Kajak', '10', '15')
     centre1_2 = create_gear(1, 'Rower wodny', '30', '12')
     add_object_to_database(centre1)
@@ -43,3 +43,5 @@ def prepare_db():
     add_object_to_database(rental4)
     add_object_to_database(rental5)
 
+
+prepare_db()
