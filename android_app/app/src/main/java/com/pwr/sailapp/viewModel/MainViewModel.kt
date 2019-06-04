@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.pwr.sailapp.data.network.TOKEN_EXPIRED
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
+import com.pwr.sailapp.data.network.sail.response.CHANGE_SUCCESS_MSG
 import com.pwr.sailapp.data.network.sail.response.RENTAL_OK_MESSAGE
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.*
@@ -83,6 +84,7 @@ class MainViewModel(
 
     val authenticationState = MutableLiveData<AuthenticationState>()
     val rentalState = MutableLiveData<RentalState>()
+    val changeDataState = MutableLiveData<ChangeDataState>()
 
     var isCancellationAllowed: Boolean = false
 
@@ -264,6 +266,36 @@ class MainViewModel(
             Log.e("MainViewModel", "calculateDistances: location = null"); return
         }
         centres.value = calculateDistances(centres.value, location)
+    }
+
+    fun isChangedDataValid(
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        email: String
+    ): Boolean {
+        return firstName.isNotEmpty() &&
+                lastName.isNotEmpty() &&
+                phoneNumber.isNotEmpty() &&
+                email.isNotEmpty()
+    }
+
+    suspend fun changeUserData(
+        firstName : String,
+        lastName: String,
+        email: String,
+        phoneNumber: String
+    ) = doNetworkOperation{
+        val changeDataDeferred =
+            sailAppApiService.changeDataAsync(
+                "Bearer ${TokenHandler.accessToken}",
+                firstName, lastName, email, phoneNumber
+            )
+        val changeDataRes = changeDataDeferred.await()
+        when (changeDataRes.msg) {
+            CHANGE_SUCCESS_MSG -> changeDataState.postValue(ChangeDataState.CHANGE_DATA_SUCCESSFUL)
+            else -> changeDataState.postValue(ChangeDataState.CHANGE_DATA_FAILED)
+        }
     }
 }
 

@@ -113,6 +113,17 @@ interface SailAppApiService {
     ): Deferred<AllCentreGearResponse>
 
 
+    @FormUrlEncoded
+    @POST("accounts/changeData")
+    fun changeDataAsync(
+        @Header("Authorization") authToken: String,
+        @Field("first_name") firstName : String,
+        @Field("last_name") lastName : String,
+        @Field("email") email: String,
+        @Field("phone_number") phoneNumber : String
+    ): Deferred<ChangeDataResponse>
+
+
 
     companion object{
         // syntax: SailAppApiService()

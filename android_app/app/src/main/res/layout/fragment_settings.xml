@@ -107,7 +107,7 @@
         />
 
         <EditText
-                android:id="@+id/editText_email_register_settings"
+                android:id="@+id/editText_email_settings"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
