@@ -4,6 +4,7 @@ from database.database_classes import connection_to_db
 
 def create_user(name, surname, email, password, number, role, is_accepted):
     is_accepted = 1 if is_accepted else 0
+    print(email, is_accepted)
     user = db.User(first_name=name, last_name=surname, email=email,
                    password=password, phone_number=number, role_id=role, account_status=is_accepted)
     return user
@@ -20,8 +21,9 @@ def create_gear(centre_id, name, quantity, price):
 
 
 def create_rental(user_id, gear_id, centre_id, start, end, amount, is_accepted):
+    is_accepted = 1 if is_accepted else 0
     rental = db.GearRental(user_id=user_id, gear_id=gear_id, centre_id=centre_id,
-                           rent_start=start, rent_end=end, rent_amount=amount, is_accepted=is_accepted)
+                           rent_start=start, rent_end=end, rent_amount=amount, rent_status=is_accepted)
     return rental
 
 

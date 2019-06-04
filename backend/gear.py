@@ -38,7 +38,7 @@ def get_currently_rented_gear_by_user(user_id):
     currently_rented_gear = []
     now = datetime.datetime.now()
     for one_gear in rented_gears:
-        if one_gear['rent_start'] < now < one_gear['rent_end']:
+        if one_gear['rent_start'] < now < one_gear['rent_end'] and one_gear['rent_status'] == 'accepted':
             currently_rented_gear.append(one_gear)
     return currently_rented_gear
 
@@ -61,7 +61,12 @@ def get_rented_gear_by_user(user_id, session=None):
         one_gear_dict['centre_latitude'] = one_gear.WaterCentre.latitude
         one_gear_dict['centre_longitude'] = one_gear.WaterCentre.longitude
         one_gear_dict['centre_phone_number'] = one_gear.WaterCentre.contact_number
-
+        if one_gear.GearRental.rent_status == -1:
+            one_gear_dict['rent_status'] = 'denied'
+        elif one_gear.GearRental.rent_status == 0:
+            one_gear_dict['rent_status'] = 'pending'
+        elif one_gear.GearRental.rent_status == 1:
+            one_gear_dict['rent_status'] = 'accepted'
         formatted_rented_gears.append(one_gear_dict)
     return formatted_rented_gears
 

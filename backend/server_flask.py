@@ -383,7 +383,11 @@ class GetCurrentlyRentedGear(Resource):
         'rent_start': fields.DateTime,
         'rent_end': fields.DateTime,
         'rent_quantity': fields.Integer,
-        'gear_name': fields.String
+        'gear_name': fields.String,
+        'centre_latitude': fields.String,
+        'centre_longitude': fields.String,
+        'centre_phone_number': fields.String,
+        'rent_status': fields.String
     })
 
     @jwt_required
@@ -407,6 +411,7 @@ class GetRentedGear(Resource):
         'centre_latitude': fields.String,
         'centre_longitude': fields.String,
         'centre_phone_number': fields.String,
+        'rent_status': fields.String
     })
 
     @jwt_required
@@ -632,6 +637,42 @@ class EditCentre(Resource):
 
             return {'msg': 'Water centre edited successfully.'}, 200
         return {'msg': 'User does not have the proper rights.'}, 403
+
+
+@ns_admin.route('/decideAboutOwner')
+class DecideAboutOwner(Resource):
+    resource_fields = api.model('decideAboutOwner', {
+        'owner_id': fields.Integer,
+        'decision': fields.Integer(min=-1, max=1),
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('owner_id', type=int, required=True, location='form', help='ID of owner you want to decide about.')
+    parser.add_argument('decision', type=str, required=True, location='form', help='decision: -1 decline, 1 accept')
+
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @jwt_required
+    @api.response(200, 'Water centre edited successfully.')
+    @api.response(403, 'User does not have the proper rights.')
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        if user.is_user_the_admin(user_id):
+            user.decide_about_owner(kwargs['owner_id'], kwargs['decision'])
+            return {'msg': 'Decided successfully'}, 200
+        return {'msg': 'User does not have the proper rights.'}, 403
+
+
+@ns_admin.route('/getPendingOwners')
+class GetPendingOwners(Resource):
+    @jwt_required
+    @api.response(200, 'Pending owners returned successfully.')
+    @api.response(403, 'User does not have the proper rights.')
+    def get(self):
+        user_id = get_jwt_identity()
+        if user.is_user_the_admin(user_id):
+            owners = user.get_pending_owners()
+            return jsonify(owners)
 
 
 if __name__ == '__main__':

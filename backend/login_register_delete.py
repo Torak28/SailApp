@@ -111,6 +111,8 @@ def login_user(email, password, session=None):
         refresh_token = create_refresh_token(user_object.id)
         role_name = roles.get_role_name_by_id(user_object.role_id)
         account_status = user_.get_user_status(user_object.id)
+        print(account_status)
+
         if str(account_status) == '-1':
             account_status = 'denied'
         elif str(account_status) == '0':

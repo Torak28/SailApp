@@ -16,7 +16,8 @@ def prepare_db():
     add_object_to_database(role3)
 
     register_new_person('Jan', 'Kowalski', 'jan.kowalski@test.com', 'testowe_haslo', '500101900', 'user')
-    register_new_person('Przemysław', 'Szczurzewski', 'swamp.admin@test.com', 'haslo_ownera', '500600700', 'owner')
+    register_new_person('Przemysław', 'Szczurzewski', 'swamp.owner@test.com', 'haslo_ownera', '500600700', 'owner')
+    register_new_person('Ross', 'Ulbricht', 'admin@test.com', 'haslo_admina', '500600420', 'admin')
     register_new_person('Jerzy', 'Dudek', 'jerzy.dudek@test.com', 'testowe_haslo', '700800299', 'user')
 
     centre1 = create_centre(2, 'Wodna Nuta', '50.3483816', '18.9157175', '500600701')
@@ -44,4 +45,4 @@ def prepare_db():
     add_object_to_database(rental5)
 
 
-prepare_db()
+# prepare_db()

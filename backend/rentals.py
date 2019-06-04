@@ -82,7 +82,8 @@ def check_if_rent_is_possible(centre_id, gear_id, rent_amount, rent_start, rent_
     rent_end = datetime.datetime.strptime(rent_end, '%Y-%m-%dT%H:%M:%S.%fZ')
     all_rents = session.query(GearRental).filter_by(centre_id=centre_id, gear_id=gear_id).filter(
         GearRental.rent_end > rent_start,
-        GearRental.rent_start < rent_end).all()
+        GearRental.rent_start < rent_end,
+        GearRental.rent_status != -1).all()
     iter_start = rent_start
     while iter_start <= rent_end:
         total_number_of_rented_gear = 0

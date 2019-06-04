@@ -48,7 +48,6 @@ class User(Base):
     account_status = Column(Integer)
 
 
-
 class Role(Base):
     __tablename__ = 'role'
 
