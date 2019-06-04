@@ -92,7 +92,7 @@ class MainViewModel(
     var minRating = INITIAL_MIN_RATING
     var maxDistance = INITIAL_MAX_DISTANCE
     var actualDistance = INITIAL_MAX_DISTANCE
-    var isByRating = false
+    var isAscendingSort = true
 
     init {
         if (TokenHandler.refreshToken == NO_TOKEN) {
@@ -243,7 +243,7 @@ class MainViewModel(
                 centre.name.toLowerCase(Locale.getDefault()).contains(queryLowerCase) // && centre.rating>minRating
             }
             centres.value = ArrayList(filteredCentres)
-        } else centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
+        } else centres.value = filterAndSortCentres(allCentres.value, isAscendingSort, actualDistance)
     }
 
 
@@ -251,14 +251,14 @@ class MainViewModel(
         if (allCentres.value == null) {
             Log.e("MainViewModel", "applyFilter: allCentres.value = null"); return
         }
-        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
+        centres.value = filterAndSortCentres(allCentres.value, isAscendingSort, actualDistance)
     }
 
     fun applySort() {
         if (centres.value == null) {
             Log.e("MainViewModel", "applySort: allCentres.value = null"); return
         }
-        centres.value = filterAndSortCentres(allCentres.value, minRating, isByRating, actualDistance)
+        centres.value = filterAndSortCentres(allCentres.value, isAscendingSort, actualDistance)
     }
 
     fun applyLocation() {

@@ -11,52 +11,7 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/minimal_rating"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"/>
 
-    <RadioGroup
-            android:id="@+id/radio_group_stars"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:layout_marginBottom="10dp"
-    >
-        <RadioButton android:id="@+id/radio_5_stars"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="@string/five_stars"
-                     android:layout_weight="1"
-        >
-
-        </RadioButton>
-        <RadioButton android:id="@+id/radio_4_stars"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="@string/four_stars"
-                     android:layout_weight="1"
-        />
-
-        <RadioButton android:id="@+id/radio_3_stars"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="@string/three_stars"
-                     android:layout_weight="1"
-        />
-
-        <RadioButton android:id="@+id/radio_no_matter"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="@string/no_matter"
-                     android:layout_weight="1"
-                     android:checked="true"
-        />
-    </RadioGroup>
 
     <TextView
             android:layout_width="match_parent"

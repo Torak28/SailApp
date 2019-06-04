@@ -81,4 +81,6 @@
     <string name="your_account">Your account</string>
     <string name="save_changes">Save changes</string>
     <string name="change_data">Change data</string>
+    <string name="sort_by_distance_ascending">Sort by distance ascending</string>
+    <string name="sort_by_distance_descending">Sort by distance descending</string>
 </resources>

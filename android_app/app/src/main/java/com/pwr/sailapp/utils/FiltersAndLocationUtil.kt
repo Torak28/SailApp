@@ -6,13 +6,13 @@ import com.pwr.sailapp.data.sail.Centre
 
 object FiltersAndLocationUtil {
 
-    fun filterAndSortCentres(inputCentres : Collection<Centre>?, minimalRating:Double, isByRatingSort:Boolean, actualDistance:Double):ArrayList<Centre>{
+    fun filterAndSortCentres(inputCentres : Collection<Centre>?, isAscending:Boolean, actualDistance:Double):ArrayList<Centre>{
         if(inputCentres == null) {
             Log.e("MainViewModel", "filterAndSortCentres: inputCentres = null"); return ArrayList() }
         val filteredCentres = inputCentres.filter { centre ->
-            centre.rating >= minimalRating && centre.distance < actualDistance
+            centre.distance < actualDistance
         }
-        val sortedFilteredCentres = if (isByRatingSort) filteredCentres.sortedBy { it.rating } else filteredCentres.sortedBy { it.distance }
+        val sortedFilteredCentres = if (isAscending) filteredCentres.sortedBy { it.rating } else filteredCentres.sortedByDescending { it.distance }
         return ArrayList(sortedFilteredCentres)
     }
 
