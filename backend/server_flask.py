@@ -673,6 +673,45 @@ class GetPendingOwners(Resource):
         if user.is_user_the_admin(user_id):
             owners = user.get_pending_owners()
             return jsonify(owners)
+        return {'msg': 'User does not have the proper rights.'}, 403
+
+
+@ns_owner.route('/getPendingRentals')
+class GetPendingRentals(Resource):
+    @jwt_required
+    @api.response(200, 'Pending rentals returned successfully.')
+    @api.response(403, 'User does not have the proper rights.')
+    def get(self):
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id):
+            pending_rentals = rental.get_all_pending_rentals(user_id)
+            return jsonify(pending_rentals)
+        return {'msg': 'User does not have the proper rights.'}, 403
+
+
+@ns_owner.route('/decideAboutRental')
+class DecideAboutOwner(Resource):
+    resource_fields = api.model('decideAboutRental', {
+        'rental_id': fields.Integer,
+        'centre_id': fields.Integer,
+        'decision': fields.Integer(min=-1, max=1),
+    })
+    parser = reqparse.RequestParser()
+    parser.add_argument('rental_id', type=int, required=True, location='form', help='ID of rental you want to decide about.')
+    parser.add_argument('decision', type=str, required=True, location='form', help='decision: -1 decline, 1 accept')
+
+    @api.expect(parser)
+    @api.doc(body=resource_fields)
+    @jwt_required
+    @api.response(200, 'Water centre edited successfully.')
+    @api.response(403, 'User does not have the proper rights.')
+    def post(self):
+        kwargs = self.parser.parse_args(strict=True)
+        user_id = get_jwt_identity()
+        if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(kwargs['centre_id']):  # TODO: Kazdy owner moze zdecydowac o pending rentalu, Sec Threat!
+            rental.decide_about_rental(kwargs['rental_id'], kwargs['decision'])
+            return {'msg': 'Successfully decided about rent.'}, 200
+        return {'msg': 'User does not have the proper rights.'}, 403
 
 
 if __name__ == '__main__':

@@ -99,3 +99,29 @@ def check_if_rent_is_possible(centre_id, gear_id, rent_amount, rent_start, rent_
     return True
 
 
+@connection_to_db
+def get_all_pending_rentals(owner_id, session=None):
+    pending_rentals = session.query(GearRental, WaterCentre, Gear).filter(GearRental.rent_status == 0,
+                                                                          WaterCentre.owner_id == owner_id,
+                                                                          GearRental.gear_id == Gear.id,
+                                                                          GearRental.centre_id == WaterCentre.id).all()
+    list_of_formatted_rentals = []
+    for rental in pending_rentals:
+        formatted_rental = dict()
+        formatted_rental['gear_id'] = rental.Gear.id
+        formatted_rental['gear_name'] = rental.Gear.name
+        formatted_rental['rent_id'] = rental.GearRental.id
+        formatted_rental['rent_start'] = rental.GearRental.rent_start
+        formatted_rental['rent_end'] = rental.GearRental.rent_end
+        formatted_rental['rent_quantity'] = rental.GearRental.rent_amount
+        formatted_rental['centre_name'] = rental.WaterCentre.name
+        formatted_rental['centre_id'] = rental.WaterCentre.id
+        list_of_formatted_rentals.append(formatted_rental)
+    return list_of_formatted_rentals
+
+
+@connection_to_db
+def decide_about_rental(rental_id, decision, session=None):
+    owner = session.query(GearRental).filter_by(id=rental_id).first()
+    owner.rent_status = decision
+    session.commit()
