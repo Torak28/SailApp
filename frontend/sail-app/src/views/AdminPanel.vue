@@ -89,7 +89,6 @@ export default {
       })
       .then(
         (response) => {
-          console.log('acc');
           obj.getAllPendingOwners();
         });
     },
@@ -109,7 +108,6 @@ export default {
       })
       .then(
         (response) => {
-          console.log('del');
           obj.getAllPendingOwners();
         });
     }
@@ -138,5 +136,5 @@ export default {
   }
   .btn_space {
     margin-right: 5px;
-}
+  }
 </style>

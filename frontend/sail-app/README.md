@@ -61,6 +61,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [ ] Wypozyczenie - oddanie
 [x] Admin
     [x] Akceptacja rejestracji
+    [x] Denied Page
+    [x] Pending Page
 [ ] Owner - redesign
     [x] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
     [ ] API dla Ownera
