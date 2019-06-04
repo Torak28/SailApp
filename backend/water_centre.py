@@ -1,5 +1,5 @@
 from database.create_objects_of_classes import create_centre, add_object_to_database
-from database.database_classes import connection_to_db, WaterCentre
+from database.database_classes import connection_to_db, WaterCentre, User
 
 
 def add_water_centre(owner_id, centre_name, centre_latitude, centre_longitude, telephone_no):
@@ -32,16 +32,17 @@ def get_water_centres_by_owner_id(owner_id, session=None):
 
 
 @connection_to_db
-def get_all_water_centres(session=None):
-    centres = session.query(WaterCentre).all()
+def get_all_water_centres_from_accepted_owners(session=None):
+    centres = session.query(WaterCentre, User).filter(WaterCentre.owner_id == User.id,
+                                                      User.account_status == 1).all()
     list_of_formatted_centres = []
     for centre in centres:
         formatted_centre = dict()
-        formatted_centre['centre_id'] = centre.id
-        formatted_centre['latitude'] = centre.latitude
-        formatted_centre['longitude'] = centre.longitude
-        formatted_centre['centre_name'] = centre.name
-        formatted_centre['phone_number'] = centre.contact_number
+        formatted_centre['centre_id'] = centre.WaterCentre.id
+        formatted_centre['latitude'] = centre.WaterCentre.latitude
+        formatted_centre['longitude'] = centre.WaterCentre.longitude
+        formatted_centre['centre_name'] = centre.WaterCentre.name
+        formatted_centre['phone_number'] = centre.WaterCentre.contact_number
         list_of_formatted_centres.append(formatted_centre)
     return list_of_formatted_centres
 

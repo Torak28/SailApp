@@ -579,7 +579,7 @@ class GetCentres(Resource):
     @jwt_required
     @api.response(200, 'List of centres returned successfully.', [resource_fields])
     def get(self):
-        water_centres = wc.get_all_water_centres()
+        water_centres = wc.get_all_water_centres_from_accepted_owners()
         return jsonify(water_centres)
 
 
