@@ -28,6 +28,13 @@ export default new Router({
         import("./views/OwnerPanel.vue")
     },
     {
+      path: "/adminPanel",
+      name: "AdminPanel",
+      props: true,
+      component: () =>
+        import("./views/AdminPanel.vue")
+    },
+    {
       path: "/registration",
       name: "Registration",
       component: () =>

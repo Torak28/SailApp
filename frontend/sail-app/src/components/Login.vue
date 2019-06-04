@@ -46,8 +46,11 @@ export default {
             obj.$parent.authenticated = true;
             if(obj.form.role == 'user'){
               obj.$router.push({ name: "UserPanel", params: {user: obj.form} });
-            }else{
+            }else if(obj.form.role == 'owner'){
               obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });
+            }else if(obj.form.role == 'admin'){
+              console.log('admin');
+              obj.$router.push({ name: "AdminPanel", params: {user: obj.form} });
             }
           })
         .catch(function (error){
