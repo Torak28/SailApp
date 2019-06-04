@@ -53,10 +53,8 @@ export default {
                 obj.$router.push({ name: "Denied", params: {user: obj.form} });
               }else if(response.data.account_status == 'pending'){
                 obj.$router.push({ name: "Pending", params: {user: obj.form} });
-                console.log('a kuku 2');
               }
             }else if(obj.form.role == 'admin'){
-              console.log('admin');
               obj.$router.push({ name: "AdminPanel", params: {user: obj.form} });
             }
           })
