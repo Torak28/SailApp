@@ -56,9 +56,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Sprzęt
     [x] Filtrowanie nie działa
     [x] Cost
-    [ ] Wypozyczenie - func
-    [ ] Wypozyczenie - tresc
-    [ ] Wypozyczenie - oddanie
+    [ x Wypozyczenie - func
+    [x] Wypozyczenie - tresc
+    [ ] Wypozyczenie - oddanie(Owner oddaje)
+    [ ] Wypozyczenie - cancel
 [x] Admin
     [x] Akceptacja rejestracji
     [x] Denied Page
@@ -66,6 +67,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 [ ] Owner - redesign
     [x] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
     [ ] API dla Ownera
+    [ ] Owner zwraca dany sprzet
+    [ ] Owner potwierdza wypożyczenie
 [ ] Wypożyczenie
     [ ] Potwierdzenie ownera
     [x] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera

@@ -55,11 +55,11 @@
           <b-container v-if="rent == true">
             <b-card title="Rent">
               <b-card-text>
-                Your Water Cenre: <b>{{rentForm.gear_centre_id}}</b>
+                Your Water Cenre: <b>{{rentForm.centre_name}}</b>
                 <br>
-                Rent Start: <b>{{rentForm.rent_start.toISOString().substring(0, 10)}}</b>
+                Rent Start: <b>{{rentForm.rent_start.toLocaleString()}}</b>
                 <br>
-                Type of Gear: <b>{{rentForm.gear_id}}</b>
+                Type of Gear: <b>{{rentForm.gear_name}}</b>
                 <br>
                 Place: <b>{{rentForm.place}}</b>
                 <br>
@@ -84,6 +84,7 @@
 
 <script>
 import CompanyCard from '@/components/CompanyCard.vue';
+import apiKey from '../json/secret.json';
 
 export default {
   name: "UserPanel",
@@ -111,7 +112,9 @@ export default {
         gear_id: '',
         gear_centre_id: '',
         place: null,
-        cost: null
+        cost: null,
+        centre_name: null,
+        gear_name: null
       },
       companyForms: [],
       changeName: true,
@@ -122,7 +125,7 @@ export default {
       changeCompanyName: true,
       changeCompanyTel: true,
       breachAlert: null,
-      rent: false
+      rent: null
     }
   },
   methods: {
@@ -184,7 +187,24 @@ export default {
       this.rentForm.gear_centre_id = value.gear_centre_id;
       this.rentForm.place = value.place;
       this.rentForm.cost = value.cost;
-      this.rent = true;
+
+      var obj = this;
+      let data = new FormData();
+      data.append("centre_id", this.rentForm.gear_centre_id);
+      data.append("gear_id", this.rentForm.gear_id);
+      data.append("rent_amount", this.rentForm.rent_amount);
+      data.append("rent_start", this.rentForm.rent_start.toISOString());
+      data.append("rent_end", this.rentForm.rent_end.toISOString());
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/rentGear", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/rental/rentGear',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      });
+      this.getRentData();
     },
     Return(){
       this.rentForm.rent_start = '';
@@ -227,7 +247,65 @@ export default {
         }
       });
     },
+    calCost(){
+      for(let i = 0; i < this.companyForms.length; i++){
+        if(this.companyForms[i].name == 'Water Centre #1'){
+          for(let j = 0; j < this.companyForms[i].gears.length; j++){
+            if(this.companyForms[i].gears[j].gearType == 'Boast'){
+              this.rentForm.cost = this.rentForm.rent_amount * this.companyForms[i].gears[j].gearCost;
+            }
+          }
+        }
+      }
+    },
+    calcPlace(lat, lng){
+      let obj = this;
+      this.axios
+      .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=" + apiKey.API_KEY2)
+      .then(
+        (response) => {
+          this.rentForm.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
+                       + response.data.results[0].address_components[0].long_name;
+        })
+      this.calCost();
+    },
+    getRentData(){
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/getMyRentedGear", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/getMyRentedGear',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          if(response.length == 0){
+            obj.rent = false;
+          }else{
+            obj.rent = true;
+            obj.rentForm.rent_start = new Date(response.data[0].rent_start);
+            obj.rentForm.rent_end = new Date(response.data[0].rent_end);
+            obj.rentForm.rent_amount = response.data[0].rent_quantity
+            obj.rentForm.is_returned = false;
+            obj.rentForm.gear_centre_id = response.data[0].centre_id;
+            //obj.rentForm.place
+            //obj.rentForm.cost
+            obj.rentForm.rent_id = response.data[0].rent_id;
+            obj.rentForm.rent_status = response.data[0].rent_status;
+            obj.rentForm.gear_name = response.data[0].gear_name;
+            obj.rentForm.centre_name = response.data[0].centre_name;
+          }
+        obj.calcPlace(response.data[0].centre_latitude, response.data[0].centre_longitude);
+        })
+      .catch(function (error){
+        console.log(error);
+      });
+    },
     getUserData(){
+      //obsluzyc rent
       var obj = this;
       this.axios
       .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
@@ -242,6 +320,7 @@ export default {
           this.userForm.name = response.data.first_name;
           this.userForm.surname = response.data.last_name;
           this.userForm.phone = response.data.phone_number;
+          obj.getRentData();
         })
       .catch(function (error){
         console.log(error);

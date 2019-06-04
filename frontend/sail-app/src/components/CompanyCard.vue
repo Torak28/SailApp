@@ -136,10 +136,12 @@ export default {
       this.rentForm.is_returned = false;
       this.rentForm.rent_amount = this.amount;
       this.rentForm.user_id = this.userForm.name;
-      this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.companyForm.name;
+      this.rentForm.gear_id = this.companyForm.gears[this.index].id;
+      this.rentForm.gear_centre_id = this.parentCompanyForm.centre_id;
       this.rentForm.place = this.place;
       this.rentForm.cost = this.companyForm.gears[this.index].gearCost * this.rentForm.rent_amount;
+
+      console.log(JSON.stringify(this.rentForm));
 
       if(this.modalDate == '' || this.modalStartTime == ''  || this.modalEndTime == '' || this.rentForm.gear_id == 'Choose Gear to Rent'){
         this.badContent = true;
@@ -163,6 +165,7 @@ export default {
     },
     sendRentForm(){
       this.$emit('SendRentFormParent', this.rentForm);
+      console.log('Wypożyczenie!');
     },
     emitModal(){
       this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');
