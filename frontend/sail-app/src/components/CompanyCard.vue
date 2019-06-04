@@ -46,7 +46,8 @@
       <br>
       Amount:
       <b-form-input :readonly=parentRent class="block" type="number" :min="min" :max="max" v-model="amount" />
-
+      <br>
+      Cost: {{this.rentForm.cost}}
       <template slot="modal-footer" slot-scope="{ ok, cancel }">
       <b-button size="sm" variant="success" @click="ok()">
         Rent
@@ -111,7 +112,8 @@ export default {
       max: 2,
       min: 1,
       minDate: null,
-      badContent: false
+      badContent: false,
+      index: null
     }
   },
   methods: {
@@ -125,6 +127,8 @@ export default {
         }
       }
       this.max = tmpV.gearAmount;
+      this.index = index;
+      this.rentForm.cost = this.companyForm.gears[this.index].gearCost * Number(this.amount);
     },
     handleOk(){
       this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
@@ -134,6 +138,8 @@ export default {
       this.rentForm.user_id = this.userForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
       this.rentForm.gear_centre_id = this.companyForm.name;
+      this.rentForm.place = this.place;
+      this.rentForm.cost = this.companyForm.gears[this.index].gearCost * this.rentForm.rent_amount;
 
       if(this.modalDate == '' || this.modalStartTime == ''  || this.modalEndTime == '' || this.rentForm.gear_id == 'Choose Gear to Rent'){
         this.badContent = true;
@@ -160,14 +166,6 @@ export default {
     },
     emitModal(){
       this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');
-      /*this.dropdownTextGear = "Choose Gear to Rent";
-      this.rentForm.rent_start = '';
-      this.rentForm.rent_end = '';
-      this.rentForm.is_returned ='' 
-      this.rentForm.rent_amount = '';
-      this.rentForm.user_id = '';
-      this.rentForm.gear_id = '';
-      this.rentForm.gear_centre_id = '';*/
     }
   },
   created () {
@@ -198,7 +196,9 @@ export default {
       .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
       .then(
         (response) => {
-          this.place = response.data.results[0].address_components[3].long_name;
+          this.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
+                       + response.data.results[0].address_components[0].long_name;
         })
     if (navigator.geolocation) {
       var obj = this;
@@ -219,11 +219,16 @@ export default {
         var d = R * c;
         obj.dist = Math.floor(d/1000);
       });
-    } else {
-      //console.log('No geolocation error');
     }
   },
    watch: {
+     'amount': function(newV){
+       if(this.index == null){
+        this.rentForm.cost = 0;
+      }else{
+        this.rentForm.cost = this.companyForm.gears[this.index].gearCost * Number(newV);
+      }
+     },
     'parentCompanyForm.name': function(newV){
       this.companyForm.name = newV;
     },
@@ -257,8 +262,6 @@ export default {
           var d = R * c;
           obj.dist = Math.floor(d/1000);
         });
-      } else {
-        //console.log('No geolocation error');
       }
       this.axios
         .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)

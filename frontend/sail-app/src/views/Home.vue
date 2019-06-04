@@ -30,13 +30,6 @@ export default {
       wrongData: false,
       noDataMsg: "A login and password must be present",
       wrongDataMsg: "The login and / or password is incorrect",
-      // TODO: zmienić
-      mockAccount1: {
-        login: "asd",
-        password: "asd",
-        //role: 'User'
-        role: 'Owner'
-      }
     }
   }
 };

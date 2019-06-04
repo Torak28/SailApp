@@ -2,78 +2,99 @@
   <b-container class="OwnerPanel">
     <b-container v-if="breachAlert == false">
       <br>
-      <h1 class='title'>Preview</h1>
-      <br>
-      <br>
-      <b-row>
-        <b-col>
-          <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
+      <b-tabs content-class="mt-3" align="center">
+        <b-tab title="Company Data" active>
           <br>
-          <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
-        </b-col>
-      </b-row>
-      <br>
-      <h1 class='title'>Company</h1>
-      <br>
-      <br>
-      <b-row>
-        <b-col sm="9">
-          <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='companyForm.name' placeholder="Company Name" />
-          <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='companyForm.phone' placeholder="Company Phone Number" />
-        </b-col>
-        <b-col sm="3">
-          <b-button block class="block" variant="info" v-on:click="changeCompanyNameProp()">Change</b-button>
-          <b-button block class="block" variant="info" v-on:click="changeCompanyTelProp()">Change</b-button>
-        </b-col>
-        <b-col>
-        <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
-        <gmap-marker
-          :position="{
-            lat: Number(this.companyForm.latitude),
-            lng: Number(this.companyForm.longtitude),
-          }"
-          />
-        </gmap-map>
-        <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
-        <b-container v-for="gear in companyForm.gears" :key="gear.id">
-          <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
-          <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
-          <b-form-input class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
-          <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
-          <hr>
-        </b-container>
-        <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000, offset: -210}">Add new Gear</b-button>
-        <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
-        </b-col>
-      </b-row>
-      <br>
-      <h1 class='title'>User Options</h1>
-      <br>
-      <br>
-      <b-row>
-        <b-col sm="9">
-          <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
-          <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
-          <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
-          <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
-          <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
-          <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
-        </b-col>
-        <b-col sm="3">
-          <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
-          <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
-          <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
-          <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
-          <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-          <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-        </b-col>
-      </b-row>
-      <b-row>
-      </b-row>
-      <br>
-      <br>
-      <b-button block variant="success" v-on:click="Change()">Change</b-button>
-      <b-button block variant="warning" to="/">Go back</b-button>
+          <h1 class='title'>Preview</h1>
+          <br>
+          <br>
+          <b-row>
+            <b-col>
+              <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
+              <br>
+              <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
+            </b-col>
+          </b-row>
+          <br>
+          <br>
+          <h1 class='title'>Company</h1>
+          <br>
+          <br>
+          <b-row>
+            <b-col sm="9">
+              <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='companyForm.name' placeholder="Company Name" />
+              <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='companyForm.phone' placeholder="Company Phone Number" />
+            </b-col>
+            <b-col sm="3">
+              <b-button block class="block" variant="info" v-on:click="changeCompanyNameProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeCompanyTelProp()">Change</b-button>
+            </b-col>
+            <b-col>
+            <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
+            <gmap-marker
+              :position="{
+                lat: Number(this.companyForm.latitude),
+                lng: Number(this.companyForm.longtitude),
+              }"
+              />
+            </gmap-map>
+            <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
+            </b-col>
+          </b-row>
+        </b-tab> 
+        <b-tab title="User Data">
+          <h1 class='title'>User Data</h1>
+          <br>
+          <br>
+          <b-row>
+            <b-col sm="9">
+              <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
+              <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
+              <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
+              <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
+              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
+              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
+            </b-col>
+            <b-col sm="3">
+              <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+            </b-col>
+          </b-row>
+          <b-row>
+          </b-row>
+          <br>
+          <br>
+          <b-button block variant="success" v-on:click="Change()">Change</b-button>
+          <b-button block variant="warning" to="/">Go back</b-button>
+        </b-tab>
+        <b-tab title="Gear">
+          <br>
+          <h1 class='title'>Gear</h1>
+          <br>
+          <br>
+          <b-container v-for="gear in companyForm.gears" :key="gear.id">
+            <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
+            <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
+            <b-form-input class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+            <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
+            <hr>
+          </b-container>
+          <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000, offset: -210}">Add new Gear</b-button>
+          <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
+
+        </b-tab>
+        <b-tab title="Rents">
+          <br>
+          <h1 class='title'>Rents</h1>
+          <br>
+          <br>
+          <!-- Dodać Rent-->
+        </b-tab>
+      </b-tabs>
     </b-container>
     <b-container v-if="breachAlert == true || breachAlert == null">
       <h3>You have to be log in to view this site, go to the <b-link href="/">homepage</b-link>!</h3>
@@ -220,19 +241,65 @@ export default {
       this.rentForm.gear_centre_id = this.companyForm.name;
     },
     Change(){
-      // TODO: zmienić
-      //console.log("User " + JSON.stringify(this.userForm) + " changed");
+      //console.log("User " + JSON.stringify(this.form) + " changed");
+      var obj = this;
+      //User Data
+      let dataU = new FormData();
+      dataU.append("first_name", this.userForm.name);
+      dataU.append("last_name", this.userForm.surname);
+      dataU.append("email", this.userForm.email);
+      dataU.append("phone_number", this.userForm.phone);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/changeData", dataU, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/changeData',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      });
+      //Password
+      let dataP = new FormData();
+      dataP.append("password", this.userForm.password);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/changePassword", dataP, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/changePassword',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      });
     }
   },
   created () {
-    if(this.user.role == 'Owner'){
-      this.userForm.role = 'Owner';
-      this.userForm.name = 'Jarosław';
-      this.userForm.surname = 'Ciołek-Żelechowski';
-      this.userForm.phone = '666 615 315';
-      this.userForm.email = 'zelechowski28@gmail.com';
-      this.userForm.password = 'dupa123';
-      this.userForm.checkPassword = 'dupa123';
+    if(this.user.role == 'owner'){
+
+      this.userForm.role = this.user.role;
+      this.userForm.email = this.user.login;
+      this.userForm.password = this.user.password;
+      this.userForm.checkPassword = this.user.password;
+
+      var obj = this;
+      //Dane uzytkownika
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          this.userForm.name = response.data.first_name;
+          this.userForm.surname = response.data.last_name;
+          this.userForm.phone = response.data.phone_number;
+        })
+      .catch(function (error){
+        console.log(error);
+      });
+
       this.companyForm.name = 'KajaX';
       this.companyForm.phone = '123 123 123';
       this.companyForm.photo = 'https://picsum.photos/450/300/?image=20';
