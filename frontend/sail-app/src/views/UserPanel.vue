@@ -46,7 +46,7 @@
               </b-col>
             </b-row>
             <b-button block variant="success" v-on:click="Change()">Change</b-button>
-            <b-button block variant="warning" to="/">Go back</b-button>
+            <b-button block variant="warning" to="/">Homepage</b-button>
           </b-tab>
           <b-tab title="Upcoming events">
             <br>

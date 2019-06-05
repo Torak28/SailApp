@@ -274,7 +274,9 @@ export default {
         .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
         .then(
           (response) => {
-            this.place = response.data.results[0].address_components[3].long_name;
+            obj.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
+                       + response.data.results[0].address_components[0].long_name;
           })
     },
     'parentCompanyForm.gears': function(newV){

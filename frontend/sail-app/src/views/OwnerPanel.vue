@@ -17,6 +17,7 @@
                 <br>
                 <br>
                 <b-button block class='btnClass' variant="success" v-on:click="ChangePic()">Change Picture</b-button>
+                <b-button block variant="warning" to="/">Homepage</b-button>
               </b-col>
             </b-row>
             <br>
@@ -48,7 +49,7 @@
               </b-col>
             </b-row>
             <b-button block class='btnClass' variant="success" v-on:click="ChangeCompData()">Save Changed Data</b-button>
-            <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
+            <b-button block variant="warning" to="/">Homepage</b-button>
           </b-tab> 
           <b-tab title="User Data">
             <h1 class='title'>User Data</h1>
@@ -77,7 +78,7 @@
             <br>
             <br>
             <b-button block variant="success" v-on:click="Change()">Change</b-button>
-            <b-button block variant="warning" to="/">Go back</b-button>
+            <b-button block variant="warning" to="/">Homepage</b-button>
           </b-tab>
           <b-tab title="Gear">
             <br>
@@ -91,7 +92,7 @@
               <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
               <hr>
             </b-container>
-            <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000, offset: -210}">Add new Gear</b-button>
+            <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()">Add new Gear</b-button>
             <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
 
           </b-tab>
@@ -180,9 +181,26 @@ export default {
   },
   methods: {
     ChangeCompData(){
-      //Nowa nazwa      companyForm.name
-      //Nowa nr. telef  companyForm.phone
-      //Nowy place      companyForm.latitude i companyForm.longtitude
+      let obj = this;
+      let data = new FormData();
+      data.append("centre_id", this.companyForm.centre_id);
+      data.append("centre_name", this.companyForm.name);
+      data.append("latitude", this.companyForm.latitude);
+      data.append("longitude", this.companyForm.longtitude);
+      data.append("phone_number", this.companyForm.phone);
+      this.axios
+      .put("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/editCentre", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/editCentre',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcPlace();
+        });
     },
     ChangePic(){
       let obj = this;
@@ -225,6 +243,30 @@ export default {
         tmp.push(Object.values(this.companyForm.gears[i])[1]);
       }
       this.gearTypes = tmp;
+      var obj = this;
+      for (let i = 0; i < this.form.gears.length; i++) {
+        console.log(JSON.stringify(this.form.gears[i]));
+        let data = new FormData();
+        data.append("centre_id", this.form.centre_id);
+        data.append('gear_name', this.form.gears[i].gearName);
+        data.append('gear_quantity', this.form.gears[i].gearQuantity);
+        data.append('gear_price', this.form.gears[i].gearPrice);
+        this.axios
+          .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/addGear", data, {
+            headers: {
+              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/addGear',
+              'Content-Type': 'multipart/form-data',
+              'accept': 'application/json',
+              'Authorization': "Bearer " + this.form.token
+            }
+          })
+          .then(
+            (response) => {
+              //console.log(JSON.stringify(response));
+              //Tutaj lecimy dalej
+              //this.$router.replace({ name: "OwnerRegistrationSuccess", params: {user: obj.form} });
+            });
+      }
     },
     changeNameProp(){
       this.changeName = !this.changeName;

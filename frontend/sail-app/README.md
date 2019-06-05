@@ -70,7 +70,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] API dla Ownera
     [x] User Data
     [x] Preview
-    [ ] Company Data
+    [x] Company Data
     [ ] Gear
     [ ] Pending Rents
     [ ] Rents
