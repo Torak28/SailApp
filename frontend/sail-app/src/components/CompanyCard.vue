@@ -141,7 +141,7 @@ export default {
       this.rentForm.place = this.place;
       this.rentForm.cost = this.companyForm.gears[this.index].gearCost * this.rentForm.rent_amount;
 
-      console.log(JSON.stringify(this.rentForm));
+      //console.log(JSON.stringify(this.rentForm));
 
       if(this.modalDate == '' || this.modalStartTime == ''  || this.modalEndTime == '' || this.rentForm.gear_id == 'Choose Gear to Rent'){
         this.badContent = true;
@@ -165,7 +165,7 @@ export default {
     },
     sendRentForm(){
       this.$emit('SendRentFormParent', this.rentForm);
-      console.log('Wypożyczenie!');
+      //console.log('Wypożyczenie!');
     },
     emitModal(){
       this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');
@@ -239,7 +239,11 @@ export default {
       this.companyForm.phone = newV;
     },
     'parentCompanyForm.photo': function(newV){
-      this.companyForm.photo = newV;
+      if(typeof(newV) == 'string'){
+        this.companyForm.photo = newV;
+      }else{
+        this.companyForm.photo = 'https://i.imgur.com/um4Z7JU.png';
+      }
     },
     'parentCompanyForm.latitude': function(newV){
       this.companyForm.latitude = newV;

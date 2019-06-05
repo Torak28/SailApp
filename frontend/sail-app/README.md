@@ -68,7 +68,12 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 [ ] Owner - redesign
     [x] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
     [x] API dla Ownera
-    [ ] Zmiana danych
+    [x] User Data
+    [ ] Preview
+    [ ] Company Data
+    [ ] Gear
+    [ ] Pending Rents
+    [ ] Rents
     [ ] Owner zwraca dany sprzet
     [ ] Owner potwierdza wypożyczenie
 [ ] Wypożyczenie
@@ -80,6 +85,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 [x] Loading
 [ ] Wypożyczenie - redisign tych pól
 [ ] Nie udało się wczytać arkusza stylów XD
+[ ] Background color ?!
 [ ] Przetłumaczenie na j.polski
 [x] Obrazek Sail kieruje do home
 [x] Bezpieczeństwo
