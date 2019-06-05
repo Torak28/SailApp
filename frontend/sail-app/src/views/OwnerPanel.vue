@@ -134,7 +134,9 @@ export default {
         longtitude: '',
         phone: '',
         photo: '',
-        gears: ''
+        gears: '',
+        centre_id: '',
+        dist: ''
       },
       rentForm: {
         rent_start: '',
@@ -277,15 +279,101 @@ export default {
         }
       });
     },
+    calcDist(){
+      let obj = this;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          let currentLat = position.coords.latitude;
+          let currentLng = position.coords.longitude;
+          let R = 6371e3; // metres
+          let φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
+          let φ2 = currentLat * Math.PI / 180;
+          let Δφ = (currentLat-Number(obj.companyForm.latitude)) * Math.PI / 180;
+          let Δλ = (currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
+
+          let a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+          let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            
+          let d = R * c;
+          let result = Math.floor(d/1000);
+          obj.companyForm.dist = result;
+        });
+      } else {
+        //console.log('No geolocation error');
+      }
+      this.calcPlace();
+    },
+    getGear(){
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          for (let j = 0; j < response.data.length; j++) {
+            obj.companyForm.gears.push({
+              "id" : response.data[j].gear_id.toString(),
+              "gearType" : response.data[j].gear_name.toString(),
+              "gearAmount" : response.data[j].gear_quantity.toString(),
+              "gearCost" : response.data[j].gear_price.toString()
+            });
+          }
+      })
+      obj.calcDist();
+    },
+    getCentrePic(){
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.companyForm.photo = response.data[0].picture_link;
+      });
+      obj.getGear();
+    },
     getCentre(){
-      
-    }
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/getMyCentres", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getMyCentres',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.companyForm.centre_id = response.data[0].centre_id;
+          obj.companyForm.latitude = response.data[0].latitude;
+          obj.companyForm.longtitude = response.data[0].longitude;
+          obj.companyForm.name = response.data[0].name;
+          obj.companyForm.phone = response.data[0].phone_number;
+          obj.companyForm.gears = [];
+          obj.companyForm.photo = null;
+          obj.companyForm.dist = null; 
+          obj.getCentrePic();
+        })
+      .catch(function (error){
+        console.log(error);
+      });
+    },
     getUserData(){
       var obj = this;
       this.axios
       .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
         headers: {
-          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/getUserData',
           'accept': 'application/json',
           'Authorization': "Bearer " + this.user.token
         }
@@ -303,6 +391,27 @@ export default {
     },
     getData(){
       this.getUserData();
+    },
+    getGearTypes(){
+      let tmp = [];
+      for (let i = 0; i < this.companyForm.gears.length; i++) {
+        tmp.push(Object.values(this.companyForm.gears[i])[1]);
+      }
+      this.gearTypes = tmp;
+      this.howManyNow = this.companyForm.gears.length;
+      this.counter = this.companyForm.gears.length;
+    },
+    calcPlace(){
+      let obj = this;
+      this.axios
+      .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
+      .then(
+        (response) => {
+          obj.rentForm.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
+                       + response.data.results[0].address_components[0].long_name;
+          obj.loading = false;
+      })
     }
   },
   created () {
@@ -316,53 +425,8 @@ export default {
       //Dane uzytkownika
       //Dane Centrum
       this.getData()
-
-      this.companyForm.name = 'KajaX';
-      this.companyForm.phone = '123 123 123';
-      this.companyForm.photo = 'https://picsum.photos/450/300/?image=20';
-      this.companyForm.latitude = '51.1078852';
-      this.companyForm.longtitude = '17.03853760000004';
-      this.companyForm.gears = [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}];
-
-      if (navigator.geolocation) {
-        var obj = this;
-        navigator.geolocation.getCurrentPosition(function(position) {
-          obj.currentLat = position.coords.latitude;
-          obj.currentLng = position.coords.longitude;
-          var R = 6371e3; // metres
-          var φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
-          var φ2 = obj.currentLat * Math.PI / 180;
-          var Δφ = (obj.currentLat-Number(obj.companyForm.latitude)) * Math.PI / 180;
-          var Δλ = (obj.currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
-
-          var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                  Math.cos(φ1) * Math.cos(φ2) *
-                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
-          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-          var d = R * c;
-          obj.dist = Math.floor(d/1000);
-        });
-      } else {
-        //console.log('No geolocation error');
-      }
-
-      let tmp = [];
-      for (let i = 0; i < this.companyForm.gears.length; i++) {
-        tmp.push(Object.values(this.companyForm.gears[i])[1]);
-      }
-      this.gearTypes = tmp;
-      this.howManyNow = this.companyForm.gears.length;
-      this.counter = this.companyForm.gears.length;
-
-      this.axios
-        .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
-        .then(
-          (response) => {
-            this.place = response.data.results[0].address_components[3].long_name;
-          })
+      this.getGearTypes();
       this.breachAlert = false;
-      this.loading = false;
     }else{
       this.breachAlert = true;
     }

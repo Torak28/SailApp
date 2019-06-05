@@ -67,7 +67,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Pending Page
 [ ] Owner - redesign
     [x] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
-    [ ] API dla Ownera
+    [x] API dla Ownera
+    [ ] Zmiana danych
     [ ] Owner zwraca dany sprzet
     [ ] Owner potwierdza wypożyczenie
 [ ] Wypożyczenie
