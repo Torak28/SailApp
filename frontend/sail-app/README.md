@@ -72,8 +72,12 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [ ] Owner potwierdza wypożyczenie
 [ ] Wypożyczenie
     [ ] Potwierdzenie ownera
+    [ ] Sprawdzic godziny wypozyczen
     [x] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera
-    [ ] Same wypożyczenie jako takie
+    [x] Same wypożyczenie jako takie
+[x] div przy breachAlert
+[x] Loading
+[ ] Wypożyczenie - redisign tych pól
 [ ] Nie udało się wczytać arkusza stylów XD
 [ ] Przetłumaczenie na j.polski
 [x] Obrazek Sail kieruje do home

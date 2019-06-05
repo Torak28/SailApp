@@ -1,34 +1,38 @@
 <template>
   <b-container class="AdminPanel">
-    <b-container v-if="breachAlert == false">
-      <br>
-      <h1 class='title'>Admin page</h1>
-      <br>
-      <br>
-
-      <div v-for="(pendingOwner, index) in pendingOwners" :key="index">
-        <b-card :title="pendingOwner.first_name + ' ' +  pendingOwner.last_name">
-          <b-card-text>
-            <br>
-            <font-awesome-icon icon="envelope" /> {{pendingOwner.email}}
-            <br>
-            <font-awesome-icon icon="phone" /> {{pendingOwner.phone_number}}
-          </b-card-text>
-
-          <b-button class="btn_space" variant="success" v-on:click="acc(pendingOwner.owner_id)">Accept</b-button>
-          <b-button class="btn_space" variant="danger" v-on:click="del(pendingOwner.owner_id)">Delete</b-button>
-        </b-card>
+    <div v-if="breachAlert == false">
+      <div v-if="loading == false">
         <br>
-      </div>
-      <div v-if="pendingOwners.length == 0">
-        <h3>Thera are no pending Owners!</h3>
-      </div>
+        <h1 class='title'>Admin page</h1>
+        <br>
+        <br>
 
-      <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
-    </b-container>
-    <b-container v-if="breachAlert == true || breachAlert == null">
+        <div v-for="(pendingOwner, index) in pendingOwners" :key="index">
+          <b-card :title="pendingOwner.first_name + ' ' +  pendingOwner.last_name">
+            <b-card-text>
+              <br>
+              <font-awesome-icon icon="envelope" /> {{pendingOwner.email}}
+              <br>
+              <font-awesome-icon icon="phone" /> {{pendingOwner.phone_number}}
+            </b-card-text>
+
+            <b-button class="btn_space" variant="success" v-on:click="acc(pendingOwner.owner_id)">Accept</b-button>
+            <b-button class="btn_space" variant="danger" v-on:click="del(pendingOwner.owner_id)">Delete</b-button>
+          </b-card>
+          <br>
+        </div>
+        <div v-if="pendingOwners.length == 0">
+          <h3>Thera are no pending Owners!</h3>
+        </div>
+        <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
+      </div>
+      <div v-if="loading == true" class="text-center">
+        <b-spinner style="width: 200px; height: 200px;" class="m-25" variant="primary" type="grow"></b-spinner>
+      </div>    
+    </div>
+    <div v-if="breachAlert == true || breachAlert == null">
       <h3>You have to be log in to view this site, go to the <b-link href="/">homepage</b-link>!</h3>
-    </b-container>
+    </div>
   </b-container>
 </template>
 
@@ -45,7 +49,8 @@ export default {
         token: ''
       },
       breachAlert: null,
-      pendingOwners: []
+      pendingOwners: [],
+      loading: true
     }
   },
   methods: {
@@ -72,6 +77,7 @@ export default {
             });
           }
         });
+      this.loading = false;
     },
     acc(id) {
       let obj = this;

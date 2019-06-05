@@ -1,6 +1,6 @@
 <template>
   <b-container class="Denied">
-    <b-container v-if="breachAlert == false">
+    <div v-if="breachAlert == false">
       <br>
       <h1 class='title'>Denied page</h1>
       <br>
@@ -8,10 +8,10 @@
       <h3>You account is denied. Our admin decide that You cannot be a member of Sail-Familly. Contact us if You have any questions: <b-link href="mailto:sail@sail.com">sail@sail.com</b-link></h3>
       <br>
       <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
-    </b-container>
-    <b-container v-if="breachAlert == true || breachAlert == null">
+    </div>
+    <div v-if="breachAlert == true || breachAlert == null">
       <h3>You have to be log in to view this site, go to the <b-link href="/">homepage</b-link>!</h3>
-    </b-container>
+    </div>
   </b-container>
 </template>
 

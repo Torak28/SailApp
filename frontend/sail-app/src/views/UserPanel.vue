@@ -1,86 +1,91 @@
 <template>
   <b-container class="UserPanel">
-    <b-container v-if="breachAlert == false">
-      <br>
-      <b-tabs content-class="mt-3" align="center">
-        <b-tab title="Rent" active>
-          <br>
-          <h1 class='title'>Rent page</h1>
-          <br>
-          <br>
-          <h4>
-            Sort by Distance:
-            <b-button-group>
-              <b-button variant="primary" v-on:click="sortNear()"> Nearest </b-button>
-              <b-button variant="primary" v-on:click="sortFurth()"> Furthest </b-button>
-            </b-button-group>
-          </h4>
-          <br>
-          <div v-for="(companyForm, index) in companyForms" :key="index">
-            <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm :parentRent=rent @SendRentFormParent="FillRentForm" />
+    <div v-if="breachAlert == false">
+      <div v-if="loading == false">
+        <br>
+        <b-tabs content-class="mt-3" align="center">
+          <b-tab title="Rent" active>
             <br>
-          </div>
-        </b-tab>
-        <b-tab title="User Panel">
-          <br>
-          <h1 class='title'>User Panel</h1>
-          <br>
-          <br>
-          <b-row>
-            <b-col sm="9">
-              <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
-              <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
-              <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
-              <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
-              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
-              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
-            </b-col>
-            <b-col sm="3">
-              <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-            </b-col>
-          </b-row>
-          <b-button block variant="success" v-on:click="Change()">Change</b-button>
-          <b-button block variant="warning" to="/">Go back</b-button>
-        </b-tab>
-        <b-tab title="Upcoming events">
-          <br>
-          <h1 class='title'>Upcoming events</h1>
-          <br>
-          <br>
-          <b-container v-if="rent == true">
-            <b-card title='Rent' :sub-title="'status: ' + rentForm.rent_status">
-              <b-card-text>
-                Your Water Cenre: <b>{{rentForm.centre_name}}</b>
-                <br>
-                Phone number: <b>{{rentForm.centre_phone_number}}</b>
-                <br>
-                Rent Start: <b>{{rentForm.rent_start.toLocaleString()}}</b>
-                <br>
-                Type of Gear: <b>{{rentForm.gear_name}}</b>
-                <br>
-                Place: <b>{{rentForm.place}}</b>
-                <br>
-                Cost: <b>{{rentForm.cost}}</b>
-              </b-card-text>
-              <b-button variant="danger" v-on:click="CancelRent()">Cancel</b-button>
-            </b-card>
-          </b-container>
-          <b-container v-if="rent == false">
+            <h1 class='title'>Rent page</h1>
             <br>
             <br>
-            <h2 align="center">Rent something!</h2>
-          </b-container>
-        </b-tab>
-      </b-tabs>
-    </b-container>
-    <b-container v-if="breachAlert == true || breachAlert == null">
+            <h4>
+              Sort by Distance:
+              <b-button-group>
+                <b-button variant="primary" v-on:click="sortNear()"> Nearest </b-button>
+                <b-button variant="primary" v-on:click="sortFurth()"> Furthest </b-button>
+              </b-button-group>
+            </h4>
+            <br>
+            <div v-for="(companyForm, index) in companyForms" :key="index">
+              <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm :parentRent=rent @SendRentFormParent="FillRentForm" />
+              <br>
+            </div>
+          </b-tab>
+          <b-tab title="User Panel">
+            <br>
+            <h1 class='title'>User Panel</h1>
+            <br>
+            <br>
+            <b-row>
+              <b-col sm="9">
+                <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
+                <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
+                <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
+                <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
+                <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
+                <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
+              </b-col>
+              <b-col sm="3">
+                <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+              </b-col>
+            </b-row>
+            <b-button block variant="success" v-on:click="Change()">Change</b-button>
+            <b-button block variant="warning" to="/">Go back</b-button>
+          </b-tab>
+          <b-tab title="Upcoming events">
+            <br>
+            <h1 class='title'>Upcoming events</h1>
+            <br>
+            <br>
+            <b-container v-if="rent == true">
+              <b-card title='Rent' :sub-title="'status: ' + rentForm.rent_status">
+                <b-card-text>
+                  Your Water Cenre: <b>{{rentForm.centre_name}}</b>
+                  <br>
+                  Phone number: <b>{{rentForm.centre_phone_number}}</b>
+                  <br>
+                  Rent Start: <b>{{rentForm.rent_start.toLocaleString()}}</b>
+                  <br>
+                  Type of Gear: <b>{{rentForm.gear_name}}</b>
+                  <br>
+                  Place: <b>{{rentForm.place}}</b>
+                  <br>
+                  Cost: <b>{{rentForm.cost}}</b>
+                </b-card-text>
+                <b-button variant="danger" v-on:click="CancelRent()">Cancel</b-button>
+              </b-card>
+            </b-container>
+            <b-container v-if="rent == false">
+              <br>
+              <br>
+              <h2 align="center">Rent something!</h2>
+            </b-container>
+          </b-tab>
+        </b-tabs>
+      </div>
+      <div v-if="loading == true" class="text-center">
+        <b-spinner style="width: 200px; height: 200px;" class="m-25" variant="primary" type="grow"></b-spinner>
+      </div>
+    </div>
+    <div v-if="breachAlert == true || breachAlert == null">
       <h3>You have to be log in to view this site, go to the <b-link href="/">homepage</b-link>!</h3>
-    </b-container>
+    </div>
   </b-container>
 </template>
 
@@ -130,7 +135,8 @@ export default {
       changeCompanyName: true,
       changeCompanyTel: true,
       breachAlert: null,
-      rent: null
+      rent: null,
+      loading: true
     }
   },
   methods: {
@@ -175,6 +181,7 @@ export default {
           //console.log('No geolocation error');
         }
       }
+      this.loading = false;
     },
     sortNear(){
       this.companyForms.sort((a, b) => (a.dist > b.dist) ? 1 : -1);
