@@ -84,9 +84,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 [x] div przy breachAlert
 [x] Loading
 [ ] Wypożyczenie - redisign tych pól
+[x] DELETE not working
 [ ] Nie udało się wczytać arkusza stylów XD
-[ ] Background color ?!
-[ ] Przetłumaczenie na j.polski
+[x] Background color ?!
+[x] Przetłumaczenie na j.polski
 [x] Obrazek Sail kieruje do home
 [x] Bezpieczeństwo
 ```

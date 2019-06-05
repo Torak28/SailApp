@@ -220,23 +220,21 @@ export default {
     },
     CancelRent(){
       var obj = this;
-      let data = new FormData();
-      console.log(Number(this.rentForm.rent_id));
-      console.log(this.user.token);
-      data.append("rent_id", Number(this.rentForm.rent_id));
+      let dataR = new FormData();
+      dataR.append("rent_id", Number(this.rentForm.rent_id));
       this.axios
-      .delete("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", data, {
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", dataR,{
         headers: {
           'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/rental/cancelRent',
           'Content-Type': 'multipart/form-data',
-          //'accept': 'application/json',
+          'accept': 'application/json',
           'Authorization': "Bearer " + this.user.token
         }
       })
       .then(
         (response) => {
-          //obj.getRentData();
-          console.log(JSON.stringify(response));
+          obj.getRentData();
+          //console.log(JSON.stringify(response));
         });
     },
     Change(){
