@@ -53,9 +53,11 @@
           <br>
           <br>
           <b-container v-if="rent == true">
-            <b-card title="Rent">
+            <b-card title='Rent' :sub-title="'status: ' + rentForm.rent_status">
               <b-card-text>
                 Your Water Cenre: <b>{{rentForm.centre_name}}</b>
+                <br>
+                Phone number: <b>{{rentForm.centre_phone_number}}</b>
                 <br>
                 Rent Start: <b>{{rentForm.rent_start.toLocaleString()}}</b>
                 <br>
@@ -65,7 +67,7 @@
                 <br>
                 Cost: <b>{{rentForm.cost}}</b>
               </b-card-text>
-              <b-button variant="primary" v-on:click="Return()">Return</b-button>
+              <b-button variant="danger" v-on:click="CancelRent()">Cancel</b-button>
             </b-card>
           </b-container>
           <b-container v-if="rent == false">
@@ -114,7 +116,10 @@ export default {
         place: null,
         cost: null,
         centre_name: null,
-        gear_name: null
+        gear_name: null,
+        rent_id: null,
+        rent_status: null,
+        centre_phone_number: null
       },
       companyForms: [],
       changeName: true,
@@ -181,12 +186,7 @@ export default {
       this.rentForm.rent_start = value.rent_start;
       this.rentForm.rent_end = value.rent_end;
       this.rentForm.rent_amount = value.rent_amount;
-      this.rentForm.is_returned = value.is_returned;
-      this.rentForm.user_id = value.user_id;
-      this.rentForm.gear_id = value.gear_id;
       this.rentForm.gear_centre_id = value.gear_centre_id;
-      this.rentForm.place = value.place;
-      this.rentForm.cost = value.cost;
 
       var obj = this;
       let data = new FormData();
@@ -203,17 +203,13 @@ export default {
           'accept': 'application/json',
           'Authorization': "Bearer " + this.user.token
         }
-      });
-      this.getRentData();
+      })
+      .then(
+        (response) => {
+          obj.getRentData();
+        })
     },
-    Return(){
-      this.rentForm.rent_start = '';
-      this.rentForm.rent_end = '';
-      this.rentForm.rent_amount = '';
-      this.rentForm.is_returned = '';
-      this.rentForm.user_id = '';
-      this.rentForm.gear_id = '';
-      this.rentForm.gear_centre_id = '';
+    CancelRent(){
       this.rent = false;
     },
     Change(){
@@ -282,8 +278,10 @@ export default {
       })
       .then(
         (response) => {
-          if(response.length == 0){
+          console.log(JSON.stringify(response));
+          if(response.data.length == 0){
             obj.rent = false;
+            console.log('xd tutaj');
           }else{
             obj.rent = true;
             obj.rentForm.rent_start = new Date(response.data[0].rent_start);
@@ -297,6 +295,7 @@ export default {
             obj.rentForm.rent_status = response.data[0].rent_status;
             obj.rentForm.gear_name = response.data[0].gear_name;
             obj.rentForm.centre_name = response.data[0].centre_name;
+            obj.rentForm.centre_phone_number = response.data[0].centre_phone_number;
           }
         obj.calcPlace(response.data[0].centre_latitude, response.data[0].centre_longitude);
         })

@@ -56,8 +56,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Sprzęt
     [x] Filtrowanie nie działa
     [x] Cost
-    [ x Wypozyczenie - func
+    [x] Wypozyczenie - func
     [x] Wypozyczenie - tresc
+    [x] Wypozyczenie - status
     [ ] Wypozyczenie - oddanie(Owner oddaje)
     [ ] Wypozyczenie - cancel
 [x] Admin

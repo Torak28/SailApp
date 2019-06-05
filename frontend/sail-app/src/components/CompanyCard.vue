@@ -131,8 +131,8 @@ export default {
       this.rentForm.cost = this.companyForm.gears[this.index].gearCost * Number(this.amount);
     },
     handleOk(){
-      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
-      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
+      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime);
+      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime);
       this.rentForm.is_returned = false;
       this.rentForm.rent_amount = this.amount;
       this.rentForm.user_id = this.userForm.name;

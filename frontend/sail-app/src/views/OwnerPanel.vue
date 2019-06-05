@@ -233,8 +233,8 @@ export default {
       this.dropdownTextGear = this.gearTypes[index];
     },
     handleOk(){
-      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
-      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
+      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime);
+      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime);
       this.rentForm.is_returned = false;
       this.rentForm.user_id = this.userForm.name;
       this.rentForm.gear_id = this.dropdownTextGear;
