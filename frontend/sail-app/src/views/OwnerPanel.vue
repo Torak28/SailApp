@@ -54,13 +54,13 @@
           <b-tab title="User Data">
             <h1 class='title'>User Data</h1>
             <br>
+            <h6>User: {{userForm.email}}</h6>
             <br>
             <b-row>
               <b-col sm="9">
                 <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
                 <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
                 <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
-                <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
                 <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
                 <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
               </b-col>
@@ -68,7 +68,6 @@
                 <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
-                <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
               </b-col>
@@ -159,7 +158,6 @@ export default {
       modalEndTime: '',
       howManyNow: 0,
       counter: 0,
-      changeName: true,
       changeSurname: true,
       changeTel: true,
       changeEmail: true,
@@ -276,9 +274,6 @@ export default {
     },
     changeTelProp(){
       this.changeTel = !this.changeTel;
-    },
-    changeEmailProp(){
-      this.changeEmail = !this.changeEmail;
     },
     changeCompanyNameProp(){
       this.changeCompanyName = !this.changeCompanyName;

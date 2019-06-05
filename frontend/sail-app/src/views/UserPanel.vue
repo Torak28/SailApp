@@ -26,13 +26,14 @@
             <br>
             <h1 class='title'>User Panel</h1>
             <br>
+            <h6>User: {{userForm.email}}</h6>
+            <br>
             <br>
             <b-row>
               <b-col sm="9">
                 <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
                 <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
                 <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
-                <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
                 <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
                 <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
               </b-col>
@@ -40,7 +41,6 @@
                 <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
-                <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
                 <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
               </b-col>
@@ -130,7 +130,6 @@ export default {
       changeName: true,
       changeSurname: true,
       changeTel: true,
-      changeEmail: true,
       changePassword: true,
       changeCompanyName: true,
       changeCompanyTel: true,
@@ -148,9 +147,6 @@ export default {
     },
     changeTelProp(){
       this.changeTel = !this.changeTel;
-    },
-    changeEmailProp(){
-      this.changeEmail = !this.changeEmail;
     },
     changePasswordProp(){
       this.changePassword = !this.changePassword;

@@ -83,6 +83,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Same wypożyczenie jako takie
 [x] div przy breachAlert
 [x] Loading
+[x] Login niezmienny
 [ ] Wypożyczenie - redisign tych pól
 [x] DELETE not working
 [ ] Nie udało się wczytać arkusza stylów XD
