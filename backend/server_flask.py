@@ -501,7 +501,7 @@ class CancelRent(Resource):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
         if rental.is_user_allowed_to_delete_rental(user_id, kwargs['rent_id']):
-            rental.delete_rental()
+            rental.delete_rental(kwargs['rent_id'])
             return {'msg': 'Cancellation was successful.'}, 200
         return {'msg': 'Permission denied. You are not the user nor the owner.'}, 403
 
