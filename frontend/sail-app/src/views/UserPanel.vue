@@ -210,7 +210,22 @@ export default {
         })
     },
     CancelRent(){
-      this.rent = false;
+      var obj = this;
+      let data = new FormData();
+      data.append("rent_id", this.rentForm.gear_centre_id);
+      this.axios
+      .delete("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/rental/cancelRent',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.getRentData();
+        });
     },
     Change(){
       //console.log("User " + JSON.stringify(this.form) + " changed");

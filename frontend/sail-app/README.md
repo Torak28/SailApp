@@ -60,7 +60,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Wypozyczenie - tresc
     [x] Wypozyczenie - status
     [ ] Wypozyczenie - oddanie(Owner oddaje)
-    [ ] Wypozyczenie - cancel
+    [ ] Wypozyczenie - cancel(zapytanie nie działa)
 [x] Admin
     [x] Akceptacja rejestracji
     [x] Denied Page
