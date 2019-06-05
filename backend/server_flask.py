@@ -304,7 +304,7 @@ class DeleteGear(Resource):
     @jwt_required
     @api.response(200, 'Gear deleted successfully.')
     @api.response(403, 'User does not have the proper rights.')
-    def delete(self):
+    def put(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
         if user.is_user_the_owner(user_id) and user.is_owner_the_centre_owner(user_id, kwargs['centre_id']):
@@ -497,7 +497,7 @@ class CancelRent(Resource):
     @api.response(200, 'Cancelation was successful.')
     @api.response(403, 'User does not have the proper rights.')
     @jwt_required
-    def delete(self):
+    def put(self):
         kwargs = self.parser.parse_args(strict=True)
         user_id = get_jwt_identity()
         if rental.is_user_allowed_to_delete_rental(user_id, kwargs['rent_id']):
