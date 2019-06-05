@@ -194,6 +194,8 @@ export default {
       this.rentForm.rent_end = value.rent_end;
       this.rentForm.rent_amount = value.rent_amount;
       this.rentForm.gear_centre_id = value.gear_centre_id;
+      this.rentForm.gear_id = value.gear_id;
+
 
       var obj = this;
       let data = new FormData();
@@ -219,12 +221,14 @@ export default {
     CancelRent(){
       var obj = this;
       let data = new FormData();
-      data.append("rent_id", this.rentForm.rent_id);
+      console.log(Number(this.rentForm.rent_id));
+      console.log(this.user.token);
+      data.append("rent_id", Number(this.rentForm.rent_id));
       this.axios
       .delete("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", data, {
         headers: {
           'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/rental/cancelRent',
-          //'Content-Type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
           //'accept': 'application/json',
           'Authorization': "Bearer " + this.user.token
         }
@@ -317,8 +321,8 @@ export default {
             obj.rentForm.gear_name = response.data[0].gear_name;
             obj.rentForm.centre_name = response.data[0].centre_name;
             obj.rentForm.centre_phone_number = response.data[0].centre_phone_number;
+            obj.calcPlace(response.data[0].centre_latitude, response.data[0].centre_longitude);
           }
-        obj.calcPlace(response.data[0].centre_latitude, response.data[0].centre_longitude);
         })
       .catch(function (error){
         console.log(error);
