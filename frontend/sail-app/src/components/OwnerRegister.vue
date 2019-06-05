@@ -76,7 +76,6 @@ export default {
             (response) => {
               obj.getCentreId();
             });
-        
         }else{
           this.$parent.noData = true;
           this.$parent.cookieData = false;

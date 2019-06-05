@@ -47,7 +47,7 @@
               <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
               </b-col>
             </b-row>
-            <b-button block class='btnClass' variant="success" v-on:click="ChangeData()">Save Changed Data</b-button>
+            <b-button block class='btnClass' variant="success" v-on:click="ChangeCompData()">Save Changed Data</b-button>
             <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
           </b-tab> 
           <b-tab title="User Data">
@@ -179,8 +179,7 @@ export default {
     }
   },
   methods: {
-    ChangeData(){
-      //Nowe zdjecie    companyForm.photo
+    ChangeCompData(){
       //Nowa nazwa      companyForm.name
       //Nowa nr. telef  companyForm.phone
       //Nowy place      companyForm.latitude i companyForm.longtitude
