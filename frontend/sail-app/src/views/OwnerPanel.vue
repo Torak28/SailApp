@@ -4,7 +4,7 @@
       <div v-if="loading == false">
         <br>
         <b-tabs content-class="mt-3" align="center">
-          <b-tab title="Company Data" active>
+          <b-tab title="Preview" active>
             <br>
             <h1 class='title'>Preview</h1>
             <br>
@@ -17,8 +17,10 @@
               </b-col>
             </b-row>
             <br>
+          </b-tab>
+          <b-tab title="Company Data">
             <br>
-            <h1 class='title'>Company</h1>
+            <h1 class='title'>Company Data</h1>
             <br>
             <br>
             <b-row>
@@ -42,6 +44,8 @@
               <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
               </b-col>
             </b-row>
+            <b-button block class='btnClass' variant="success" v-on:click="ChangeData()">Save Changed Data</b-button>
+            <b-button block class='btnClass' variant="warning" to="/">Go back</b-button>
           </b-tab> 
           <b-tab title="User Data">
             <h1 class='title'>User Data</h1>
@@ -88,12 +92,18 @@
             <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
 
           </b-tab>
+          <b-tab title="Pending Rents">
+            <br>
+            <h1 class='title'>Pending Rents</h1>
+            <br>
+            <br>
+            <!-- Dodać Rent-->
+          </b-tab>
           <b-tab title="Rents">
             <br>
             <h1 class='title'>Rents</h1>
             <br>
             <br>
-            <!-- Dodać Rent-->
           </b-tab>
         </b-tabs>
       </div>
@@ -138,15 +148,6 @@ export default {
         centre_id: '',
         dist: ''
       },
-      rentForm: {
-        rent_start: '',
-        rent_end: '',
-        rent_amount: 1,
-        is_returned: null,
-        user_id: '',
-        gear_id: '',
-        gear_centre_id: ''
-      },
       dropdownTextGear: "Choose Gear to Rent",
       dropdownTextTime: "How Long",
       modalDate: '',
@@ -175,6 +176,12 @@ export default {
     }
   },
   methods: {
+    ChangeData(){
+      //Nowe zdjecie    companyForm.photo
+      //Nowa nazwa      companyForm.name
+      //Nowa nr. telef  companyForm.phone
+      //Nowy place      companyForm.latitude i companyForm.longtitude
+    },
     addGear(){
       this.companyForm.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
       this.howManyNow++;
@@ -240,16 +247,7 @@ export default {
     chooseGear(index){
       this.dropdownTextGear = this.gearTypes[index];
     },
-    handleOk(){
-      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime);
-      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime);
-      this.rentForm.is_returned = false;
-      this.rentForm.user_id = this.userForm.name;
-      this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.companyForm.name;
-    },
     Change(){
-      //console.log("User " + JSON.stringify(this.form) + " changed");
       var obj = this;
       //User Data
       let dataU = new FormData();
@@ -407,7 +405,7 @@ export default {
       .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
       .then(
         (response) => {
-          obj.rentForm.place = response.data.results[0].address_components[3].long_name + ', '
+          obj.place = response.data.results[0].address_components[3].long_name + ', '
                        + response.data.results[0].address_components[1].long_name + ', '
                        + response.data.results[0].address_components[0].long_name;
           obj.loading = false;
