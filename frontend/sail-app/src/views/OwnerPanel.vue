@@ -14,6 +14,9 @@
                 <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
                 <br>
                 <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
+                <br>
+                <br>
+                <b-button block class='btnClass' variant="success" v-on:click="ChangePic()">Change Picture</b-button>
               </b-col>
             </b-row>
             <br>
@@ -182,6 +185,26 @@ export default {
       //Nowa nr. telef  companyForm.phone
       //Nowy place      companyForm.latitude i companyForm.longtitude
     },
+    ChangePic(){
+      let obj = this;
+      let data = new FormData();
+      data.append("centre_id", this.companyForm.centre_id);
+      data.append("file", this.companyForm.photo);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/addPicture", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addPicture',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.getCentrePic();
+          obj.companyForm.photo = '';
+        });
+    },
     addGear(){
       this.companyForm.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
       this.howManyNow++;
@@ -336,7 +359,7 @@ export default {
       })
       .then(
         (response) => {
-          obj.companyForm.photo = response.data[0].picture_link;
+          obj.companyForm.photo = response.data[response.data.length - 1].picture_link;
       });
       obj.getGear();
     },

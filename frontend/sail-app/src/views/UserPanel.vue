@@ -223,7 +223,7 @@ export default {
       let dataR = new FormData();
       dataR.append("rent_id", Number(this.rentForm.rent_id));
       this.axios
-      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", dataR,{
+      .put("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", dataR,{
         headers: {
           'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/rental/cancelRent',
           'Content-Type': 'multipart/form-data',
@@ -417,7 +417,7 @@ export default {
           })
           .then(
             (response) => {
-              obj.companyForms[i].photo = response.data[0].picture_link;
+              obj.companyForms[i].photo = response.data[response.data.length - 1].picture_link;
             })
       }
       obj.getAllGear();

@@ -69,7 +69,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
     [x] API dla Ownera
     [x] User Data
-    [ ] Preview
+    [x] Preview
     [ ] Company Data
     [ ] Gear
     [ ] Pending Rents
