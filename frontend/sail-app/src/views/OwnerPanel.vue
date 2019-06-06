@@ -96,7 +96,7 @@
               <b-form-input class="block" type="text" v-model="newGear.gearType" placeholder="Type of gear e.g. water bikes" />
               <b-form-input class="block" type="number" v-model="newGear.gearAmount" placeholder="How many of those You have?" />
               <b-form-input class="block" type="number" v-model="newGear.gearCost" placeholder="How much cost 1 hour?" />
-              <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
+              <b-button class='block' block variant="danger" v-on:click="deleteGear(newGear.id)">Delete This Gear</b-button>
               <hr>
             </b-container>
             <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()">Add new Gear</b-button>
@@ -285,15 +285,13 @@ export default {
               "gearCost" : response.data[j].gear_price.toString()
             });
           }
+          let tmp = [];
+          for (let i = 0; i < obj.companyForm.gears.length; i++) {
+            tmp.push(Object.values(obj.companyForm.gears[i])[1]);
+          }
+          obj.gearTypes = tmp;
+          obj.companyForm.newGears = [];
       })
-
-
-
-      let tmp = [];
-      for (let i = 0; i < obj.companyForm.gears.length; i++) {
-        tmp.push(Object.values(obj.companyForm.gears[i])[1]);
-      }
-      obj.gearTypes = tmp;
     },
     changeNameProp(){
       this.changeName = !this.changeName;
