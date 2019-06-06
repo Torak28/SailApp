@@ -160,7 +160,7 @@ export default {
       counter: 0,
       changeSurname: true,
       changeTel: true,
-      changeEmail: true,
+      changeName: true,
       changePassword: true,
       changeCompanyName: true,
       changeCompanyTel: true,
@@ -234,36 +234,57 @@ export default {
       }
     },
     saveGear(){
-      let newValue = this.companyForm.gears.pop();
-      this.companyForm.gears.push(newValue);
-      let tmp = [];
-      for (let i = 0; i < this.companyForm.gears.length; i++) {
-        tmp.push(Object.values(this.companyForm.gears[i])[1]);
-      }
-      this.gearTypes = tmp;
+      this.delAllGear();
+      },
+    delAllGear(){
       var obj = this;
-      for (let i = 0; i < this.form.gears.length; i++) {
-        console.log(JSON.stringify(this.form.gears[i]));
+      let canGo = true;
+      for (let i = 0; i < this.companyForm.gears.length; i++) {
         let data = new FormData();
-        data.append("centre_id", this.form.centre_id);
-        data.append('gear_name', this.form.gears[i].gearName);
-        data.append('gear_quantity', this.form.gears[i].gearQuantity);
-        data.append('gear_price', this.form.gears[i].gearPrice);
+        data.append("centre_id", this.companyForm.centre_id);
+        data.append('gear_id', this.companyForm.gears[i].id);
+        this.axios
+          .put("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/deleteGear", data, {
+            headers: {
+              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/deleteGear',
+              'Content-Type': 'multipart/form-data',
+              'accept': 'application/json',
+              'Authorization': "Bearer " + this.user.token
+            }
+          })
+      }
+      if(canGo){
+        obj.addAllGear();
+      }
+    },
+    addAllGear(){
+      var obj = this;
+      for (let i = 0; i < this.companyForm.gears.length; i++) {
+        let data = new FormData();
+        data.append("centre_id", this.companyForm.centre_id);
+        data.append('gear_name', this.companyForm.gears[i].gearType);
+        data.append('gear_quantity', this.companyForm.gears[i].gearAmount);
+        data.append('gear_price', this.companyForm.gears[i].gearCost);
         this.axios
           .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/addGear", data, {
             headers: {
               'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/addGear',
               'Content-Type': 'multipart/form-data',
               'accept': 'application/json',
-              'Authorization': "Bearer " + this.form.token
+              'Authorization': "Bearer " + this.user.token
             }
           })
           .then(
             (response) => {
-              //console.log(JSON.stringify(response));
-              //Tutaj lecimy dalej
-              //this.$router.replace({ name: "OwnerRegistrationSuccess", params: {user: obj.form} });
-            });
+              let tmp = [];
+              for (let i = 0; i < obj.companyForm.gears.length; i++) {
+                tmp.push(Object.values(obj.companyForm.gears[i])[1]);
+              }
+            obj.gearTypes = tmp;
+          })
+          .catch(function (error){
+            console.log(error);
+          });
       }
     },
     changeNameProp(){
