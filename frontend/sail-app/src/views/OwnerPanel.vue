@@ -595,8 +595,8 @@ export default {
               gear_id: response.data[i].gear_id,
               gear_name : response.data[i].gear_name,
               rent_id : response.data[i].rent_id,
-              rent_start : response.data[i].rent_start,
-              rent_end : response.data[i].rent_end,
+              rent_start : new Date(response.data[i].rent_start),
+              rent_end : new Date(response.data[i].rent_end),
               rent_quantity : response.data[i].rent_quantity
             });
           }
@@ -616,14 +616,16 @@ export default {
         (response) => {
           obj.rents = [];
           for (let i = 0; i < response.data.length; i++) {
-            obj.rents.push({
-              gear_id: response.data[i].gear_id,
-              gear_name : response.data[i].gear_name,
-              rent_id : response.data[i].rent_id,
-              rent_start : response.data[i].rent_start,
-              rent_end : response.data[i].rent_end,
-              rent_quantity : response.data[i].rent_quantity
-            });
+            if(response.data[i].rent_status == 'accepted') {
+              obj.rents.push({
+                gear_id: response.data[i].gear_id,
+                gear_name : response.data[i].gear_name,
+                rent_id : response.data[i].rent_id,
+                rent_start : new Date(response.data[i].rent_start),
+                rent_end : new Date(response.data[i].rent_end),
+                rent_quantity : response.data[i].rent_quantity
+              });
+            }
           }
       });
     },

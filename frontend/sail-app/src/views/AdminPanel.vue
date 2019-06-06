@@ -76,8 +76,8 @@ export default {
               phone_number: response.data[i].phone_number,
             });
           }
+          obj.loading = false;
         });
-      this.loading = false;
     },
     acc(id) {
       let obj = this;
