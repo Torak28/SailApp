@@ -20,15 +20,14 @@ object DateUtil{
 
     @SuppressLint("SimpleDateFormat")
     fun dateToString(date: Date?, datePattern : String = DATE_PATTERN_ISO_8601): String {
-        val simpleDateFormat = SimpleDateFormat(datePattern)
+        val simpleDateFormat = SimpleDateFormat(datePattern, Locale.getDefault())
         return simpleDateFormat.format(date)
     }
 
     @SuppressLint("SimpleDateFormat")
     fun stringToDate(dateStr: String?, datePattern : String = DATE_PATTERN_SIMPLE): Date? {
         val simpleDateFormat = SimpleDateFormat(datePattern, Locale.ENGLISH)
-        val dateFormatted = simpleDateFormat.parse(dateStr)
-        return dateFormatted
+        return simpleDateFormat.parse(dateStr)
     }
 
     fun timeDiff(dateStart: Date, dateEnd:Date):Pair<Int, Int>{
@@ -73,10 +72,5 @@ object DateUtil{
     fun getMonth(date: Date):Int = DateTime(date).monthOfYear
 
     fun getYear(date: Date):Int = DateTime(date).year
-
-
-
-
-
 
 }
