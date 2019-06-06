@@ -262,8 +262,11 @@ export default {
               'Authorization': "Bearer " + this.user.token
             }
           })
+          .then(
+            (response) => {
+              obj.addToGears();
+          })
         }
-        this.addToGears();
     },
     addToGears(){
       this.companyForm.gears =  [];
@@ -291,6 +294,10 @@ export default {
           }
           obj.gearTypes = tmp;
           obj.companyForm.newGears = [];
+          //obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });
+          //this.$router.go()
+          //this.$router.reload()
+
       })
     },
     changeNameProp(){

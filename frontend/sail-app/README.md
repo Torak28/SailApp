@@ -71,7 +71,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] User Data
     [x] Preview
     [x] Company Data
-    [ ] Gear
+    [x] Gear
     [ ] Pending Rents
     [ ] Rents
     [ ] Owner zwraca dany sprzet
