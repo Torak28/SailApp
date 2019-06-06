@@ -125,7 +125,7 @@ class RentDetailsFragment : MainScopedFragment() {
 
     // implementation of OnTimeSetListener one abstract method interface
     private val startTimeSetListener = OnTimeSetListener { _, hourOfDay, minute, second ->
-        calendar[Calendar.HOUR] = hourOfDay
+        calendar[Calendar.HOUR_OF_DAY] = hourOfDay
         calendar[Calendar.MINUTE] = minute
         calendar[Calendar.SECOND] = second
         mainViewModel.rentStart = calendar.time
@@ -135,7 +135,7 @@ class RentDetailsFragment : MainScopedFragment() {
 
     // implementation of OnTimeSetListener one abstract method interface
     private val endTimeSetListener = OnTimeSetListener { _, hourOfDay, minute, second ->
-        calendar[Calendar.HOUR] = hourOfDay
+        calendar[Calendar.HOUR_OF_DAY] = hourOfDay
         calendar[Calendar.MINUTE] = minute
         calendar[Calendar.SECOND] = second
         mainViewModel.rentEnd = calendar.time
