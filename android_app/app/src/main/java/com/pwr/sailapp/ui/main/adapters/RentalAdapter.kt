@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pwr.sailapp.R
@@ -36,6 +37,9 @@ class RentalAdapter(
 ) : RecyclerView.Adapter<RentalAdapter.ViewHolder>() {
 
     private var rentals = ArrayList<Rental>()
+    private val colorSuccess = ContextCompat.getColor(context, R.color.colorSuccess)
+    private val colorError = ContextCompat.getColor(context, R.color.colorError)
+    private val colorWaiting = ContextCompat.getColor(context, R.color.colorPrimary)
 
     // Creating a new view (view holder) - only a few times
     // The onCreateViewHolder() method is similar to the onCreate() method. It inflates the item layout, and returns a ViewHolder with the layout and the adapter.
@@ -61,6 +65,24 @@ class RentalAdapter(
 
         val gearAndQuantity = "${currentRental.equipmentName}   × ${currentRental.rentQuantity}"
         holder.textViewGearAndQuantity.text = gearAndQuantity
+        
+        holder.textViewRentStatus.apply { 
+            when(currentRental.rentStatus){
+                Rental.STATUS_ACCEPTED -> {
+                    setBackgroundColor(colorSuccess)
+                    text = context.getString(R.string.status_accepted)
+                }
+                Rental.STATUS_DENIED -> {
+                    setBackgroundColor(colorError)
+                    text = context.getString(R.string.status_denied)
+                }
+                Rental.STATUS_PENDING -> {
+                    setBackgroundColor(colorWaiting)
+                    text = context.getString(R.string.status_waiting)
+                }
+                else -> visibility = View.GONE
+            }
+        }
 
         // Expand the view and hide down arrow when clicked
         holder.arrowDownImageView.setOnClickListener {
@@ -132,5 +154,7 @@ class RentalAdapter(
         val textViewTemperature: TextView = itemView.findViewById(R.id.textView_temperature)
         val textViewWind: TextView = itemView.findViewById(R.id.textView_wind)
         val imageViewWeather : ImageView = itemView.findViewById(R.id.imageView_weather_icon)
+        
+        val textViewRentStatus: TextView = itemView.findViewById(R.id.textView_rental_status) 
     }
 }

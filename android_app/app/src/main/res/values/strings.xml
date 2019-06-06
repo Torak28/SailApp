@@ -83,4 +83,7 @@
     <string name="change_data">Change data</string>
     <string name="sort_by_distance_ascending">Sort by distance ascending</string>
     <string name="sort_by_distance_descending">Sort by distance descending</string>
+    <string name="status_accepted">Status: Accepted</string>
+    <string name="status_denied">Status: Denied</string>
+    <string name="status_waiting">Status: Waiting for confirmation</string>
 </resources>

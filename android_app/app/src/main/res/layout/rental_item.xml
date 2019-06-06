@@ -21,6 +21,17 @@
 
 
         <TextView
+                android:id="@+id/textView_rental_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/black"
+                tools:text="Status:     Waiting for confirmation"
+                android:background="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textAlignment="center"/>
+
+        <TextView
                 android:id="@+id/textView_rental_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

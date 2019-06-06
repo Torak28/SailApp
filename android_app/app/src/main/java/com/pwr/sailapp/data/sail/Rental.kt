@@ -39,9 +39,18 @@ data class Rental(
     @SerializedName("centre_phone_number")
     val centrePhoneNumber: String,
 
+    @SerializedName("rent_status")
+    val rentStatus: String = STATUS_PENDING,
+
     var currently : Currently? = null
 
 ) {
+
+    companion object{
+        const val STATUS_ACCEPTED = "accepted"
+        const val STATUS_DENIED= "denied"
+        const val STATUS_PENDING = "pending"
+    }
 
     override fun toString() = "$ID, $centreName , $rentStartDateStr, $rentEndDateStr, $equipmentName"
 
