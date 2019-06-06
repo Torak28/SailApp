@@ -20,7 +20,9 @@ object DateUtil{
 
     @SuppressLint("SimpleDateFormat")
     fun dateToString(date: Date?, datePattern : String = DATE_PATTERN_ISO_8601): String {
+        val timeZone = TimeZone.getTimeZone("UTC")
         val simpleDateFormat = SimpleDateFormat(datePattern, Locale.getDefault())
+        simpleDateFormat.timeZone = timeZone
         return simpleDateFormat.format(date)
     }
 
