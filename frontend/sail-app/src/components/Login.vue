@@ -46,8 +46,16 @@ export default {
             obj.$parent.authenticated = true;
             if(obj.form.role == 'user'){
               obj.$router.push({ name: "UserPanel", params: {user: obj.form} });
-            }else{
-              obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });
+            }else if(obj.form.role == 'owner'){
+              if(response.data.account_status == 'accepted'){
+                obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });
+              }else if(response.data.account_status == 'denied'){
+                obj.$router.push({ name: "Denied", params: {user: obj.form} });
+              }else if(response.data.account_status == 'pending'){
+                obj.$router.push({ name: "Pending", params: {user: obj.form} });
+              }
+            }else if(obj.form.role == 'admin'){
+              obj.$router.push({ name: "AdminPanel", params: {user: obj.form} });
             }
           })
         .catch(function (error){

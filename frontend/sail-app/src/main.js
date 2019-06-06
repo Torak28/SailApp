@@ -34,10 +34,12 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { faRoad } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(faPhone);
 library.add(faMapMarkerAlt);
 library.add(faRoad);
+library.add(faEnvelope);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 new Vue({
