@@ -62,7 +62,7 @@ export default {
           this.$parent.noGear = false;
           var obj = this;
           for (let i = 0; i < this.form.gears.length; i++) {
-            console.log(JSON.stringify(this.form.gears[i]));
+            //console.log(JSON.stringify(this.form.gears[i]));
             let data = new FormData();
             data.append("centre_id", this.form.centre_id);
             data.append('gear_name', this.form.gears[i].gearName);

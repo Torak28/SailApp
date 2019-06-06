@@ -56,20 +56,39 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Sprzęt
     [x] Filtrowanie nie działa
     [x] Cost
-    [ ] Wypozyczenie - func
-    [ ] Wypozyczenie - tresc
-    [ ] Wypozyczenie - oddanie
-[ ] Admin
-    [ ] Akceptacja rejestracji
+    [x] Wypozyczenie - func
+    [x] Wypozyczenie - tresc
+    [x] Wypozyczenie - status
+    [ ] Wypozyczenie - oddanie(Owner oddaje)
+    [ ] Wypozyczenie - cancel(zapytanie nie działa)
+[x] Admin
+    [x] Akceptacja rejestracji
+    [x] Denied Page
+    [x] Pending Page
 [ ] Owner - redesign
     [x] Taby dla Ownera(Company data + Obrazek + Preview, User data, Gear, Wypożyczenia)
-    [ ] API dla Ownera
-[ ] Wypożyczenie
-    [ ] Potwierdzenie ownera
+    [x] API dla Ownera
+    [x] User Data
+    [x] Preview
+    [x] Company Data
+    [x] Gear
+    [x] Pending Rents
+    [x] Rents
+    [x] Owner zwraca dany sprzet
+    [x] Owner potwierdza wypożyczenie
+[x] Wypożyczenie
+    [x] Potwierdzenie ownera
+    [x] Sprawdzic godziny wypozyczen
     [x] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera
-    [ ] Same wypożyczenie jako takie
-[ ] Nie udało się wczytać arkusza stylów XD
-[ ] Przetłumaczenie na j.polski
+    [x] Same wypożyczenie jako takie
+[x] div przy breachAlert
+[x] Loading
+[x] Login niezmienny
+[x] Wypożyczenie - redisign tych pól
+[x] DELETE not working
+[x] Nie udało się wczytać arkusza stylów XD
+[x] Background color ?!
+[x] Przetłumaczenie na j.polski
 [x] Obrazek Sail kieruje do home
 [x] Bezpieczeństwo
 ```

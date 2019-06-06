@@ -131,15 +131,17 @@ export default {
       this.rentForm.cost = this.companyForm.gears[this.index].gearCost * Number(this.amount);
     },
     handleOk(){
-      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
-      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
+      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime);
+      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime);
       this.rentForm.is_returned = false;
       this.rentForm.rent_amount = this.amount;
       this.rentForm.user_id = this.userForm.name;
-      this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.companyForm.name;
+      this.rentForm.gear_id = this.companyForm.gears[this.index].id;
+      this.rentForm.gear_centre_id = this.parentCompanyForm.centre_id;
       this.rentForm.place = this.place;
       this.rentForm.cost = this.companyForm.gears[this.index].gearCost * this.rentForm.rent_amount;
+
+      //console.log(JSON.stringify(this.rentForm));
 
       if(this.modalDate == '' || this.modalStartTime == ''  || this.modalEndTime == '' || this.rentForm.gear_id == 'Choose Gear to Rent'){
         this.badContent = true;
@@ -163,6 +165,7 @@ export default {
     },
     sendRentForm(){
       this.$emit('SendRentFormParent', this.rentForm);
+      //console.log('Wypożyczenie!');
     },
     emitModal(){
       this.$root.$emit('bv::show::modal', this.companyForm.name, '#card');
@@ -236,7 +239,11 @@ export default {
       this.companyForm.phone = newV;
     },
     'parentCompanyForm.photo': function(newV){
-      this.companyForm.photo = newV;
+      if(typeof(newV) == 'string'){
+        this.companyForm.photo = newV;
+      }else{
+        this.companyForm.photo = 'https://i.imgur.com/um4Z7JU.png';
+      }
     },
     'parentCompanyForm.latitude': function(newV){
       this.companyForm.latitude = newV;
@@ -267,7 +274,9 @@ export default {
         .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
         .then(
           (response) => {
-            this.place = response.data.results[0].address_components[3].long_name;
+            obj.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
+                       + response.data.results[0].address_components[0].long_name;
           })
     },
     'parentCompanyForm.gears': function(newV){

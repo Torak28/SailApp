@@ -28,6 +28,13 @@ export default new Router({
         import("./views/OwnerPanel.vue")
     },
     {
+      path: "/adminPanel",
+      name: "AdminPanel",
+      props: true,
+      component: () =>
+        import("./views/AdminPanel.vue")
+    },
+    {
       path: "/registration",
       name: "Registration",
       component: () =>
@@ -53,6 +60,20 @@ export default new Router({
       props: true,
       component: () =>
         import("./views/OwnerRegistrationSuccess.vue")
-    }
+    },
+    {
+      path: "/denied",
+      name: "Denied",
+      props: true,
+      component: () =>
+        import("./views/Denied.vue")
+    },
+    {
+      path: "/pending",
+      name: "Pending",
+      props: true,
+      component: () =>
+        import("./views/Pending.vue")
+    },
   ]
 });

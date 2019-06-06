@@ -1,104 +1,170 @@
 <template>
   <b-container class="OwnerPanel">
-    <b-container v-if="breachAlert == false">
-      <br>
-      <b-tabs content-class="mt-3" align="center">
-        <b-tab title="Company Data" active>
-          <br>
-          <h1 class='title'>Preview</h1>
-          <br>
-          <br>
-          <b-row>
-            <b-col>
-              <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
-              <br>
-              <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
-            </b-col>
-          </b-row>
-          <br>
-          <br>
-          <h1 class='title'>Company</h1>
-          <br>
-          <br>
-          <b-row>
-            <b-col sm="9">
-              <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='companyForm.name' placeholder="Company Name" />
-              <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='companyForm.phone' placeholder="Company Phone Number" />
-            </b-col>
-            <b-col sm="3">
-              <b-button block class="block" variant="info" v-on:click="changeCompanyNameProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changeCompanyTelProp()">Change</b-button>
-            </b-col>
-            <b-col>
-            <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
-            <gmap-marker
-              :position="{
-                lat: Number(this.companyForm.latitude),
-                lng: Number(this.companyForm.longtitude),
-              }"
-              />
-            </gmap-map>
-            <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
-            </b-col>
-          </b-row>
-        </b-tab> 
-        <b-tab title="User Data">
-          <h1 class='title'>User Data</h1>
-          <br>
-          <br>
-          <b-row>
-            <b-col sm="9">
-              <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
-              <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
-              <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
-              <b-form-input :readonly='changeEmail' class="block" type="email" v-model='userForm.email' placeholder="Email" />
-              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
-              <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
-            </b-col>
-            <b-col sm="3">
-              <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changeEmailProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-              <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
-            </b-col>
-          </b-row>
-          <b-row>
-          </b-row>
-          <br>
-          <br>
-          <b-button block variant="success" v-on:click="Change()">Change</b-button>
-          <b-button block variant="warning" to="/">Go back</b-button>
-        </b-tab>
-        <b-tab title="Gear">
-          <br>
-          <h1 class='title'>Gear</h1>
-          <br>
-          <br>
-          <b-container v-for="gear in companyForm.gears" :key="gear.id">
-            <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
-            <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
-            <b-form-input class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
-            <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
-            <hr>
-          </b-container>
-          <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()" v-scroll-to="{el: '#Add', duration: 2000, offset: -210}">Add new Gear</b-button>
-          <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
+    <div v-if="breachAlert == false">
+      <div v-if="loading == false">
+        <br>
+        <b-tabs content-class="mt-3" align="center">
+          <b-tab title="Preview" active>
+            <br>
+            <h1 class='title'>Preview</h1>
+            <br>
+            <br>
+            <b-row>
+              <b-col>
+                <CompanyCard :parentUserForm=userForm :parentCompanyForm=companyForm />
+                <br>
+                <b-form-file class="block" v-model="companyForm.photo" placeholder="Company photo" drop-placeholder="Drop file here..." />
+                <br>
+                <br>
+                <b-button block class='btnClass' variant="success" v-on:click="ChangePic()">Change Picture</b-button>
+                <b-button block variant="warning" to="/">Homepage</b-button>
+              </b-col>
+            </b-row>
+            <br>
+          </b-tab>
+          <b-tab title="Company Data">
+            <br>
+            <h1 class='title'>Company Data</h1>
+            <br>
+            <br>
+            <b-row>
+              <b-col sm="9">
+                <b-form-input :readonly='changeCompanyName' class="block" type="text" v-model='companyForm.name' placeholder="Company Name" />
+                <b-form-input :readonly='changeCompanyTel' class="block" type="tel" v-model='companyForm.phone' placeholder="Company Phone Number" />
+              </b-col>
+              <b-col sm="3">
+                <b-button block class="block" variant="info" v-on:click="changeCompanyNameProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changeCompanyTelProp()">Change</b-button>
+              </b-col>
+              <b-col>
+              <gmap-map class='block' :center= "center" :zoom= "zoom" style="width:100%;  height: 600px;" >
+              <gmap-marker
+                :position="{
+                  lat: Number(this.companyForm.latitude),
+                  lng: Number(this.companyForm.longtitude),
+                }"
+                />
+              </gmap-map>
+              <GmapAutocomplete class="AutoBlockOff" :placeholder="place" @place_changed="setPlace" />
+              </b-col>
+            </b-row>
+            <b-button block class='btnClass' variant="success" v-on:click="ChangeCompData()">Save Changed Data</b-button>
+            <b-button block variant="warning" to="/">Homepage</b-button>
+          </b-tab> 
+          <b-tab title="User Data">
+            <h1 class='title'>User Data</h1>
+            <br>
+            <h6>User: {{userForm.email}}</h6>
+            <br>
+            <b-row>
+              <b-col sm="9">
+                <b-form-input :readonly='changeName' class="block" type="text" v-model='userForm.name' placeholder="First Name" />
+                <b-form-input :readonly='changeSurname' class="block" type="text" v-model='userForm.surname' placeholder="Second Name" />
+                <b-form-input :readonly='changeTel' class="block" type="tel" v-model='userForm.phone' placeholder="Phone number" />
+                <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.password' placeholder="Password" />
+                <b-form-input :readonly='changePassword' class="block" type="password" v-model='userForm.checkPassword' placeholder="Repeat Password" />
+              </b-col>
+              <b-col sm="3">
+                <b-button block class="block" variant="info" v-on:click="changeNameProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changeSurnameProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changeTelProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+                <b-button block class="block" variant="info" v-on:click="changePasswordProp()">Change</b-button>
+              </b-col>
+            </b-row>
+            <b-row>
+            </b-row>
+            <br>
+            <br>
+            <b-button block variant="success" v-on:click="Change()">Change</b-button>
+            <b-button block variant="warning" to="/">Homepage</b-button>
+          </b-tab>
+          <b-tab title="Gear">
+            <br>
+            <h1 class='title'>Gear</h1>
+            <br>
+            <h6>Gear that existed before last login is locked. It can be changed only by contacting our Admin</h6>
+            <br>
+            <b-container v-for="gear in companyForm.gears" :key="gear.id">
+              <b-form-input readonly class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
+              <b-form-input readonly class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
+              <b-form-input readonly class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+              <b-button disabled class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
+              <hr>
+            </b-container>
+            <b-container v-for="newGear in companyForm.newGears" :key="newGear.id">
+              <b-form-input class="block" type="text" v-model="newGear.gearType" placeholder="Type of gear e.g. water bikes" />
+              <b-form-input class="block" type="number" v-model="newGear.gearAmount" placeholder="How many of those You have?" />
+              <b-form-input class="block" type="number" v-model="newGear.gearCost" placeholder="How much cost 1 hour?" />
+              <b-button class='block' block variant="danger" v-on:click="deleteGear(newGear.id)">Delete This Gear</b-button>
+              <hr>
+            </b-container>
+            <b-button id="Add" class='btnClass' block variant="primary" v-on:click="addGear()">Add new Gear</b-button>
+            <b-button class='block' block variant="success" v-on:click="saveGear()">Save This Gear</b-button>
 
-        </b-tab>
-        <b-tab title="Rents">
-          <br>
-          <h1 class='title'>Rents</h1>
-          <br>
-          <br>
-          <!-- Dodać Rent-->
-        </b-tab>
-      </b-tabs>
-    </b-container>
-    <b-container v-if="breachAlert == true || breachAlert == null">
+          </b-tab>
+          <b-tab title="Pending Rents">
+            <br>
+            <h1 class='title'>Pending Rents</h1>
+            <br>
+            <br>
+            <div v-for="(pendingRent, index) in pendingRents" :key="index">
+              <b-card :title="'Rent' + '#' + pendingRent.rent_id.toString()">
+                <b-card-text>
+                  <br>
+                  Name: <b>{{pendingRent.gear_name}}</b>
+                  <br>
+                  Amount: <b>{{pendingRent.rent_quantity}}</b>
+                  <br>
+                  Start: <b>{{pendingRent.rent_start.toLocaleString()}}</b>
+                  <br>
+                  End: <b>{{pendingRent.rent_end.toLocaleString()}}</b>
+                  <br>
+                </b-card-text>
+                <b-button class="btn_space" variant="success" v-on:click="ack(pendingRent.rent_id)">Accept</b-button>
+                <b-button class="btn_space" variant="danger" v-on:click="dec(pendingRent.rent_id)">Delete</b-button>
+              </b-card>
+              <br>
+            </div>
+            <div v-if="pendingRents.length == 0">
+              <h3>There are no pending Rents</h3>
+            </div>
+          </b-tab>
+          <b-tab title="Rents">
+            <br>
+            <h1 class='title'>Rents</h1>
+            <br>
+            <br>
+            <div v-for="(rent, index) in rents" :key="index">
+              <b-card :title="'Rent' + '#' + rent.rent_id.toString()">
+                <b-card-text>
+                  <br>
+                  Name: <b>{{rent.gear_name}}</b>
+                  <br>
+                  Amount: <b>{{rent.rent_quantity}}</b>
+                  <br>
+                  Start: <b>{{rent.rent_start.toLocaleString()}}</b>
+                  <br>
+                  End: <b>{{rent.rent_end.toLocaleString()}}</b>
+                  <br>
+                </b-card-text>
+                <b-button class="btn_space" variant="primary" v-on:click="CancelRent(rent.rent_id)">Return</b-button>
+              </b-card>
+              <br>
+            </div>
+            <div v-if="rents.length == 0">
+              <h3>There are no Rents</h3>
+            </div>
+          </b-tab>
+        </b-tabs>
+      </div>
+      <div v-if="loading == true" class="text-center">
+        <b-spinner style="width: 200px; height: 200px;" class="m-25" variant="primary" type="grow"></b-spinner>
+      </div>
+    </div>
+    <div v-if="breachAlert == true || breachAlert == null">
       <h3>You have to be log in to view this site, go to the <b-link href="/">homepage</b-link>!</h3>
-    </b-container>
+    </div>
   </b-container>
 </template>
 
@@ -129,16 +195,10 @@ export default {
         longtitude: '',
         phone: '',
         photo: '',
-        gears: ''
-      },
-      rentForm: {
-        rent_start: '',
-        rent_end: '',
-        rent_amount: 1,
-        is_returned: null,
-        user_id: '',
-        gear_id: '',
-        gear_centre_id: ''
+        gears: '',
+        newGears: [],
+        centre_id: '',
+        dist: ''
       },
       dropdownTextGear: "Choose Gear to Rent",
       dropdownTextTime: "How Long",
@@ -147,10 +207,9 @@ export default {
       modalEndTime: '',
       howManyNow: 0,
       counter: 0,
-      changeName: true,
       changeSurname: true,
       changeTel: true,
-      changeEmail: true,
+      changeName: true,
       changePassword: true,
       changeCompanyName: true,
       changeCompanyTel: true,
@@ -163,31 +222,155 @@ export default {
       dist: null,
       breachAlert: null,
       date: null,
-      time: null
+      time: null,
+      loading: true,
+      pendingRents: [],
+      rents: []
     }
   },
   methods: {
+    ChangeCompData(){
+      let obj = this;
+      let data = new FormData();
+      data.append("centre_id", this.companyForm.centre_id);
+      data.append("centre_name", this.companyForm.name);
+      data.append("latitude", this.companyForm.latitude);
+      data.append("longitude", this.companyForm.longtitude);
+      data.append("phone_number", this.companyForm.phone);
+      this.axios
+      .put("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/editCentre", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/editCentre',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcPlace();
+        });
+    },
+    ChangePic(){
+      let obj = this;
+      let data = new FormData();
+      data.append("centre_id", this.companyForm.centre_id);
+      data.append("file", this.companyForm.photo);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/addPicture", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/addPicture',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.getCentrePic();
+          obj.companyForm.photo = '';
+        });
+    },
     addGear(){
-      this.companyForm.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
+      this.companyForm.newGears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
       this.howManyNow++;
       this.counter++;
     },
     deleteGear(elemId){
-      const index = this.companyForm.gears.map(e => e.id).indexOf(elemId);
-      this.companyForm.gears.splice(index, 1);
+      const index = this.companyForm.newGears.map(e => e.id).indexOf(elemId);
+      this.companyForm.newGears.splice(index, 1);
       this.howManyNow--;
       if(this.howManyNow < 0){
         this.howManyNow = 0;  
       }
     },
     saveGear(){
-      let newValue = this.companyForm.gears.pop();
-      this.companyForm.gears.push(newValue);
-      let tmp = [];
-      for (let i = 0; i < this.companyForm.gears.length; i++) {
-        tmp.push(Object.values(this.companyForm.gears[i])[1]);
-      }
-      this.gearTypes = tmp;
+      this.addAllNewGear();
+      },
+    addAllNewGear(){
+      var obj = this;
+      for (let i = 0; i < this.companyForm.newGears.length; i++) {
+        let data = new FormData();
+        data.append("centre_id", this.companyForm.centre_id);
+        data.append('gear_name', this.companyForm.newGears[i].gearType);
+        data.append('gear_quantity', this.companyForm.newGears[i].gearAmount);
+        data.append('gear_price', this.companyForm.newGears[i].gearCost);
+        this.axios
+          .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/addGear", data, {
+            headers: {
+              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/addGear',
+              'Content-Type': 'multipart/form-data',
+              'accept': 'application/json',
+              'Authorization': "Bearer " + this.user.token
+            }
+          })
+          .then(
+            (response) => {
+              obj.addToGears();
+          })
+        }
+    },
+    addToGears(){
+      this.companyForm.gears =  [];
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          for (let j = 0; j < response.data.length; j++) {
+            obj.companyForm.gears.push({
+              "id" : response.data[j].gear_id.toString(),
+              "gearType" : response.data[j].gear_name.toString(),
+              "gearAmount" : response.data[j].gear_quantity.toString(),
+              "gearCost" : response.data[j].gear_price.toString()
+            });
+          }
+          let tmp = [];
+          for (let i = 0; i < obj.companyForm.gears.length; i++) {
+            tmp.push(Object.values(obj.companyForm.gears[i])[1]);
+          }
+          obj.gearTypes = tmp;
+          obj.companyForm.newGears = [];
+      })
+    },
+    ack(id){ ///owner/decideAboutRental
+      let obj = this;
+      let data = new FormData();
+      data.append("rental_id", id);
+      data.append("decision", 1);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcPendingRents();
+      })
+    },
+    dec(id){
+      let obj = this;
+      let data = new FormData();
+      data.append("rental_id", id);
+      data.append("decision", -1);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcPendingRents();
+      })
     },
     changeNameProp(){
       this.changeName = !this.changeName;
@@ -197,9 +380,6 @@ export default {
     },
     changeTelProp(){
       this.changeTel = !this.changeTel;
-    },
-    changeEmailProp(){
-      this.changeEmail = !this.changeEmail;
     },
     changeCompanyNameProp(){
       this.changeCompanyName = !this.changeCompanyName;
@@ -232,16 +412,7 @@ export default {
     chooseGear(index){
       this.dropdownTextGear = this.gearTypes[index];
     },
-    handleOk(){
-      this.rentForm.rent_start = new Date(this.modalDate + 'T' + this.modalStartTime + '+01:00');
-      this.rentForm.rent_end = new Date(this.modalDate + 'T' + this.modalEndTime + '+01:00');
-      this.rentForm.is_returned = false;
-      this.rentForm.user_id = this.userForm.name;
-      this.rentForm.gear_id = this.dropdownTextGear;
-      this.rentForm.gear_centre_id = this.companyForm.name;
-    },
     Change(){
-      //console.log("User " + JSON.stringify(this.form) + " changed");
       var obj = this;
       //User Data
       let dataU = new FormData();
@@ -270,7 +441,211 @@ export default {
           'Authorization': "Bearer " + this.user.token
         }
       });
-    }
+    },
+    calcDist(){
+      let obj = this;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          let currentLat = position.coords.latitude;
+          let currentLng = position.coords.longitude;
+          let R = 6371e3; // metres
+          let φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
+          let φ2 = currentLat * Math.PI / 180;
+          let Δφ = (currentLat-Number(obj.companyForm.latitude)) * Math.PI / 180;
+          let Δλ = (currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
+
+          let a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+          let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            
+          let d = R * c;
+          let result = Math.floor(d/1000);
+          obj.companyForm.dist = result;
+        });
+      } else {
+        //console.log('No geolocation error');
+      }
+      this.calcPlace();
+    },
+    getGear(){
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          for (let j = 0; j < response.data.length; j++) {
+            obj.companyForm.gears.push({
+              "id" : response.data[j].gear_id.toString(),
+              "gearType" : response.data[j].gear_name.toString(),
+              "gearAmount" : response.data[j].gear_quantity.toString(),
+              "gearCost" : response.data[j].gear_price.toString()
+            });
+          }
+      })
+      obj.calcDist();
+    },
+    getCentrePic(){
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/user/getPicturesOfCentre/',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.companyForm.photo = response.data[response.data.length - 1].picture_link;
+      });
+      obj.getGear();
+    },
+    getCentre(){
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/getMyCentres", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getMyCentres',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.companyForm.centre_id = response.data[0].centre_id;
+          obj.companyForm.latitude = response.data[0].latitude;
+          obj.companyForm.longtitude = response.data[0].longitude;
+          obj.companyForm.name = response.data[0].name;
+          obj.companyForm.phone = response.data[0].phone_number;
+          obj.companyForm.gears = [];
+          obj.companyForm.photo = null;
+          obj.companyForm.dist = null; 
+          obj.getCentrePic();
+        })
+      .catch(function (error){
+        console.log(error);
+      });
+    },
+    getUserData(){
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/getUserData',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.userForm.name = response.data.first_name;
+          obj.userForm.surname = response.data.last_name;
+          obj.userForm.phone = response.data.phone_number;
+          obj.getCentre()
+        })
+      .catch(function (error){
+        console.log(error);
+      });
+    },
+    getData(){
+      this.getUserData();
+    },
+    getGearTypes(){
+      let tmp = [];
+      for (let i = 0; i < this.companyForm.gears.length; i++) {
+        tmp.push(Object.values(this.companyForm.gears[i])[1]);
+      }
+      this.gearTypes = tmp;
+      this.howManyNow = this.companyForm.gears.length;
+      this.counter = this.companyForm.gears.length;
+    },
+    calcPlace(){
+      let obj = this;
+      this.axios
+      .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
+      .then(
+        (response) => {
+          obj.place = response.data.results[0].address_components[3].long_name + ', '
+                       + response.data.results[0].address_components[1].long_name + ', '
+                       + response.data.results[0].address_components[0].long_name;
+          obj.loading = false;
+      })
+      this.calcPendingRents();
+    },
+    calcPendingRents(){
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/getPendingRentals", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getPendingRentals',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.pendingRents = [];
+          for (let i = 0; i < response.data.length; i++) {
+            obj.pendingRents.push({
+              gear_id: response.data[i].gear_id,
+              gear_name : response.data[i].gear_name,
+              rent_id : response.data[i].rent_id,
+              rent_start : response.data[i].rent_start,
+              rent_end : response.data[i].rent_end,
+              rent_quantity : response.data[i].rent_quantity
+            });
+          }
+        });
+      obj.calcRents();
+    },
+    calcRents(){
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/getRentalsForMyCentre/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getRentalsForMyCentre',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.rents = [];
+          for (let i = 0; i < response.data.length; i++) {
+            obj.rents.push({
+              gear_id: response.data[i].gear_id,
+              gear_name : response.data[i].gear_name,
+              rent_id : response.data[i].rent_id,
+              rent_start : response.data[i].rent_start,
+              rent_end : response.data[i].rent_end,
+              rent_quantity : response.data[i].rent_quantity
+            });
+          }
+      });
+    },
+    CancelRent(id){
+      var obj = this;
+      let dataR = new FormData();
+      dataR.append("rent_id", Number(id));
+      this.axios
+      .put("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", dataR,{
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/rental/cancelRent',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcRents();
+          //console.log(JSON.stringify(response));
+        });
+    },
   },
   created () {
     if(this.user.role == 'owner'){
@@ -280,70 +655,10 @@ export default {
       this.userForm.password = this.user.password;
       this.userForm.checkPassword = this.user.password;
 
-      var obj = this;
       //Dane uzytkownika
-      this.axios
-      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/getUserData", {
-        headers: {
-          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
-          'accept': 'application/json',
-          'Authorization': "Bearer " + this.user.token
-        }
-      })
-      .then(
-        (response) => {
-          this.userForm.name = response.data.first_name;
-          this.userForm.surname = response.data.last_name;
-          this.userForm.phone = response.data.phone_number;
-        })
-      .catch(function (error){
-        console.log(error);
-      });
-
-      this.companyForm.name = 'KajaX';
-      this.companyForm.phone = '123 123 123';
-      this.companyForm.photo = 'https://picsum.photos/450/300/?image=20';
-      this.companyForm.latitude = '51.1078852';
-      this.companyForm.longtitude = '17.03853760000004';
-      this.companyForm.gears = [{"id":"0","gearType":"Water bikes","gearAmount":"10","gearCost":"25"},{"id":"1","gearType":"Sailboat","gearAmount":"5","gearCost":"50"}];
-
-      if (navigator.geolocation) {
-        var obj = this;
-        navigator.geolocation.getCurrentPosition(function(position) {
-          obj.currentLat = position.coords.latitude;
-          obj.currentLng = position.coords.longitude;
-          var R = 6371e3; // metres
-          var φ1 = Number(obj.companyForm.latitude) * Math.PI / 180;
-          var φ2 = obj.currentLat * Math.PI / 180;
-          var Δφ = (obj.currentLat-Number(obj.companyForm.latitude)) * Math.PI / 180;
-          var Δλ = (obj.currentLng-Number(obj.companyForm.longtitude)) * Math.PI / 180;
-
-          var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                  Math.cos(φ1) * Math.cos(φ2) *
-                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
-          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-          var d = R * c;
-          obj.dist = Math.floor(d/1000);
-        });
-      } else {
-        //console.log('No geolocation error');
-      }
-
-      let tmp = [];
-      for (let i = 0; i < this.companyForm.gears.length; i++) {
-        tmp.push(Object.values(this.companyForm.gears[i])[1]);
-      }
-      this.gearTypes = tmp;
-      this.howManyNow = this.companyForm.gears.length;
-      this.counter = this.companyForm.gears.length;
-
-      this.axios
-        .get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.companyForm.latitude + "," + this.companyForm.longtitude + "&key=" + apiKey.API_KEY2)
-        .then(
-          (response) => {
-            this.place = response.data.results[0].address_components[3].long_name;
-          })
+      //Dane Centrum
+      this.getData()
+      this.getGearTypes();
       this.breachAlert = false;
     }else{
       this.breachAlert = true;
@@ -410,5 +725,8 @@ export default {
   }
   .card:hover{
     cursor: pointer;
+  }
+  .btn_space {
+    margin-right: 5px;
   }
 </style>
