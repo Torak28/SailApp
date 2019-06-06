@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pwr.sailapp.R
+import com.pwr.sailapp.data.sail.CancelRentalStatus
 import com.pwr.sailapp.data.sail.Rental
 import com.pwr.sailapp.ui.generic.MainScopedFragment
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -54,23 +55,25 @@ class ProfileFragment : MainScopedFragment() {
             changeLoadingBarVisibility(isVisible = false)
 
             mainViewModel.upcomingRentals.observe(viewLifecycleOwner, rentalsObserver)
+
         }
     }
 
 
     private fun onRentalCancel() = { rental: Rental ->
-        val cancelRentalDialog = CancelRentalDialog()
-        fragmentManager.let { cancelRentalDialog.show(it!!, "Cancel dialog") }
-        mainViewModel.isCancellationAllowed = true
-        snack("Removal not allowed yet")
         /*
+       val cancelRentalDialog = CancelRentalDialog()
+       fragmentManager.let { cancelRentalDialog.show(it!!, "Cancel dialog") }
+       */
+        mainViewModel.isCancellationAllowed = true
+
         runBlocking {
             changeLoadingBarVisibility(true)
             withContext(Dispatchers.IO) { mainViewModel.cancelRental(rental.ID) }
             withContext(Dispatchers.IO) { mainViewModel.fetchUpcomingRentals() }
             changeLoadingBarVisibility(false)
         }
-        */
+
     }
 
     private fun onRentalCall() = { rental: Rental ->

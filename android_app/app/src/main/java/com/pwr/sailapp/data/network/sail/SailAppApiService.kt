@@ -98,7 +98,7 @@ interface SailAppApiService {
     ): Deferred<RentResponse>
 
     @FormUrlEncoded
-    @HTTP(method = "DELETE", path = "rental/cancelRent", hasBody = true)
+    @PUT("rental/cancelRent")
     fun cancelRentAsync(
         @Header("Authorization") authToken: String,
         @Field("rent_id") rentID: Int

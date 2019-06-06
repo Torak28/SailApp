@@ -8,6 +8,7 @@ import com.pwr.sailapp.data.network.TOKEN_EXPIRED
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.response.CHANGE_SUCCESS_MSG
+import com.pwr.sailapp.data.network.sail.response.CancelResponse
 import com.pwr.sailapp.data.network.sail.response.RENTAL_OK_MESSAGE
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
 import com.pwr.sailapp.data.repository.*
@@ -49,6 +50,7 @@ class MainViewModel(
     val allRentals = MutableLiveData<List<Rental>>()
     private val allCentres = MutableLiveData<List<Centre>>()
     val networkStatus = MutableLiveData<NetworkStatus>()
+    val cancelStatus = MutableLiveData<CancelRentalStatus>()
 
     val centres = MediatorLiveData<List<Centre>>().apply {
         addSource(allCentres) {
@@ -119,6 +121,7 @@ class MainViewModel(
                             refreshAuthToken()
                         }
                     } else authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED
+                    403 -> cancelStatus.postValue(CancelRentalStatus.CANCELLATION_FAILED)
                 }
                 Log.e("doNetworkOperation", "${e.code} ${e.message}")
             }
@@ -219,6 +222,10 @@ class MainViewModel(
                     rentID = rentID
                 )
             val cancelRes = cancelDeferred.await()
+            when(cancelRes.msg){
+                CancelResponse.CANCEL_OK_MSG -> cancelStatus.postValue(CancelRentalStatus.CANCELLATION_SUCCESS)
+                else -> cancelStatus.postValue(CancelRentalStatus.CANCELLATION_FAILED)
+            }
             isCancellationAllowed = false
         }
     }
