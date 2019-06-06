@@ -83,11 +83,19 @@
             <br>
             <h1 class='title'>Gear</h1>
             <br>
+            <h6>Gear that existed before last login is locked. It can be changed only by contacting our Admin</h6>
             <br>
             <b-container v-for="gear in companyForm.gears" :key="gear.id">
-              <b-form-input class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
-              <b-form-input class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
-              <b-form-input class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+              <b-form-input readonly class="block" type="text" v-model="gear.gearType" placeholder="Type of gear e.g. water bikes" />
+              <b-form-input readonly class="block" type="number" v-model="gear.gearAmount" placeholder="How many of those You have?" />
+              <b-form-input readonly class="block" type="number" v-model="gear.gearCost" placeholder="How much cost 1 hour?" />
+              <b-button disabled class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
+              <hr>
+            </b-container>
+            <b-container v-for="newGear in companyForm.newGears" :key="newGear.id">
+              <b-form-input class="block" type="text" v-model="newGear.gearType" placeholder="Type of gear e.g. water bikes" />
+              <b-form-input class="block" type="number" v-model="newGear.gearAmount" placeholder="How many of those You have?" />
+              <b-form-input class="block" type="number" v-model="newGear.gearCost" placeholder="How much cost 1 hour?" />
               <b-button class='block' block variant="danger" v-on:click="deleteGear(gear.id)">Delete This Gear</b-button>
               <hr>
             </b-container>
@@ -148,6 +156,7 @@ export default {
         phone: '',
         photo: '',
         gears: '',
+        newGears: [],
         centre_id: '',
         dist: ''
       },
@@ -221,50 +230,29 @@ export default {
         });
     },
     addGear(){
-      this.companyForm.gears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
+      this.companyForm.newGears.push({ id: this.counter.toString(), gearType: '',  gearAmount: '', gearCost: ''});
       this.howManyNow++;
       this.counter++;
     },
     deleteGear(elemId){
-      const index = this.companyForm.gears.map(e => e.id).indexOf(elemId);
-      this.companyForm.gears.splice(index, 1);
+      const index = this.companyForm.newGears.map(e => e.id).indexOf(elemId);
+      this.companyForm.newGears.splice(index, 1);
       this.howManyNow--;
       if(this.howManyNow < 0){
         this.howManyNow = 0;  
       }
     },
     saveGear(){
-      this.delAllGear();
+      this.addAllNewGear();
       },
-    delAllGear(){
+    addAllNewGear(){
       var obj = this;
-      let canGo = true;
-      for (let i = 0; i < this.companyForm.gears.length; i++) {
+      for (let i = 0; i < this.companyForm.newGears.length; i++) {
         let data = new FormData();
         data.append("centre_id", this.companyForm.centre_id);
-        data.append('gear_id', this.companyForm.gears[i].id);
-        this.axios
-          .put("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/deleteGear", data, {
-            headers: {
-              'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/deleteGear',
-              'Content-Type': 'multipart/form-data',
-              'accept': 'application/json',
-              'Authorization': "Bearer " + this.user.token
-            }
-          })
-      }
-      if(canGo){
-        obj.addAllGear();
-      }
-    },
-    addAllGear(){
-      var obj = this;
-      for (let i = 0; i < this.companyForm.gears.length; i++) {
-        let data = new FormData();
-        data.append("centre_id", this.companyForm.centre_id);
-        data.append('gear_name', this.companyForm.gears[i].gearType);
-        data.append('gear_quantity', this.companyForm.gears[i].gearAmount);
-        data.append('gear_price', this.companyForm.gears[i].gearCost);
+        data.append('gear_name', this.companyForm.newGears[i].gearType);
+        data.append('gear_quantity', this.companyForm.newGears[i].gearAmount);
+        data.append('gear_price', this.companyForm.newGears[i].gearCost);
         this.axios
           .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/addGear", data, {
             headers: {
@@ -274,18 +262,38 @@ export default {
               'Authorization': "Bearer " + this.user.token
             }
           })
-          .then(
-            (response) => {
-              let tmp = [];
-              for (let i = 0; i < obj.companyForm.gears.length; i++) {
-                tmp.push(Object.values(obj.companyForm.gears[i])[1]);
-              }
-            obj.gearTypes = tmp;
-          })
-          .catch(function (error){
-            console.log(error);
-          });
+        }
+        this.addToGears();
+    },
+    addToGears(){
+      this.companyForm.gears =  [];
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/gear/getAllGear/',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          for (let j = 0; j < response.data.length; j++) {
+            obj.companyForm.gears.push({
+              "id" : response.data[j].gear_id.toString(),
+              "gearType" : response.data[j].gear_name.toString(),
+              "gearAmount" : response.data[j].gear_quantity.toString(),
+              "gearCost" : response.data[j].gear_price.toString()
+            });
+          }
+      })
+
+
+
+      let tmp = [];
+      for (let i = 0; i < obj.companyForm.gears.length; i++) {
+        tmp.push(Object.values(obj.companyForm.gears[i])[1]);
       }
+      obj.gearTypes = tmp;
     },
     changeNameProp(){
       this.changeName = !this.changeName;
