@@ -38,6 +38,7 @@ class MainViewModel(
     companion object {
         const val INITIAL_MIN_RATING = 0.0
         const val INITIAL_MAX_DISTANCE = 1000000.00
+        const val INITIAL_RENT_AMOUNT_LIMIT = 10
     }
 
     private val appContext = application.applicationContext
@@ -66,7 +67,8 @@ class MainViewModel(
     var gearList = ArrayList<Gear>()
 
     var selectedGearId = -1
-    var rentAmount = 1 // TODO enable choosing rent amount
+    var rentAmountLimit = INITIAL_RENT_AMOUNT_LIMIT
+    var rentAmount = 1
     // var rentStart = "2019-05-30T08:25:31.129Z"
     // var rentEnd = "2019-05-30T08:35:31.129Z"
 

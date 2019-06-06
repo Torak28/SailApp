@@ -63,13 +63,16 @@ class RentDetailsFragment : MainScopedFragment() {
             gearArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner_equipment.adapter = gearArrayAdapter
 
-
+            numberPicker.maxValue = mainViewModel.rentAmountLimit
             spinner_equipment.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                     if (gearArrayAdapter.getItem(pos) == null) {
                         Log.e("spinner_equipment", "gearArrayAdapter.getItem(pos) == null");return
                     }
-                    mainViewModel.selectedGearId = gearArrayAdapter.getItem(pos)!!.ID
+                    val selectedGear = gearArrayAdapter.getItem(pos)!!
+                    mainViewModel.selectedGearId = selectedGear.ID
+                    mainViewModel.rentAmountLimit = selectedGear.quantity
+                    numberPicker.maxValue = mainViewModel.rentAmountLimit
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -178,6 +181,7 @@ class RentDetailsFragment : MainScopedFragment() {
     }
 
     private val onConfirmClickListener = View.OnClickListener {
+        mainViewModel.rentAmount = numberPicker.value
         launch {
             changeLoadingBarVisibility(true)
             withContext(Dispatchers.IO) {
