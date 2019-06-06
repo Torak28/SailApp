@@ -67,6 +67,12 @@ def get_rentals_for_centre_owner(centre_id, session=None):
         rental['last_name'] = renting_person.User.last_name
         rental['email'] = renting_person.User.email
         rental['phone_number'] = renting_person.User.phone_number
+        if renting_person.GearRental.rent_status == -1:
+            rental['rent_status'] = 'denied'
+        elif renting_person.GearRental.rent_status == 0:
+            rental['rent_status'] = 'pending'
+        elif renting_person.GearRental.rent_status == 1:
+            rental['rent_status'] = 'accepted'
         pprint(rental)
     return rentals
 

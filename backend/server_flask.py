@@ -471,7 +471,8 @@ class GetRentalsForCentre(Resource):
         'first_name': fields.String,
         'last_name': fields.String,
         'email': fields.String,
-        'phone_number': fields.String
+        'phone_number': fields.String,
+        'rent_status': fields.String
     })
 
     @jwt_required
