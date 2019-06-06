@@ -72,21 +72,21 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     [x] Preview
     [x] Company Data
     [x] Gear
-    [ ] Pending Rents
-    [ ] Rents
-    [ ] Owner zwraca dany sprzet
-    [ ] Owner potwierdza wypożyczenie
-[ ] Wypożyczenie
-    [ ] Potwierdzenie ownera
-    [ ] Sprawdzic godziny wypozyczen
+    [x] Pending Rents
+    [x] Rents
+    [x] Owner zwraca dany sprzet
+    [x] Owner potwierdza wypożyczenie
+[x] Wypożyczenie
+    [x] Potwierdzenie ownera
+    [x] Sprawdzic godziny wypozyczen
     [x] Statusy wypożyczenia(Napisać do Filipa) dla Usera i Ownera
     [x] Same wypożyczenie jako takie
 [x] div przy breachAlert
 [x] Loading
 [x] Login niezmienny
-[ ] Wypożyczenie - redisign tych pól
+[x] Wypożyczenie - redisign tych pól
 [x] DELETE not working
-[ ] Nie udało się wczytać arkusza stylów XD
+[x] Nie udało się wczytać arkusza stylów XD
 [x] Background color ?!
 [x] Przetłumaczenie na j.polski
 [x] Obrazek Sail kieruje do home

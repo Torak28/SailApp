@@ -108,13 +108,53 @@
             <h1 class='title'>Pending Rents</h1>
             <br>
             <br>
-            <!-- Dodać Rent-->
+            <div v-for="(pendingRent, index) in pendingRents" :key="index">
+              <b-card :title="'Rent' + '#' + pendingRent.rent_id.toString()">
+                <b-card-text>
+                  <br>
+                  Name: <b>{{pendingRent.gear_name}}</b>
+                  <br>
+                  Amount: <b>{{pendingRent.rent_quantity}}</b>
+                  <br>
+                  Start: <b>{{pendingRent.rent_start.toLocaleString()}}</b>
+                  <br>
+                  End: <b>{{pendingRent.rent_end.toLocaleString()}}</b>
+                  <br>
+                </b-card-text>
+                <b-button class="btn_space" variant="success" v-on:click="ack(pendingRent.rent_id)">Accept</b-button>
+                <b-button class="btn_space" variant="danger" v-on:click="dec(pendingRent.rent_id)">Delete</b-button>
+              </b-card>
+              <br>
+            </div>
+            <div v-if="pendingRents.length == 0">
+              <h3>There are no pending Rents</h3>
+            </div>
           </b-tab>
           <b-tab title="Rents">
             <br>
             <h1 class='title'>Rents</h1>
             <br>
             <br>
+            <div v-for="(rent, index) in rents" :key="index">
+              <b-card :title="'Rent' + '#' + rent.rent_id.toString()">
+                <b-card-text>
+                  <br>
+                  Name: <b>{{rent.gear_name}}</b>
+                  <br>
+                  Amount: <b>{{rent.rent_quantity}}</b>
+                  <br>
+                  Start: <b>{{rent.rent_start.toLocaleString()}}</b>
+                  <br>
+                  End: <b>{{rent.rent_end.toLocaleString()}}</b>
+                  <br>
+                </b-card-text>
+                <b-button class="btn_space" variant="primary" v-on:click="CancelRent(rent.rent_id)">Return</b-button>
+              </b-card>
+              <br>
+            </div>
+            <div v-if="rents.length == 0">
+              <h3>There are no Rents</h3>
+            </div>
           </b-tab>
         </b-tabs>
       </div>
@@ -183,7 +223,9 @@ export default {
       breachAlert: null,
       date: null,
       time: null,
-      loading: true
+      loading: true,
+      pendingRents: [],
+      rents: []
     }
   },
   methods: {
@@ -294,10 +336,40 @@ export default {
           }
           obj.gearTypes = tmp;
           obj.companyForm.newGears = [];
-          //obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });
-          //this.$router.go()
-          //this.$router.reload()
-
+      })
+    },
+    ack(id){ ///owner/decideAboutRental
+      let obj = this;
+      let data = new FormData();
+      data.append("rental_id", id);
+      data.append("decision", 1);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcPendingRents();
+      })
+    },
+    dec(id){
+      let obj = this;
+      let data = new FormData();
+      data.append("rental_id", id);
+      data.append("decision", -1);
+      this.axios
+      .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental", data, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/decideAboutRental',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcPendingRents();
       })
     },
     changeNameProp(){
@@ -503,7 +575,77 @@ export default {
                        + response.data.results[0].address_components[0].long_name;
           obj.loading = false;
       })
-    }
+      this.calcPendingRents();
+    },
+    calcPendingRents(){
+      var obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/getPendingRentals", {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getPendingRentals',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.pendingRents = [];
+          for (let i = 0; i < response.data.length; i++) {
+            obj.pendingRents.push({
+              gear_id: response.data[i].gear_id,
+              gear_name : response.data[i].gear_name,
+              rent_id : response.data[i].rent_id,
+              rent_start : response.data[i].rent_start,
+              rent_end : response.data[i].rent_end,
+              rent_quantity : response.data[i].rent_quantity
+            });
+          }
+        });
+      obj.calcRents();
+    },
+    calcRents(){
+      let obj = this;
+      this.axios
+      .get("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/owner/getRentalsForMyCentre/" + this.companyForm.centre_id, {
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/owner/getRentalsForMyCentre',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.rents = [];
+          for (let i = 0; i < response.data.length; i++) {
+            obj.rents.push({
+              gear_id: response.data[i].gear_id,
+              gear_name : response.data[i].gear_name,
+              rent_id : response.data[i].rent_id,
+              rent_start : response.data[i].rent_start,
+              rent_end : response.data[i].rent_end,
+              rent_quantity : response.data[i].rent_quantity
+            });
+          }
+      });
+    },
+    CancelRent(id){
+      var obj = this;
+      let dataR = new FormData();
+      dataR.append("rent_id", Number(id));
+      this.axios
+      .put("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/rental/cancelRent", dataR,{
+        headers: {
+          'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/rental/cancelRent',
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+          'Authorization': "Bearer " + this.user.token
+        }
+      })
+      .then(
+        (response) => {
+          obj.calcRents();
+          //console.log(JSON.stringify(response));
+        });
+    },
   },
   created () {
     if(this.user.role == 'owner'){
@@ -583,5 +725,8 @@ export default {
   }
   .card:hover{
     cursor: pointer;
+  }
+  .btn_space {
+    margin-right: 5px;
   }
 </style>
