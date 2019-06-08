@@ -102,7 +102,8 @@ class RentDetailsFragment : MainScopedFragment() {
 
             if(mainViewModel.gearList.isEmpty()){
                 snack(NO_GEAR_MSG)
-                findNavController().navigate(R.id.destination_rent_master)
+                findNavController().popBackStack(R.id.destination_rent_master, false)
+                // findNavController().navigate(R.id.destination_rent_master)
             }
         }
     }
@@ -192,7 +193,7 @@ class RentDetailsFragment : MainScopedFragment() {
                 when (it) {
                     RentalState.RENTAL_SUCCESSFUL -> {
                         toast(SUCCESS_MESSAGE)
-                        findNavController().navigate(R.id.destination_profile)
+                        findNavController().navigate(R.id.action_destination_rent_details_to_destination_profile)
                     }
                     else -> snack(FAILURE_MESSAGE)
                 }

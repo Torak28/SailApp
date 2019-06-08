@@ -91,7 +91,7 @@ class RentMasterFragment : MainScopedFragment() {
 
     private fun centreItemClicked(centre: Centre) {
         mainViewModel.selectedCentre = centre
-        findNavController().navigate(R.id.destination_rent_details)
+        findNavController().navigate(R.id.action_destination_rent_master_to_destination_rent_details)
     }
 
     private fun checkLocationPermission() {
