@@ -64,7 +64,7 @@ class LoginFragment : LoginScopedFragment() {
         when (it) {
             AuthenticationState.AUTHENTICATED -> {
                 snack(LOGIN_SUCCESSFUL)
-                navController.navigate(R.id.action_global_destination_profile)
+                navController.navigate(R.id.destination_main)
             }
             else -> snack(INVALID_CREDENTIALS)
         }
