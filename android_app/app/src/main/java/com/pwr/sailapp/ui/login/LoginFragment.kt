@@ -41,7 +41,7 @@ class LoginFragment : LoginScopedFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        button_register.setOnClickListener { navController.navigate(R.id.destination_register) }
+        button_register.setOnClickListener { navController.navigate(R.id.action_loginFragment_to_registerFragment) }
 
         button_login.setOnClickListener {
             val email = editText_email.text.toString()
@@ -64,7 +64,7 @@ class LoginFragment : LoginScopedFragment() {
         when (it) {
             AuthenticationState.AUTHENTICATED -> {
                 snack(LOGIN_SUCCESSFUL)
-                navController.navigate(R.id.destination_main)
+                navController.navigate(R.id.action_global_destination_profile)
             }
             else -> snack(INVALID_CREDENTIALS)
         }

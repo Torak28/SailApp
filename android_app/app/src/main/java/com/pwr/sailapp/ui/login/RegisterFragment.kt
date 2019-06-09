@@ -102,7 +102,7 @@ class RegisterFragment : LoginScopedFragment() {
         when (it) {
             RegistrationState.OK -> {
                 snack(CORRECT_REGISTRATION)
-                navController.navigate(R.id.destination_login_fragment)
+                navController.navigate(R.id.action_destination_register_to_destination_login_fragment)
             }
             else -> {
                 snack(INCORRECT_REGISTRATION)
