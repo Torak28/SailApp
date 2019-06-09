@@ -39,6 +39,8 @@ class MainViewModel(
         const val INITIAL_MIN_RATING = 0.0
         const val INITIAL_MAX_DISTANCE = 1000000.00
         const val INITIAL_RENT_AMOUNT_LIMIT = 10
+        const val INITIAL_START_TIME_SHIFT = 1
+        const val INITIAL_END_TIME_SHIFT = 2
     }
 
     private val appContext = application.applicationContext
@@ -74,13 +76,25 @@ class MainViewModel(
 
     var rentStart: Date? = null
         get() {
-            if (field == null) field = Calendar.getInstance().time
+            if (field == null) {
+                val calendar = Calendar.getInstance()
+                calendar.add(Calendar.HOUR_OF_DAY, INITIAL_START_TIME_SHIFT)
+                calendar[Calendar.MINUTE] = 0
+                calendar[Calendar.SECOND] = 0
+                field = calendar.time
+            }
             return field
         }
 
     var rentEnd: Date? = null
         get() {
-            if (field == null) field = Calendar.getInstance().time
+            if (field == null) {
+                val calendar = Calendar.getInstance()
+                calendar.add(Calendar.HOUR_OF_DAY, INITIAL_END_TIME_SHIFT)
+                calendar[Calendar.MINUTE] = 0
+                calendar[Calendar.SECOND] = 0
+                field = calendar.time
+            }
             return field
         }
 
@@ -197,6 +211,10 @@ class MainViewModel(
     }
 
     suspend fun rentGear() = doNetworkOperation {
+        if (!areDatesCorrect(rentStart!!, rentEnd!!)){
+            rentalState.postValue(RentalState.RENTAL_FAILED)
+            return@doNetworkOperation
+        }
         val rentStartStr = DateUtil.dateToString(rentStart)
         val rentEndStr = DateUtil.dateToString(rentEnd)
 
@@ -214,6 +232,11 @@ class MainViewModel(
             RENTAL_OK_MESSAGE -> rentalState.postValue(RentalState.RENTAL_SUCCESSFUL)
             else -> rentalState.postValue(RentalState.RENTAL_FAILED)
         }
+    }
+
+    private fun areDatesCorrect(startDate: Date, endDate: Date):Boolean{
+        val currentDate = Calendar.getInstance().time
+        return (startDate >= currentDate && endDate > startDate)
     }
 
     suspend fun cancelRental(rentID: Int) = doNetworkOperation {
