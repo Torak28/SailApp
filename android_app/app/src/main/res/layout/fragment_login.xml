@@ -2,28 +2,31 @@
 <!-- HINT: Fragment layout crashes when it uses constraint layout as the main layout (needs to be wrapped into frame layout- why? -->
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
+        xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".ui.login.LoginFragment"
-            android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.login.LoginFragment"
+        android:orientation="vertical"
         android:padding="10dp"
 >
 
-        <ImageView
-                android:layout_width="match_parent"
-                android:contentDescription="@string/login_screen_banner"
-                android:layout_height="121dp"
-                app:srcCompat="@drawable/banner"
-                android:id="@+id/imageView"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginTop="100dp"
-                android:layout_marginBottom="40dp"
-        />
+    <ImageView
+            android:layout_width="match_parent"
+            android:contentDescription="@string/login_screen_banner"
+            android:layout_height="121dp"
+            app:srcCompat="@drawable/banner"
+            android:id="@+id/imageView"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="40dp"
+    />
 
-        <EditText
+    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
+                                                           android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editText_email"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
@@ -32,6 +35,11 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_margin="8dp"
         />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
+                                                           android:layout_height="wrap_content">
 
         <EditText
                 android:layout_width="match_parent"
@@ -44,48 +52,49 @@
                 android:layout_margin="10dp"
         />
 
-        <Button
-                android:text="@string/login"
-                android:layout_width="match_parent"
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+            android:text="@string/login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_login"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@color/colorPrimary"
+    />
+
+    <Button
+            android:text="@string/register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_register"
+            android:layout_margin="8dp"
+            android:background="@color/colorPrimaryDark"
+    />
+
+    <LinearLayout
+            android:id="@+id/linearLayout_logging"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            tools:visibility="visible"
+            android:visibility="gone"
+            android:layout_marginTop="40dp"
+    >
+        <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/button_login"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:background="@color/colorPrimary"
+                android:text="@string/downloading"
         />
-
-        <Button
-                android:text="@string/register"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/button_register"
-                android:layout_margin="8dp"
-                android:background="@color/colorPrimaryDark"
-        />
-
-        <LinearLayout
-                android:id="@+id/linearLayout_logging"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                tools:visibility="visible"
-                android:visibility="gone"
-                android:layout_marginTop="40dp"
-        >
-                <ProgressBar
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/downloading"
-                />
-        </LinearLayout>
-
+    </LinearLayout>
 
 
 </LinearLayout>

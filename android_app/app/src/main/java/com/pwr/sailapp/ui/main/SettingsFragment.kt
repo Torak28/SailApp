@@ -57,6 +57,10 @@ class SettingsFragment : MainScopedFragment() {
         textView_second_name_settings.text = user.lastName
         textView_phone_settings.text = user.phoneNumber
         textView_email_settings.text = user.email
+        editText_first_name_settings.setText(user.firstName)
+        editText_second_name_settings.setText(user.lastName)
+        editText_phone_settings.setText(user.phoneNumber)
+        editText_email_settings.setText(user.email)
     }
 
     private val onButtonConfirmListener = View.OnClickListener {
