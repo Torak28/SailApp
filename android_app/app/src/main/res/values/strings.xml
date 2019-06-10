@@ -4,8 +4,6 @@
     <string name="password">password</string>
     <string name="email">email</string>
     <string name="register">Register</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="my_profile">My profile</string>
     <string name="sail_now">Sail now</string>

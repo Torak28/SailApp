@@ -114,9 +114,7 @@ class RentMasterFragment : MainScopedFragment() {
                     if (location != null) {
                         mainViewModel.location = location
                         mainViewModel.applyLocation()
-                    } else {
-                        // TODO inform user that couldn't fetch location
-                    }
+                    } else {}
                 }
                 .addOnFailureListener {
                     Log.e("fusedLocationClient", "last location failure")

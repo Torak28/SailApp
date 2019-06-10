@@ -3,24 +3,16 @@ package com.pwr.sailapp.viewModel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
 import com.pwr.sailapp.data.network.sail.SailAppApiService
 import com.pwr.sailapp.data.network.sail.response.REGISTER_OK_MESSAGE
-import com.pwr.sailapp.data.network.sail.response.RegisterUserResponse
-import com.pwr.sailapp.data.repository.NO_TOKEN
-import com.pwr.sailapp.data.repository.UserManager
-import com.pwr.sailapp.data.repository.UserManagerImpl
 import com.pwr.sailapp.data.sail.RegistrationState
 import com.pwr.sailapp.data.sail.User
 import com.pwr.sailapp.internal.ErrorCodeException
 import com.pwr.sailapp.internal.NoConnectivityException
-import com.pwr.sailapp.utils.CredentialsUtil
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 /*

@@ -28,7 +28,6 @@ abstract class ScopedFragment : Fragment(), CoroutineScope{
 
     protected fun toast(text: String) = Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
 
-    // TODO make it abstract:
     protected open fun changeLoadingBarVisibility(isVisible: Boolean){}
 
     protected fun snack(msg: String){

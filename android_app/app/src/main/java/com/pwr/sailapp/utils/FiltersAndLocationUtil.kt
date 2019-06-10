@@ -12,7 +12,7 @@ object FiltersAndLocationUtil {
         val filteredCentres = inputCentres.filter { centre ->
             centre.distance < actualDistance
         }
-        val sortedFilteredCentres = if (isAscending) filteredCentres.sortedBy { it.rating } else filteredCentres.sortedByDescending { it.distance }
+        val sortedFilteredCentres = if (isAscending) filteredCentres.sortedBy { it.distance } else filteredCentres.sortedByDescending { it.distance }
         return ArrayList(sortedFilteredCentres)
     }
 

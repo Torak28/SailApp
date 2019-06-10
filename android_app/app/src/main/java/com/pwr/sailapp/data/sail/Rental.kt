@@ -7,7 +7,6 @@ import com.pwr.sailapp.utils.DateUtil
 import java.text.DateFormat
 import java.util.*
 
-// TODO add number of hours
 data class Rental(
     @SerializedName("rent_id")
     val ID: Int,
@@ -109,12 +108,4 @@ data class Rental(
             return timeSecs.toString()
         }
 
-
-    // Required for correctly removing rentals from array list
-    override fun equals(other: Any?): Boolean {
-        return if (other == null || other !is Rental) false
-        else other.ID == this.ID
-    }
-
-    override fun hashCode() = ID
 }

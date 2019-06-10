@@ -9,8 +9,6 @@
               android:padding="10dp"
 >
 
-    <!-- TODO: Update blank fragment layout -->
-
     <RadioGroup
             android:id="@+id/radio_group_sort"
             android:layout_width="match_parent"

@@ -20,7 +20,6 @@ import com.pwr.sailapp.ui.main.adapters.RentalAdapter
 import com.pwr.sailapp.ui.main.dialogs.CancelRentalDialog
 import kotlinx.coroutines.runBlocking
 
-// TODO consider using generic adapter for view model
 
 class ProfileFragment : MainScopedFragment() {
 

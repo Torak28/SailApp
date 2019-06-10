@@ -29,12 +29,6 @@ interface SailAppApiService {
         @Field("password") password: String
     ):Deferred<LoginUserResponse>
 
-
-    @GET("default/refreshToken") // TODO delete it
-    fun refreshTokenAsync(
-        @Body refresh_token: String
-    ):Deferred<LoginUserResponse>
-
     // Good one
     @GET("default/refreshToken")
     fun refreshAuthTokenAsync(
@@ -130,24 +124,7 @@ interface SailAppApiService {
         operator fun invoke(
             connectivityInterceptor: ConnectivityInterceptor
         ): SailAppApiService{
-            /* okhttp3 Interceptor
-            Interceptors are a powerful mechanism that can monitor, rewrite, and retry calls
-            Typically interceptors add, remove, or transform headers on the request or response.
-             */
-    /*        val requestInterceptor = Interceptor{
-                val request = it.request()
-                    .newBuilder()
-                    .build()
 
-                val response = it.proceed(request)
-                // TODO check response code val responseCode = response.code()
-                return@Interceptor response
-            }
-
-            val loggingInterceptor = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BASIC
-            }
-*/
             val okHttpClient = OkHttpClient.Builder()
                 //.addInterceptor(loggingInterceptor)
                 .addInterceptor(ErrorHandlingInterceptor())

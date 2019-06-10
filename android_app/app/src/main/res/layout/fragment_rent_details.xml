@@ -99,7 +99,6 @@
                     android:drawableStart="@drawable/ic_date_white"
             />
 
-            <!-- TODO use data binding here - current date -->
             <TextView
                     android:id="@+id/textView_choose_date"
                     android:layout_width="match_parent"

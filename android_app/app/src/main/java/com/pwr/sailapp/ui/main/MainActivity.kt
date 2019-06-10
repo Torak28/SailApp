@@ -1,19 +1,16 @@
 package com.pwr.sailapp.ui.main
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.pwr.sailapp.R
-import com.pwr.sailapp.data.DataProvider
 import com.pwr.sailapp.data.sail.AuthenticationState
 import com.pwr.sailapp.data.sail.User
 import com.pwr.sailapp.internal.NetworkStatus
@@ -23,7 +20,6 @@ import com.pwr.sailapp.viewModel.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigationview_header.view.*
 import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
 
 const val DISCONNECTED_MSG = "No connection"
 

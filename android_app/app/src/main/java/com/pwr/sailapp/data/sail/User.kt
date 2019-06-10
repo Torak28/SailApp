@@ -16,5 +16,4 @@ data class User(// val id:Int? = null,
     var phoneNumber: String = "",
     @SerializedName("role")
     val role: String = "user"
-    //var authToken:String = ""
 )

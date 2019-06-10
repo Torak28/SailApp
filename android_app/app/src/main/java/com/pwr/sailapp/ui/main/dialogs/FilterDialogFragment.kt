@@ -48,7 +48,7 @@ class FilterDialogFragment() : DialogFragment(){
 
 
         maximalDistanceValue.text = formatDistance(mainViewModel.maxDistance)
-        actualDistanceValue.text = formatDistance(mainViewModel.actualDistance) // TODO use mutable live data
+        actualDistanceValue.text = formatDistance(mainViewModel.actualDistance)
         seekBarDistance.progress = (100*(mainViewModel.actualDistance/mainViewModel.maxDistance)).toInt()
 
         seekBarDistance.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{

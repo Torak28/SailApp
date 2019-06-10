@@ -11,7 +11,6 @@ import com.pwr.sailapp.data.network.sail.response.CHANGE_SUCCESS_MSG
 import com.pwr.sailapp.data.network.sail.response.CancelResponse
 import com.pwr.sailapp.data.network.sail.response.RENTAL_OK_MESSAGE
 import com.pwr.sailapp.data.network.weather.DarkSkyApiService
-import com.pwr.sailapp.data.repository.*
 import com.pwr.sailapp.data.sail.*
 import com.pwr.sailapp.internal.ErrorCodeException
 import com.pwr.sailapp.internal.NetworkStatus
@@ -19,6 +18,7 @@ import com.pwr.sailapp.internal.NoConnectivityException
 import com.pwr.sailapp.utils.DateUtil
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
 import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
+import com.pwr.sailapp.viewModel.TokenHandler.NO_TOKEN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -186,7 +186,7 @@ class MainViewModel(
     private suspend fun refreshAuthToken() = doNetworkOperation {
         val tokenDeferred = sailAppApiService.refreshAuthTokenAsync("Bearer ${TokenHandler.refreshToken}")
         val tokenRes = tokenDeferred.await()
-        TokenHandler.accessToken = tokenRes // TODO check if you can do it on background thread
+        TokenHandler.accessToken = tokenRes
     }
 
     suspend fun fetchCentres() = doNetworkOperation {
@@ -257,7 +257,7 @@ class MainViewModel(
 
     fun logOut() {
         TokenHandler.accessToken = NO_TOKEN
-        TokenHandler.refreshToken = NO_TOKEN // TODO erase token from shared preferences
+        TokenHandler.refreshToken = NO_TOKEN
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
