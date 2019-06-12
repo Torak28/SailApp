@@ -2,7 +2,7 @@
 
 In progress!
 
-![alt text](https://flask-restplus.readthedocs.io/en/stable/#)
+![alt text](https://media.giphy.com/media/RHEqKwRZDwFKE/giphy.gif)
 
 ### Schemat bazy danych
 
