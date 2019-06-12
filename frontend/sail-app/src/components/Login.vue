@@ -1,18 +1,11 @@
-
 <template>
   <b-container id='Login'>
     <b-row>
-      <b-form-input type="text" v-model='login' placeholder="Login" />
-      <br>
-      <br>
-      <b-form-input type="password" v-model='password' placeholder="Password" />
-      <br>
-      <br>
+      <b-form-input class="block" type="text" v-model='form.login' placeholder="Login" />
+      <b-form-input class="block" type="password" v-model='form.password' placeholder="Password" />
       <b-button block variant="success" v-on:click="loginToAccount()">Login</b-button>
       <b-button block variant="warning" to="/registration">Register</b-button>
     </b-row>
-    <br>
-    <br>
   </b-container>
 </template>
 
@@ -21,20 +14,54 @@ export default {
   name: "Login",
   data() {
     return {
-      login: '',
-      password: ''
+      form: {
+        login: '',
+        password: '',
+        role: '',
+        token: ''
+      }
     }
   },
   methods: {
     loginToAccount() {
-      if(this.login != "" && this.password != "") {
-        if(this.login == this.$parent.mockAccount.login && this.password == this.$parent.mockAccount.password) {
-          this.$parent.authenticated = true;
-          this.$router.push({ name: "UserPanel" });
-        } else {
-          this.$parent.wrongData = true;
-          this.$parent.noData = false;
-        }
+      this.form.role = 'User';
+      if(this.form.login != "" && this.form.password != "") {
+        //Tutaj lecimy z koksem
+        var obj = this;
+        let data = new FormData();
+        data.append("email", this.form.login);
+        data.append("password", this.form.password);
+        this.axios
+        .post("http://127.0.0.1:8000/projekt-gospodarka-backend.herokuapp.com/accounts/login", data, {
+          headers: {
+            'X-Requested-With': 'http://projekt-gospodarka-backend.herokuapp.com/accounts/login',
+            'Content-Type': 'multipart/form-data',
+            'accept': 'application/json'
+          }
+        })
+        .then(
+          (response) => {
+            obj.form.token = response.data.access_token;
+            obj.form.role = response.data.role;
+            obj.$parent.authenticated = true;
+            if(obj.form.role == 'user'){
+              obj.$router.push({ name: "UserPanel", params: {user: obj.form} });
+            }else if(obj.form.role == 'owner'){
+              if(response.data.account_status == 'accepted'){
+                obj.$router.push({ name: "OwnerPanel", params: {user: obj.form} });
+              }else if(response.data.account_status == 'denied'){
+                obj.$router.push({ name: "Denied", params: {user: obj.form} });
+              }else if(response.data.account_status == 'pending'){
+                obj.$router.push({ name: "Pending", params: {user: obj.form} });
+              }
+            }else if(obj.form.role == 'admin'){
+              obj.$router.push({ name: "AdminPanel", params: {user: obj.form} });
+            }
+          })
+        .catch(function (error){
+          obj.$parent.wrongData = true;
+          obj.$parent.noData = false;
+        });
       } else {
         this.$parent.noData = true;
         this.$parent.wrongData = false;
@@ -43,3 +70,9 @@ export default {
   }
 };
 </script>
+
+<style scope>
+  .block {
+    margin-bottom: 10px;
+  }
+</style>

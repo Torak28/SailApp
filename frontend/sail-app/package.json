@@ -11,6 +11,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/vue-fontawesome": "^0.1.6",
+    "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.19",
     "core-js": "^2.6.5",
@@ -19,8 +20,11 @@
     "npm": "^6.9.0",
     "tar": "^4.4.8",
     "vue": "^2.6.10",
+    "vue-axios": "^2.1.4",
     "vue-cookie-law": "^1.10.0",
-    "vue-router": "^3.0.3"
+    "vue-router": "^3.0.3",
+    "vue-scrollto": "^2.15.0",
+    "vue2-google-maps": "^0.10.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.6.0",

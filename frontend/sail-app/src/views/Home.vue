@@ -30,10 +30,6 @@ export default {
       wrongData: false,
       noDataMsg: "A login and password must be present",
       wrongDataMsg: "The login and / or password is incorrect",
-      mockAccount: {
-        login: "dupa",
-        password: "dupa"
-      }
     }
   }
 };

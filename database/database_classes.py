@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Sequence, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Sequence, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
@@ -46,6 +46,7 @@ class User(Base):
     gear_rental = relationship("GearRental")
     class_table = relationship("Class")
     owner = relationship('WaterCentre')
+    account_status = Column(Integer)
 
 
 class Role(Base):
@@ -97,6 +98,7 @@ class GearRental(Base):
     rent_start = Column(DateTime)
     rent_end = Column(DateTime)
     rent_amount = Column(Integer)
+    rent_status = Column(Integer)
 
 
 class WaterCentre(Base):
@@ -113,9 +115,26 @@ class WaterCentre(Base):
     owner_id = Column(Integer, ForeignKey('user_account.id'))
     latitude = Column(String)
     longitude = Column(String)
-
+    contact_number = Column(String)
     gear = relationship("Gear")
     gear_rental = relationship("GearRental")
+    file_path = relationship("Picture", back_populates="parent")
+
+
+class Picture(Base):
+    __tablename__ = 'picture'
+
+    picture_id_seq = Sequence('picture_id_seq', metadata=Base.metadata)
+
+    id = Column(Integer,
+                picture_id_seq,
+                server_default=picture_id_seq.next_value(),
+                primary_key=True,
+                unique=True)
+
+    file_path = Column(String)
+    water_centre_id = Column(Integer, ForeignKey('centre.id'))
+    parent = relationship("WaterCentre")
 
 
 class Class(Base):
@@ -130,7 +149,7 @@ class Class(Base):
                 unique=True)
     class_type_id = Column(Integer, ForeignKey('class_type.id'))
     user_id = Column(Integer, ForeignKey('user_account.id'))
-    class_date = Column(Date)
+    class_date = Column(DateTime)
 
 
 class ClassType(Base):
