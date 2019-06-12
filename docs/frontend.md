@@ -2,7 +2,7 @@
 
 __Simple Logo:__
 
-![alt text](https://i.imgur.com/pIET3sH.png)
+![alt text](https://i.imgur.com/MteyKr5.png)
 
 __Simple Black&White Logo:__
 
@@ -10,29 +10,17 @@ __Simple Black&White Logo:__
 
 __Simple Baner 1:__
 
-![alt text](https://i.imgur.com/Qx9AfTp.png)
+![alt text](https://i.imgur.com/9ncUBJc.png)
 
 __Simple Black&White Baner 1:__
 
 ![alt text](https://i.imgur.com/fYu5Fxi.png)
 
-__Simple Baner 2:__
-
-![alt text](https://i.imgur.com/gQG9z8R.png)
-
-__Simple Black&White Baner 2:__
-
-![alt text](https://i.imgur.com/IRu1Q8T.png)
-
 # Colors
  
 __Palette:__
 
-![alt text](https://i.imgur.com/X5oTG8b.png)
-
-__Sample Mockup:__
-
-![alt text](https://i.imgur.com/rL7XVx4.png)
+![alt text](https://i.imgur.com/lFH7Wqm.png)
 
 # Site Design
 
