@@ -41,17 +41,17 @@ class SortDialogFragment : DialogFragment() {
         val radioGroupSort = view.findViewById<RadioGroup>(R.id.radio_group_sort)
 
         // Check the previously checked radio button if it had been already checked
-        if(mainViewModel.isByRating) radioGroupSort.check(R.id.radio_by_rating)
-            else radioGroupSort.check(R.id.radio_by_distance)
+        if(mainViewModel.isAscendingSort) radioGroupSort.check(R.id.radio_by_distance_asc)
+            else radioGroupSort.check(R.id.radio_by_distance_des)
 
         // Listen to cancel and ok buttons
         buttonCancel.setOnClickListener { dialog?.dismiss() }
         buttonOk.setOnClickListener {
             when(radioGroupSort.checkedRadioButtonId){
-                R.id.radio_by_rating-> mainViewModel.isByRating = true
-                else -> mainViewModel.isByRating = false
+                R.id.radio_by_distance_asc-> mainViewModel.isAscendingSort = true
+                else -> mainViewModel.isAscendingSort = false
             }
-            mainViewModel.sort()
+            mainViewModel.applySort()
             dialog?.dismiss()
         }
     }

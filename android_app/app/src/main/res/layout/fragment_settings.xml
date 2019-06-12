@@ -1,14 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".ui.main.SettingsFragment">
-
-    <!-- TODO: Update blank fragment layout -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context=".ui.main.SettingsFragment"
+              android:orientation="vertical"
+              android:padding="20dp"
+>
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Settings fragment"/>
+            android:drawableStart="@drawable/ic_account_circle"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/your_account"
+            android:textAlignment="center"
+            android:layout_marginBottom="10dp"
+            android:textStyle="italic"/>
 
-</FrameLayout>
+    <TextView
+            android:id="@+id/textView_first_name_settings"
+            android:drawableStart="@drawable/ic_portrait"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="20sp"
+            tools:text="Piotr"
+            android:textAlignment="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+    />
+
+    <TextView
+            android:id="@+id/textView_second_name_settings"
+            android:drawableStart="@drawable/ic_portrait"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="20sp"
+            tools:text="Chorościn"
+            android:textAlignment="center"
+            android:layout_marginBottom="10dp"
+    />
+
+    <TextView
+            android:id="@+id/textView_email_settings"
+            android:drawableStart="@drawable/ic_mail_outline"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="20sp"
+            tools:text="titkot@o2.pl"
+            android:textAlignment="center"
+            android:layout_marginBottom="10dp"
+    />
+
+    <TextView
+            android:id="@+id/textView_phone_settings"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:drawableStart="@drawable/ic_local_phone"
+            tools:text="511754113"
+            android:textAlignment="center"
+            android:layout_marginBottom="10dp"
+    />
+
+    <TextView
+            android:id="@+id/textView_expand_change_user_data"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:drawableStart="@drawable/ic_keyboard_arrow_down_black"
+            android:text="@string/change_data"
+            android:textAlignment="center"
+            android:layout_marginBottom="10dp"
+            android:textStyle="italic"/>
+
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:id="@+id/linearLayout_change_user_data"
+                  android:visibility="gone"
+                  android:animateLayoutChanges="true"
+                  tools:visibility="visible"
+    >
+
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editText_first_name_settings"
+                android:hint="@string/first_name"
+                android:inputType="textPersonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:layout_margin="8dp"
+        />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editText_second_name_settings"
+                android:hint="@string/second_name"
+                android:inputType="textPersonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:layout_margin="8dp"
+        />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editText_phone_settings"
+                android:hint="@string/phone_number"
+                android:inputType="phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:layout_margin="8dp"
+        />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editText_email_settings"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:layout_margin="8dp"
+        />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
+            android:animateLayoutChanges="true"
+        >
+            <Button
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_change_user_data_dismiss"
+                    android:text="@string/cancel"
+                    android:background="@color/colorCardLight"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+            />
+
+            <Button
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_change_user_data_confirm"
+                    android:text="@string/save_changes"
+                    android:background="@color/colorPrimaryDark"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+            />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

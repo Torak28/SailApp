@@ -3,165 +3,331 @@ package com.pwr.sailapp.viewModel
 import android.app.Application
 import android.location.Location
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import com.pwr.sailapp.data.*
-import com.pwr.sailapp.utils.CredentialsUtil
+import androidx.lifecycle.*
+import com.pwr.sailapp.data.network.TOKEN_EXPIRED
+import com.pwr.sailapp.data.network.sail.ConnectivityInterceptorImpl
+import com.pwr.sailapp.data.network.sail.SailAppApiService
+import com.pwr.sailapp.data.network.sail.response.CHANGE_SUCCESS_MSG
+import com.pwr.sailapp.data.network.sail.response.CancelResponse
+import com.pwr.sailapp.data.network.sail.response.RENTAL_OK_MESSAGE
+import com.pwr.sailapp.data.network.weather.DarkSkyApiService
+import com.pwr.sailapp.data.sail.*
+import com.pwr.sailapp.internal.ErrorCodeException
+import com.pwr.sailapp.internal.NetworkStatus
+import com.pwr.sailapp.internal.NoConnectivityException
+import com.pwr.sailapp.utils.DateUtil
+import com.pwr.sailapp.utils.FiltersAndLocationUtil.calculateDistances
+import com.pwr.sailapp.utils.FiltersAndLocationUtil.filterAndSortCentres
+import com.pwr.sailapp.viewModel.TokenHandler.NO_TOKEN
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
+
+const val NO_DATE = ""
 
 /*
 https://developer.android.com/guide/navigation/navigation-conditional#kotlin
 https://developer.android.com/reference/android/arch/lifecycle/AndroidViewModel - AndroidViewModel provides application (and its context!)
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val appContext = application.applicationContext
+class MainViewModel(
+    application: Application
+) : AndroidViewModel(application) {
 
     companion object {
         const val INITIAL_MIN_RATING = 0.0
-        const val INITIAL_COORDINATE_X = 0.00
-        const val INITIAL_COORDINATE_Y = 0.00
         const val INITIAL_MAX_DISTANCE = 1000000.00
+        const val INITIAL_RENT_AMOUNT_LIMIT = 10
+        const val INITIAL_START_TIME_SHIFT = 1
+        const val INITIAL_END_TIME_SHIFT = 2
     }
 
-    enum class AuthenticationState {
-        AUTHENTICATED,
-        UNAUTHENTICATED,
-        INVALID_AUTHENTICATION
+    private val appContext = application.applicationContext
+
+    private val sailAppApiService = SailAppApiService(connectivityInterceptor = ConnectivityInterceptorImpl(appContext))
+    private val darkSkyApiService = DarkSkyApiService(connectivityInterceptor = ConnectivityInterceptorImpl(appContext))
+
+    val user = MutableLiveData<User>()
+    val upcomingRentals = MutableLiveData<List<Rental>>()
+    val allRentals = MutableLiveData<List<Rental>>()
+    private val allCentres = MutableLiveData<List<Centre>>()
+    val networkStatus = MutableLiveData<NetworkStatus>()
+    val cancelStatus = MutableLiveData<CancelRentalStatus>()
+
+    val centres = MediatorLiveData<List<Centre>>().apply {
+        addSource(allCentres) {
+            this.value = it
+        }
     }
 
-    // Authentication
-    val authenticationState = MutableLiveData<AuthenticationState>() // observe it to know if user is logged in
+    var location: Location? = null
 
-    var currentUser: User
-    lateinit var currentRental: Rental
+    lateinit var selectedCentre: Centre
+    //  var selectedCentreId = -1
 
-    // Rent fragments
-    // Rent master fragment
-    val centres = MutableLiveData<ArrayList<Centre>>() // observe it to know which centres are available
-    val allCentres = ArrayList<Centre>()
-    val selectedCentre = MutableLiveData<Centre>() // observe which centre was selected
+    var gearList = ArrayList<Gear>()
+
+    var selectedGearId = -1
+    var rentAmountLimit = INITIAL_RENT_AMOUNT_LIMIT
+    var rentAmount = 1
+    // var rentStart = "2019-05-30T08:25:31.129Z"
+    // var rentEnd = "2019-05-30T08:35:31.129Z"
+
+    var rentStart: Date? = null
+        get() {
+            if (field == null) {
+                val calendar = Calendar.getInstance()
+                calendar.add(Calendar.HOUR_OF_DAY, INITIAL_START_TIME_SHIFT)
+                calendar[Calendar.MINUTE] = 0
+                calendar[Calendar.SECOND] = 0
+                field = calendar.time
+            }
+            return field
+        }
+
+    var rentEnd: Date? = null
+        get() {
+            if (field == null) {
+                val calendar = Calendar.getInstance()
+                calendar.add(Calendar.HOUR_OF_DAY, INITIAL_END_TIME_SHIFT)
+                calendar[Calendar.MINUTE] = 0
+                calendar[Calendar.SECOND] = 0
+                field = calendar.time
+            }
+            return field
+        }
+
+    var rentID = -1
+
+    val authenticationState = MutableLiveData<AuthenticationState>()
+    val rentalState = MutableLiveData<RentalState>()
+    val changeDataState = MutableLiveData<ChangeDataState>()
+
+    var isCancellationAllowed: Boolean = false
 
     // Dialogs
-    // TODO consider mutable live data
     var minRating = INITIAL_MIN_RATING
     var maxDistance = INITIAL_MAX_DISTANCE
-    var coordinates = Pair(INITIAL_COORDINATE_X, INITIAL_COORDINATE_Y)
     var actualDistance = INITIAL_MAX_DISTANCE
-    var isByRating = false
-
-    // Rent details fragment
-    val startTime = MutableLiveData<Date>()
-    val timeOptions = ArrayList<String>()
-    val equipmentOptions = ArrayList<String>()
-    val selectedTimeIndex = MutableLiveData<Int>() // observe which element of time options array list was selected
-    val selectedEquipmentIndex =
-        MutableLiveData<Int>() // observe which element of equipment options array list was selected
-    // val totalCost = MutableLiveData<Double>()
-
-    // Profile fragment
-    val rentals = MutableLiveData<ArrayList<Rental>>()
-
+    var isAscendingSort = true
 
     init {
-        // TODO use repository and LiveData here
-        if (CredentialsUtil.isLogged(application.applicationContext)) authenticationState.value =
-            AuthenticationState.AUTHENTICATED
-        else authenticationState.value = AuthenticationState.UNAUTHENTICATED
-        currentUser = fetchUserData()
-        centres.value = MockCentres.centres
-        allCentres.addAll(MockCentres.centres)
-        rentals.value = ArrayList<Rental>()
+        if (TokenHandler.refreshToken == NO_TOKEN) {
+            authenticationState.value = AuthenticationState.UNAUTHENTICATED
+        }
     }
 
-    // TODO consider using live data for observing whether the user has remover their credentials from shared preferences (logged out)
 
-    fun selectCentre(centre: Centre) { // TODO consider nicer Kotlin syntax
-        selectedCentre.value = centre
+    private suspend fun doNetworkOperation(
+        logic: suspend () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                logic()
+                networkStatus.postValue(NetworkStatus.CONNECTED)
+            } catch (e: NoConnectivityException) {
+                networkStatus.postValue(NetworkStatus.DISCONNECTED)
+                Log.e("doNetworkOperation", "No connectivity exception")
+
+            } catch (e: ErrorCodeException) {
+                when (e.code) {
+                    401 -> if (e.message == TOKEN_EXPIRED) {
+                        runBlocking(Dispatchers.IO) {
+                            refreshAuthToken()
+                        }
+                    } else authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)// 401 UNAUTHORIZED
+                    403 -> cancelStatus.postValue(CancelRentalStatus.CANCELLATION_FAILED)
+                }
+                Log.e("doNetworkOperation", "${e.code} ${e.message}")
+            }
+        }
     }
 
-    fun confirmRental(): Boolean {
-        //    val rentalsPrev = rentals.value
-        //    rentalsPrev?.add(Rental(centre, startDate, startTime))
-        if (selectedCentre.value != null && startTime.value != null && selectedTimeIndex.value != null && selectedEquipmentIndex.value != null) {
-            MockRentals.counter ++ // mock ID
-            rentals.value?.add(
-                Rental(
-                    MockRentals.counter,
-                    selectedCentre.value!!,
-                    startTime.value!!,
-                    selectedTimeIndex.value!!,
-                    selectedEquipmentIndex.value!!
+    suspend fun fetchUser() = doNetworkOperation {
+        val userDeferred = sailAppApiService.getUserDataAsync("Bearer ${TokenHandler.accessToken}")
+        val userRes = userDeferred.await()
+        user.postValue(userRes)
+    }
+
+    suspend fun fetchUpcomingRentals() = doNetworkOperation {
+        val rentalsDeferred = sailAppApiService.getAllUserRentals("Bearer ${TokenHandler.accessToken}")
+        val rentalsRes = rentalsDeferred.await()
+        //
+        val futureRentals = rentalsRes.filter {
+            if(it.rentStartDate == null){Log.e("fetchRentals", "Filter: rentStartDate = null"); false}
+            else DateUtil.isFutureDate(it.rentStartDate!!)
+        }
+        for (rental in futureRentals) {
+            if (DateUtil.isForecastAvailable(rental.rentStartDate)) {
+                val forecastDeferred = darkSkyApiService.getForecastAsync(
+                    rental.centreLatitude,
+                    rental.centreLongitude,
+                    rental.timestampSecs!!
                 )
-            ); return true
-        } else return false
+                val forecastRes = forecastDeferred.await()
+                rental.currently = forecastRes.currently
+            }
+        }
+
+        val sortedFutureRentals = futureRentals.sortedBy {
+            it.timestampSecs
+        }
+
+        upcomingRentals.postValue(sortedFutureRentals)
+    }
+
+    suspend fun fetchAllRentals() = doNetworkOperation {
+        val rentalsDeferred = sailAppApiService.getAllUserRentals("Bearer ${TokenHandler.accessToken}")
+        val rentalsRes = rentalsDeferred.await()
+        allRentals.postValue(rentalsRes)
+    }
+
+    private suspend fun refreshAuthToken() = doNetworkOperation {
+        val tokenDeferred = sailAppApiService.refreshAuthTokenAsync("Bearer ${TokenHandler.refreshToken}")
+        val tokenRes = tokenDeferred.await()
+        TokenHandler.accessToken = tokenRes
+    }
+
+    suspend fun fetchCentres() = doNetworkOperation {
+        val centresDeferred = sailAppApiService.getCentresAsync("Bearer ${TokenHandler.accessToken}")
+        val centresRes = centresDeferred.await()
+        for(centre in centresRes){
+            val picDeferred = sailAppApiService.getPicturesOfCentreAsync("Bearer ${TokenHandler.accessToken}", centre.ID)
+            val picRes = picDeferred.await()
+            if(picRes.isNotEmpty()){
+                if(picRes[0].picture_id != "1"){
+                    centre.photoURL = picRes[0].picture_link
+                }
+            }
+        }
+        allCentres.postValue(centresRes)
+    }
+
+    suspend fun fetchGear() = doNetworkOperation {
+        val gearDeferred = sailAppApiService.getAllGearAsync("Bearer ${TokenHandler.accessToken}", selectedCentre.ID)
+        val gearRes = gearDeferred.await()
+        gearList = ArrayList(gearRes)
+    }
+
+    suspend fun rentGear() = doNetworkOperation {
+        if (!areDatesCorrect(rentStart!!, rentEnd!!)){
+            rentalState.postValue(RentalState.RENTAL_FAILED)
+            return@doNetworkOperation
+        }
+        val rentStartStr = DateUtil.dateToString(rentStart)
+        val rentEndStr = DateUtil.dateToString(rentEnd)
+
+        val rentDeferred =
+            sailAppApiService.rentGearAsync(
+                "Bearer ${TokenHandler.accessToken}",
+                centreID = selectedCentre.ID,
+                gearID = selectedGearId,
+                rentAmount = rentAmount,
+                rentStart = rentStartStr,
+                rentEnd = rentEndStr
+            )
+        val rentRes = rentDeferred.await()
+        when (rentRes.msg) {
+            RENTAL_OK_MESSAGE -> rentalState.postValue(RentalState.RENTAL_SUCCESSFUL)
+            else -> rentalState.postValue(RentalState.RENTAL_FAILED)
+        }
+    }
+
+    private fun areDatesCorrect(startDate: Date, endDate: Date):Boolean{
+        val currentDate = Calendar.getInstance().time
+        return (startDate >= currentDate && endDate > startDate)
+    }
+
+    suspend fun cancelRental(rentID: Int) = doNetworkOperation {
+        if (isCancellationAllowed) {
+            val cancelDeferred =
+                sailAppApiService.cancelRentAsync(
+                    "Bearer ${TokenHandler.accessToken}",
+                    rentID = rentID
+                )
+            val cancelRes = cancelDeferred.await()
+            when(cancelRes.msg){
+                CancelResponse.CANCEL_OK_MSG -> cancelStatus.postValue(CancelRentalStatus.CANCELLATION_SUCCESS)
+                else -> cancelStatus.postValue(CancelRentalStatus.CANCELLATION_FAILED)
+            }
+            isCancellationAllowed = false
+        }
     }
 
     fun logOut() {
-        CredentialsUtil.resetUserCredentials(appContext)
-        authenticationState.value = MainViewModel.AuthenticationState.UNAUTHENTICATED
+        TokenHandler.accessToken = NO_TOKEN
+        TokenHandler.refreshToken = NO_TOKEN
+        authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
+    // Search (filter) centres by name
     fun search(query: String?) {
-        val queryLowerCase = query!!.toLowerCase(Locale.getDefault())
-        // Filter by centre name
-        if (!queryLowerCase.isEmpty()) {
-            val filteredCentres = centres.value!!.filter { centre ->
+        if (query == null) {
+            Log.e("MainViewModel", "search: query = null"); return
+        }
+        if (centres.value == null) {
+            Log.e("MainViewModel", "search: centres.value = null"); return
+        }
+        val queryLowerCase = query.toLowerCase(Locale.getDefault())
+        if (queryLowerCase.isNotEmpty()) {
+            val filteredCentres = centres.value!!.filter { centre: Centre ->
                 centre.name.toLowerCase(Locale.getDefault()).contains(queryLowerCase) // && centre.rating>minRating
             }
             centres.value = ArrayList(filteredCentres)
-        } else centres.value = allCentres
+        } else centres.value = filterAndSortCentres(allCentres.value, isAscendingSort, actualDistance)
     }
 
-    fun filter() { // rating, distance, sport, centreName ...
-        val filteredCentres = allCentres.filter { centre ->
-            centre.rating >= minRating && centre.distance < actualDistance
+
+    fun applyFilter() {
+        if (allCentres.value == null) {
+            Log.e("MainViewModel", "applyFilter: allCentres.value = null"); return
         }
-        centres.value = ArrayList(filteredCentres)
+        centres.value = filterAndSortCentres(allCentres.value, isAscendingSort, actualDistance)
     }
 
-    fun sort() {
-        val sortedCentres =
-            if (isByRating) centres.value!!.sortedBy { it.rating } else centres.value!!.sortedBy { it.distance }
-        centres.value = ArrayList(sortedCentres)
+    fun applySort() {
+        if (centres.value == null) {
+            Log.e("MainViewModel", "applySort: allCentres.value = null"); return
+        }
+        centres.value = filterAndSortCentres(allCentres.value, isAscendingSort, actualDistance)
     }
 
-    fun calculateDistances(myLocation: Location) {
-        for (centre in centres.value!!) {
-            val distance = calculateDistance(myLocation, Pair(centre.coordinateX, centre.coordinateY))
-            centre.distance = distance.toDouble()
-            Log.d("Calculated distance", "$distance") // ...
+    fun applyLocation() {
+        if (location == null) {
+            Log.e("MainViewModel", "calculateDistances: location = null"); return
+        }
+        centres.value = calculateDistances(centres.value, location)
+    }
+
+    fun isChangedDataValid(
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        email: String
+    ): Boolean {
+        return firstName.isNotEmpty() &&
+                lastName.isNotEmpty() &&
+                phoneNumber.isNotEmpty() &&
+                email.isNotEmpty()
+    }
+
+    suspend fun changeUserData(
+        firstName : String,
+        lastName: String,
+        email: String,
+        phoneNumber: String
+    ) = doNetworkOperation{
+        val changeDataDeferred =
+            sailAppApiService.changeDataAsync(
+                "Bearer ${TokenHandler.accessToken}",
+                firstName, lastName, email, phoneNumber
+            )
+        val changeDataRes = changeDataDeferred.await()
+        when (changeDataRes.msg) {
+            CHANGE_SUCCESS_MSG -> changeDataState.postValue(ChangeDataState.CHANGE_DATA_SUCCESSFUL)
+            else -> changeDataState.postValue(ChangeDataState.CHANGE_DATA_FAILED)
         }
     }
-
-    fun fetchTimeOptions() {
-        timeOptions.clear() // remove previously fetched data
-        timeOptions.addAll(MockRentalOptions.timeOptions) // add new data
-    }
-
-    fun fetchEquipmentOptions() {
-        equipmentOptions.clear() // remove previously fetched data
-        equipmentOptions.addAll(MockRentalOptions.equipmentOptions) // add new data
-    }
-
-    fun cancelRental(rental: Rental) {
-        rentals.value?.remove(rental)
-        /*
-        Necessary to notify that live data changed.
-        Since live data is an object (arrayList), adding nor removing will not cause the data change (still the same reference)
-         */
-        rentals.value = rentals.value
-    }
-
-
-    private fun calculateDistance(myLocation: Location, theirCoordinates: Pair<Double, Double>): Float {
-        val theirLocation = Location("")
-        theirLocation.latitude = theirCoordinates.first
-        theirLocation.longitude = theirCoordinates.second
-        return myLocation.distanceTo(theirLocation)
-    }
-
-    private fun fetchUserData(): User = MockUsers.usersList[0]
-
 }
+

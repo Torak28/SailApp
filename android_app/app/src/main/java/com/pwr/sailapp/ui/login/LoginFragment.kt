@@ -2,7 +2,7 @@ package com.pwr.sailapp.ui.login
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,14 +12,23 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 
 import com.pwr.sailapp.R
+import com.pwr.sailapp.data.sail.AuthenticationState
+import com.pwr.sailapp.ui.generic.LoginScopedFragment
+import com.pwr.sailapp.ui.generic.ScopedFragment
 import com.pwr.sailapp.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.coroutines.*
 
 // https://developer.android.com/guide/navigation/navigation-conditional
 
-class LoginFragment : Fragment() {
+const val INVALID_CREDENTIALS = "Invalid email or credentials"
+const val LOGIN_SUCCESSFUL = "Login successful"
 
-    private lateinit var loginViewModel: LoginViewModel
+class LoginFragment : LoginScopedFragment() {
+
+    private val navController by lazy {
+        findNavController()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,27 +40,47 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel::class.java)
 
-        val navController = findNavController()
+        button_register.setOnClickListener { navController.navigate(R.id.action_loginFragment_to_registerFragment) }
 
-        // authenticate user when Login button clicked
         button_login.setOnClickListener {
-            loginViewModel.authenticate(editText_email.text.toString(), editText_password.text.toString())
-        }
+            val email = editText_email.text.toString()
+            val password = editText_password.text.toString()
 
-        button_register.setOnClickListener {
-            navController.navigate(R.id.destination_register)
-        }
-
-        loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
-            // when is like match or switch-case
-            when(authenticationState){
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> navController.navigate(R.id.destination_main)
-                else -> Snackbar.make(view,
-                    "Invalid credentials",
-                    Snackbar.LENGTH_SHORT).show()
+            launch {
+                changeLoadingBarVisibility(true)
+                withContext(Dispatchers.IO) {loginViewModel.authenticate(email, password)}
+                changeLoadingBarVisibility(false)
+                loginViewModel.authenticationState.observe(viewLifecycleOwner, authenticationStateObserver)
             }
-        })
+        }
+    }
+
+    private val authenticationStateObserver = Observer<AuthenticationState> {
+        if (it == null) {
+            Log.e("Login fragment", "loginViewModel.authenticationState.value = null")
+            return@Observer
+        }
+        when (it) {
+            AuthenticationState.AUTHENTICATED -> {
+                snack(LOGIN_SUCCESSFUL)
+                navController.navigate(R.id.destination_main)
+            }
+            else -> snack(INVALID_CREDENTIALS)
+        }
+    }
+
+    override fun changeLoadingBarVisibility(isVisible: Boolean) {
+        super.changeLoadingBarVisibility(isVisible)
+        if(isVisible){
+            button_login.visibility = View.GONE
+            button_register.visibility = View.GONE
+            linearLayout_logging.visibility = View.VISIBLE
+        }
+        else{
+            button_login.visibility = View.VISIBLE
+            button_register.visibility = View.VISIBLE
+            linearLayout_logging.visibility = View.GONE
+        }
     }
 }

@@ -9,8 +9,6 @@
               android:padding="10dp"
 >
 
-    <!-- TODO: Update blank fragment layout -->
-
     <RadioGroup
             android:id="@+id/radio_group_sort"
             android:layout_width="match_parent"
@@ -20,19 +18,19 @@
             android:padding="10dp"
             android:layout_marginBottom="10dp"
     >
-        <RadioButton android:id="@+id/radio_by_distance"
+        <RadioButton android:id="@+id/radio_by_distance_asc"
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:checked="true"
-                     android:text="@string/sort_by_distance"
+                     android:text="@string/sort_by_distance_ascending"
                      android:layout_weight="1"
         >
 
         </RadioButton>
-        <RadioButton android:id="@+id/radio_by_rating"
+        <RadioButton android:id="@+id/radio_by_distance_des"
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
-                     android:text="@string/sort_by_rating"
+                     android:text="@string/sort_by_distance_descending"
                      android:layout_weight="1"
         />
     </RadioGroup>

@@ -14,13 +14,16 @@ class CancelRentalDialog : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             val mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
+            mainViewModel.isCancellationAllowed = false
 
             builder.setMessage(R.string.cancel_reservation)
                 .setPositiveButton(R.string.yes) { dialog, id ->
-                    mainViewModel.cancelRental(mainViewModel.currentRental)
+                    mainViewModel.isCancellationAllowed = true
                     dialog.dismiss()
                 }
-                .setNegativeButton(R.string.no) { dialog, id -> dialog.dismiss() }
+                .setNegativeButton(R.string.no) { dialog, id ->
+                    mainViewModel.isCancellationAllowed = false
+                    dialog.dismiss() }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }

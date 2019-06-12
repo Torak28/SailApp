@@ -7,10 +7,16 @@
     <fragment android:id="@+id/destination_login_fragment" android:name="com.pwr.sailapp.ui.login.LoginFragment"
               android:label="fragment_login" tools:layout="@layout/fragment_login">
         <action android:id="@+id/action_loginFragment_to_registerFragment" app:destination="@id/destination_register"
-        />
+                app:enterAnim="@anim/slide_in_from_right" app:exitAnim="@anim/slide_out_from_right"
+                app:popExitAnim="@anim/slide_out_from_left" app:popEnterAnim="@anim/slide_in_from_left"/>
     </fragment>
     <fragment android:id="@+id/destination_register" android:name="com.pwr.sailapp.ui.login.RegisterFragment"
-              android:label="fragment_register" tools:layout="@layout/fragment_register"/>
+              android:label="fragment_register" tools:layout="@layout/fragment_register">
+        <action android:id="@+id/action_destination_register_to_destination_login_fragment"
+                app:destination="@id/destination_login_fragment" app:enterAnim="@anim/slide_in_from_right"
+                app:exitAnim="@anim/slide_out_from_right" app:popExitAnim="@anim/slide_out_from_left"
+                app:popEnterAnim="@anim/slide_in_from_left"/>
+    </fragment>
     <activity android:id="@+id/destination_main" android:name="com.pwr.sailapp.ui.main.MainActivity"
               android:label="MainActivity"/>
 </navigation>

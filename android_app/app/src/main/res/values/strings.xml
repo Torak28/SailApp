@@ -4,13 +4,10 @@
     <string name="password">password</string>
     <string name="email">email</string>
     <string name="register">Register</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="my_profile">My profile</string>
     <string name="sail_now">Sail now</string>
     <string name="my_stats">My stats</string>
-    <string name="settings">Settings</string>
     <string name="log_out">Log out</string>
     <string name="login_screen_banner">Login screen banner</string>
     <string name="sailapp_banner">SailApp banner</string>
@@ -64,4 +61,28 @@
     <string name="upcoming_events">Upcoming events</string>
     <string name="treasure_and_map">Treasure and map</string>
     <string name="no_rentals_info">No planned events. Want to sail a bit?</string>
+    <string name="stats_fragment">Stats fragment</string>
+    <string name="gear">Gear:</string>
+    <string name="rental_duration">Rental duration:</string>
+    <string name="downloading">Loading…</string>
+    <string name="my_localization_button">My localization button</string>
+    <string name="register_error">Registration error: Account already exists.</string>
+    <string name="end_time">End time:</string>
+    <string name="years_rentals">Your year\'s rentals:</string>
+    <string name="years_favourite_centres">Your favourite centres:</string>
+    <string name="total_number_of_rentals">Total number of rentals:</string>
+    <string name="rentals_history">Rentals\' history:</string>
+    <string name="anchor">anchor</string>
+    <string name="seems_like_no_sailing">Seems like no sailing this year. Want to sail a bit?</string>
+    <string name="change">Change</string>
+    <string name="settings">Settings</string>
+    <string name="your_account">Your account</string>
+    <string name="save_changes">Save changes</string>
+    <string name="change_data">Change data</string>
+    <string name="sort_by_distance_ascending">Sort by distance ascending</string>
+    <string name="sort_by_distance_descending">Sort by distance descending</string>
+    <string name="status_accepted">Status: Accepted</string>
+    <string name="status_denied">Status: Denied</string>
+    <string name="status_waiting">Status: Waiting for confirmation</string>
+    <string name="quantity">Quantity</string>
 </resources>
