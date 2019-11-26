@@ -38,4 +38,9 @@
     <action android:id="@+id/action_global_destination_profile" app:destination="@id/destination_profile"
             app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+    <fragment
+        android:id="@+id/cruiseFragment"
+        android:name="com.pwr.sailapp.ui.main.CruiseFragment"
+        android:label="fragment_cruise"
+        tools:layout="@layout/fragment_cruise" />
 </navigation>

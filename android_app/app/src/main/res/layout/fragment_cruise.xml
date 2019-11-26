@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.CruiseFragment"
+    android:columnCount="2"
+    >
+
+    <TextView
+        android:text="@string/lightness_level"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:gravity="fill_horizontal"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <TextView
+        android:id="@+id/text_lightness"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill_horizontal"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <ProgressBar
+        android:id="@+id/progress_bar_lightness"
+        android:layout_columnSpan="2"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:indeterminate="false"
+        android:indeterminateOnly="false"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        />
+
+</GridLayout>

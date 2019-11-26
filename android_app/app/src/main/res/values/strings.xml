@@ -85,4 +85,7 @@
     <string name="status_denied">Status: Denied</string>
     <string name="status_waiting">Status: Waiting for confirmation</string>
     <string name="quantity">Quantity</string>
+    <string name="lightness_level">Lightness Level</string>
+    <string name="no_light_sensor">No light sensor</string>
+    <string name="cruise_mode">Cruise mode</string>
 </resources>
