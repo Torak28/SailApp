@@ -88,4 +88,8 @@
     <string name="lightness_level">Lightness Level</string>
     <string name="no_light_sensor">No light sensor</string>
     <string name="cruise_mode">Cruise mode</string>
+    <string name="acceleration">Acceleration</string>
+    <string name="x_axis">X axis:</string>
+    <string name="y_axis">Y axis</string>
+    <string name="z_axis">Z axis:</string>
 </resources>

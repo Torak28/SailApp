@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.CruiseFragment"
     android:columnCount="2"
+    android:padding="10dp"
     >
 
     <TextView
@@ -32,6 +33,79 @@
         android:indeterminateOnly="false"
         android:layout_height="wrap_content"
         android:layout_gravity="fill_horizontal"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp"
         />
+
+    <TextView
+        android:text="@string/acceleration"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:layout_columnSpan="2"
+        android:gravity="fill_horizontal"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <TextView
+        android:text="@string/x_axis"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:layout_columnSpan="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <TextView
+        tools:text="2.121"
+        android:id="@+id/text_acc_x"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:layout_columnSpan="1"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <TextView
+        android:text="@string/y_axis"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:layout_columnSpan="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <TextView
+        tools:text="2.121"
+        android:id="@+id/text_acc_y"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:layout_columnSpan="1"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <TextView
+        android:text="@string/z_axis"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:layout_columnSpan="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
+    <TextView
+        tools:text="2.121"
+        android:id="@+id/text_acc_z"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_columnWeight="1"
+        android:layout_columnSpan="1"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
+
 
 </GridLayout>

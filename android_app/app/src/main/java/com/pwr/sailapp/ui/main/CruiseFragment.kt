@@ -15,18 +15,19 @@ import android.view.ViewGroup
 
 import com.pwr.sailapp.R
 import kotlinx.android.synthetic.main.fragment_cruise.*
+import kotlin.math.abs
 import kotlin.math.exp
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * A simple [Fragment] subclass.
  */
 class CruiseFragment : Fragment() {
-
     private lateinit var sensorManager: SensorManager
     private var lightSensor: Sensor? = null
     private var maxLight: Float? = null
+    private var linearAccelerationSensor: Sensor? = null
+    private var displayedAcceleration: FloatArray? = floatArrayOf(0f, 0f, 0f)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,17 +42,24 @@ class CruiseFragment : Fragment() {
         sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
         maxLight = lightSensor?.maximumRange
-        Log.d("Sensor max", maxLight.toString())
+        linearAccelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
+        arrayOf(text_acc_x, text_acc_y, text_acc_z).map { it.text = "0" }
     }
 
     override fun onResume() {
         super.onResume()
         sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_GAME)
+        sensorManager.registerListener(
+            linearAccelerationListener,
+            linearAccelerationSensor,
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
     }
 
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(lightListener)
+        sensorManager.unregisterListener(linearAccelerationListener)
     }
 
     private val lightListener = object : SensorEventListener {
@@ -80,6 +88,32 @@ class CruiseFragment : Fragment() {
      * @param lightValue value read by lightness sensor
      * @return exponential mapped value (small values amplified)
      */
-    private fun adjustLightValue(lightValue: Float) = (100 * (-exp(-0.001 * lightValue) + 1)).toInt()
+    private fun adjustLightValue(lightValue: Float) =
+        (100 * (-exp(-0.001 * lightValue) + 1)).toInt()
+
+    private val linearAccelerationListener = object : SensorEventListener {
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        }
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            renderAccelerationInfo(event?.values)
+        }
+
+    }
+
+    private fun renderAccelerationInfo(accelerationValues: FloatArray?) {
+        val views = arrayOf(text_acc_x, text_acc_y, text_acc_z)
+        if (displayedAcceleration != null && accelerationValues != null) {
+            for ((index, view) in views.withIndex()) {
+                val diffNoAbs = displayedAcceleration!![index] - accelerationValues[index]
+                Log.d("accDiff", diffNoAbs.toString())
+                val diff = abs(displayedAcceleration!![index] - accelerationValues[index])
+                Log.d("accDiffABS", diff.toString())
+                view.text = String.format("%.2f", accelerationValues[index])
+            }
+        } else {
+            views.map { it.text = "?" }
+        }
+    }
 
 }
