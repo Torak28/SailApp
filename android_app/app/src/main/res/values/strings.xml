@@ -92,4 +92,9 @@
     <string name="x_axis">X axis:</string>
     <string name="y_axis">Y axis</string>
     <string name="z_axis">Z axis:</string>
+    <string name="no_camera">Camera not found</string>
+    <string name="no_camera_permission">No camera permission</string>
+    <string name="no_storage_permission">No storage permission</string>
+    <string name="photo_done">Photo done</string>
+    <string name="take_a_photo">Take a photo</string>
 </resources>

@@ -42,5 +42,15 @@
         android:id="@+id/cruiseFragment"
         android:name="com.pwr.sailapp.ui.main.CruiseFragment"
         android:label="fragment_cruise"
-        tools:layout="@layout/fragment_cruise" />
+        tools:layout="@layout/fragment_cruise" >
+        <action
+            android:id="@+id/action_cruiseFragment_to_cameraActivity"
+            app:destination="@id/cameraActivity"
+            app:popUpTo="@+id/cruiseFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/cameraActivity"
+        android:name="com.pwr.sailapp.ui.main.CameraActivity"
+        android:label="activity_camera"
+        tools:layout="@layout/activity_camera" />
 </navigation>

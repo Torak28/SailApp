@@ -107,5 +107,14 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         />
 
+    <Button
+        android:id="@+id/button_camera"
+        android:text="@string/take_a_photo"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="bottom|fill_horizontal"
+        android:layout_columnSpan="2">
+
+    </Button>
+
 
 </GridLayout>

@@ -1,28 +1,35 @@
 package com.pwr.sailapp.ui.main
 
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.pwr.sailapp.R
 import kotlinx.android.synthetic.main.fragment_cruise.*
-import kotlin.math.abs
 import kotlin.math.exp
-import kotlin.math.pow
 
 /**
  * A simple [Fragment] subclass.
  */
 class CruiseFragment : Fragment() {
+
+    companion object
+    {
+        const val CAMERA_REQUEST_CODE = 100
+    }
+
     private lateinit var sensorManager: SensorManager
     private var lightSensor: Sensor? = null
     private var maxLight: Float? = null
@@ -44,6 +51,37 @@ class CruiseFragment : Fragment() {
         maxLight = lightSensor?.maximumRange
         linearAccelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
         arrayOf(text_acc_x, text_acc_y, text_acc_z).map { it.text = "0" }
+        button_camera.setOnClickListener {
+
+            val hasCamera =
+                requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)
+
+            val cameraPermission = requireContext().checkSelfPermission(android.Manifest.permission.CAMERA)
+            if(hasCamera && cameraPermission == PackageManager.PERMISSION_GRANTED) {
+                findNavController().navigate(R.id.action_cruiseFragment_to_cameraActivity)
+            }
+            else if (hasCamera && cameraPermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
+            } else {
+                renderCameraWarning()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == CAMERA_REQUEST_CODE){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                findNavController().navigate(R.id.action_cruiseFragment_to_cameraActivity)
+            }
+            else {
+                renderPermissionWarning()
+            }
+        }
     }
 
     override fun onResume() {
@@ -105,10 +143,6 @@ class CruiseFragment : Fragment() {
         val views = arrayOf(text_acc_x, text_acc_y, text_acc_z)
         if (displayedAcceleration != null && accelerationValues != null) {
             for ((index, view) in views.withIndex()) {
-                val diffNoAbs = displayedAcceleration!![index] - accelerationValues[index]
-                Log.d("accDiff", diffNoAbs.toString())
-                val diff = abs(displayedAcceleration!![index] - accelerationValues[index])
-                Log.d("accDiffABS", diff.toString())
                 view.text = String.format("%.2f", accelerationValues[index])
             }
         } else {
@@ -116,4 +150,19 @@ class CruiseFragment : Fragment() {
         }
     }
 
+    private fun renderCameraWarning() {
+        Toast.makeText(
+            requireContext(),
+            resources.getString(R.string.no_camera),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun renderPermissionWarning() {
+        Toast.makeText(
+            requireContext(),
+            resources.getString(R.string.no_camera_permission),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 }
