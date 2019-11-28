@@ -4,7 +4,12 @@
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
             app:startDestination="@id/destination_profile">
     <fragment android:id="@+id/destination_profile" android:name="com.pwr.sailapp.ui.main.ProfileFragment"
-              android:label="fragment_profile" tools:layout="@layout/fragment_profile"/>
+              android:label="fragment_profile" tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_destination_profile_to_telephonyFragment"
+            app:destination="@id/telephonyFragment"
+            app:popUpTo="@+id/destination_profile" />
+    </fragment>
     <fragment android:id="@+id/destination_rent_master" android:name="com.pwr.sailapp.ui.main.RentMasterFragment"
               android:label="fragment_rent_master" tools:layout="@layout/fragment_rent_master">
         <action android:id="@+id/action_destination_rent_master_to_destination_rent_details"

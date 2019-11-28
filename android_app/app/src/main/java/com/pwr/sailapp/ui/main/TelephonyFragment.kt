@@ -17,16 +17,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.getSystemService
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.ncorti.slidetoact.SlideToActView
 
 import com.pwr.sailapp.R
+import com.pwr.sailapp.ui.generic.MainScopedFragment
+import com.pwr.sailapp.ui.generic.ScopedFragment
 import kotlinx.android.synthetic.main.fragment_telephony.*
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
  */
-class TelephonyFragment : Fragment() {
+class TelephonyFragment : MainScopedFragment() {
 
     companion object {
         const val READ_PHONE_STATE_PERMISSION_REQUEST = 71
@@ -47,6 +52,8 @@ class TelephonyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        text_input_edit_text_cancel_phone.setText(mainViewModel.rentalToCancel?.centrePhoneNumber ?: "?")
 
         val phonePermission =
             requireContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
@@ -94,9 +101,20 @@ class TelephonyFragment : Fragment() {
                             Intent(Intent.ACTION_SENDTO, uri),
                             0
                         )
-                        smsManager?.sendTextMessage(
-                            dest, null, message, sentIntent, null
-                        )
+                        launch {
+                            if(mainViewModel.rentalToCancel == null){
+                                renderNoRentalSelectedMessage()
+                                return@launch
+                            }
+                            else{
+                                smsManager?.sendTextMessage(
+                                    dest, null, message, sentIntent, null
+                                )
+                                mainViewModel.cancelRental(mainViewModel.rentalToCancel!!.ID)
+                                findNavController().navigateUp()
+                            }
+                        }
+
                     } else {
                         slide_to_act.resetSlider()
                         renderIncorrectNumberMessage()
@@ -200,6 +218,10 @@ class TelephonyFragment : Fragment() {
             resources.getString(R.string.no_sms_permission),
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    private fun renderNoRentalSelectedMessage(){
+        snack(resources.getString(R.string.no_rental_selected))
     }
 }
 

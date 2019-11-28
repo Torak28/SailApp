@@ -103,4 +103,5 @@
     <string name="message">Message</string>
     <string name="cancellation_message">Sorry, but I must cancel my reservation.</string>
     <string name="incorrect_number">Incorrect number</string>
+    <string name="no_rental_selected">No rental selected</string>
 </resources>
