@@ -95,6 +95,12 @@
     <string name="no_camera">Camera not found</string>
     <string name="no_camera_permission">No camera permission</string>
     <string name="no_storage_permission">No storage permission</string>
+    <string name="no_telephony_permission">No telephony permission</string>
+    <string name="no_sms_permission">No SMS permission</string>
     <string name="photo_done">Photo done</string>
     <string name="take_a_photo">Take a photo</string>
+    <string name="telephony">Telephony</string>
+    <string name="message">Message</string>
+    <string name="cancellation_message">Sorry, but I must cancel my reservation.</string>
+    <string name="incorrect_number">Incorrect number</string>
 </resources>

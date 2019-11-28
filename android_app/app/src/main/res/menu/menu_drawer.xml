@@ -16,9 +16,15 @@
         <item
             android:id="@+id/cruiseFragment"
             android:title="@string/cruise_mode" />
+
+        <item
+            android:id="@+id/telephonyFragment"
+            android:title="@string/telephony" />
+
         <item
             android:id="@+id/destination_logout"
             android:title="@string/log_out" />
+
 
     </group>
 
